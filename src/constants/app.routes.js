@@ -20,3 +20,5 @@ export const faq = "faq";
 export const events = "events";
 export const certificate = "certificate";
 export const termsandconds = "/termsandconds";
+
+

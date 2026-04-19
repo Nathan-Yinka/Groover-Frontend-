@@ -1,24 +1,30 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiArrowLeft, FiEye, FiEyeOff, FiLock, FiMail, FiPhone, FiUser } from "react-icons/fi";
+import {
+  FiEye,
+  FiEyeOff,
+  FiLock,
+  FiMail,
+  FiPhone,
+  FiUser,
+} from "react-icons/fi";
 import { toast } from "sonner";
-import logo from "../../assets/logo.svg";
-import loginpageImage from "../../assets/loginpage_image.svg";
+import logo from "../../assets/LogoWithText.svg";
+import loginpageImage from "../../assets/left.png";
 import authService from "../../app/service/auth.service";
 import ErrorHandler from "../../app/ErrorHandler";
 import AuthInputField from "./components/AuthInputField";
 import AuthCheckbox from "./components/AuthCheckbox";
 
 const inputTheme = {
-  labelClassName: "!text-[#354052]",
-  iconClassName: "!text-[#98a2b3] text-base",
+  labelClassName: "!text-[#2d2d2d] !font-semibold",
+  iconClassName: "!text-gray-400 text-base",
   inputClassName:
-    "h-[52px] text-base !border-[#d2d8e2] !bg-white !text-[#101828] !placeholder:text-[#8f99ab] focus:!border-accent/65 focus:!ring-accent/30",
+    "!h-[48px] !rounded-lg !border-gray-300 !bg-white !text-gray-800 !placeholder:text-gray-400 focus:!border-[#ff6b56] focus:!ring-[#ff6b56]/25",
 };
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const currentYear = new Date().getFullYear();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -127,7 +133,9 @@ const SignUp = () => {
       errors.push("Invitation code must be 6 characters.");
     }
 
-    if (!formData.termsAccepted) errors.push("Please accept the terms and conditions to continue.");
+    if (!formData.termsAccepted) {
+      errors.push("Please accept the terms and conditions to continue.");
+    }
 
     if (errors.length > 0) {
       errors.forEach((error) => toast.error(error));
@@ -165,313 +173,301 @@ const SignUp = () => {
   };
 
   return (
-    <div
-      className="min-h-screen w-full bg-[#f2f4f7] text-[#111827] lg:h-[100dvh] lg:overflow-hidden"
-      style={{ fontFamily: "Poppins, sans-serif" }}
-    >
-      <div className="grid min-h-screen grid-cols-1 lg:h-full lg:grid-cols-[1fr_1fr]">
-        <section className="relative hidden overflow-hidden bg-black lg:block">
-          <img
-            src={loginpageImage}
-            alt="Signup background"
-            className="absolute inset-0 h-full w-full object-cover object-center"
-          />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/78 via-black/68 to-black/84" />
+    <div className="flex min-h-screen flex-col bg-[#F7F6F0]">
+      <header className="bg-[#2d2d2d] px-8 py-4">
+        <div className="mx-auto max-w-[1150px]">
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="absolute left-12 top-12 z-30"
+            className="flex items-center transition-opacity hover:opacity-80"
           >
-            <img src={logo} alt="SoundCampaign" className="h-auto w-44" />
+            <img src={logo} alt="Groover" className="h-auto w-[145px]" />
           </button>
+        </div>
+      </header>
 
-          <div className="absolute inset-x-12 bottom-24 z-10 max-w-[590px] text-white">
-            <h1 className="text-6xl font-semibold leading-[1.03] tracking-tight">
-              Join our community
-              <br />
-              and <span className="text-accent">earn.</span>
+      <main className="mx-auto grid w-full max-w-[1250px] flex-1 grid-cols-1 gap-8 px-5 py-6 md:px-8 md:py-1 lg:grid-cols-2">
+        <div className="flex items-center justify-center">
+          <img
+            src={loginpageImage}
+            alt="Join our roster of music curators & pros"
+            className="h-auto w-full max-w-[420px] object-cover sm:max-w-[500px] lg:max-w-[550px]"
+          />
+        </div>
+
+        <section className="relative flex flex-col justify-center overflow-hidden p-5 sm:p-8 lg:p-12">
+          <div className="pointer-events-none absolute right-12 top-12 h-24 w-24 rounded-full border-4 border-[#8fa3d9] opacity-40" />
+          <div className="pointer-events-none absolute right-32 top-20 h-8 w-8 rounded-full bg-[#e8a89d] opacity-50" />
+          <div className="pointer-events-none absolute right-20 top-32 h-12 w-12 rounded-full border-4 border-[#8fa3d9] opacity-40" />
+          <div className="pointer-events-none absolute bottom-32 left-8 h-16 w-16 rounded-full bg-[#e8a89d] opacity-40" />
+          <div className="pointer-events-none absolute bottom-20 right-20 h-12 w-12 rounded-full border-4 border-[#d4a5a0] opacity-40" />
+
+          <div className="relative z-10 mx-auto w-full max-w-[720px]">
+            <h1 className="mb-2 text-3xl font-black text-[#2d2d2d]">
+              Create an account
             </h1>
-            <p className="mt-7 max-w-[540px] text-[17px] leading-8 text-white/85">
-              Review albums, complete daily tasks, and earn as you grow on
-              SoundCampaign.
+            <p className="mb-8 text-sm text-gray-600">
+              Already have an account?{" "}
+              <button
+                type="button"
+                onClick={() => navigate("/login")}
+                className="font-semibold text-[#ff6b56] hover:underline"
+              >
+                Log in
+              </button>
             </p>
-          </div>
 
-          <p className="absolute bottom-10 left-12 z-10 text-sm text-white/65">
-            © {currentYear} SoundCampaign • Privacy • Terms
-          </p>
-        </section>
-
-        <section className="flex min-h-screen flex-col bg-[#f8fafc] lg:h-full lg:min-h-0 lg:overflow-hidden">
-          <div className="flex items-center justify-between bg-[#f8fafc] px-5 py-4 sm:px-8 lg:hidden">
-            <button
-              type="button"
-              onClick={() => navigate("/")}
-              className="rounded-xl bg-[#0b0b0c] p-2 shadow-sm"
+            <form
+              noValidate
+              onSubmit={handleSubmit}
+              className="space-y-4 sm:space-y-5"
             >
-              <img src={logo} alt="SoundCampaign" className="h-auto w-32" />
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/login")}
-              className="inline-flex items-center gap-1 text-sm font-medium text-accent"
-            >
-              <FiArrowLeft className="text-sm" />
-              Back
-            </button>
-          </div>
-
-          <div className="px-5 pb-6 pt-4 sm:px-8 lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:px-12 lg:pb-10 lg:pt-10">
-            <div className="mx-auto flex min-h-full w-full max-w-[920px] flex-col lg:justify-center">
-              <div className="mx-auto w-full max-w-[720px]">
-                <h2 className="text-4xl font-semibold leading-[1.05] tracking-tight text-[#111827] sm:text-5xl">
-                  Create an account
-                </h2>
-                <p className="mt-2 text-base text-[#667085]">
-                  Already have an account?{" "}
-                  <button
-                    type="button"
-                    onClick={() => navigate("/login")}
-                    className="font-medium text-accent hover:underline"
-                  >
-                    Log in
-                  </button>
-                </p>
-
-                <form noValidate onSubmit={handleSubmit} className="mt-8 space-y-4 sm:space-y-5">
-                <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-                  <AuthInputField
-                    id="first_name"
-                    name="first_name"
-                    label="First Name"
-                    placeholder="John"
-                    Icon={FiUser}
-                    value={formData.first_name}
-                    onChange={handleChange}
-                    autoComplete="given-name"
-                    maxLength={30}
-                    {...inputTheme}
-                  />
-                  <AuthInputField
-                    id="last_name"
-                    name="last_name"
-                    label="Last Name"
-                    placeholder="Doe"
-                    Icon={FiUser}
-                    value={formData.last_name}
-                    onChange={handleChange}
-                    autoComplete="family-name"
-                    maxLength={30}
-                    {...inputTheme}
-                  />
-                </div>
-
+              <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
                 <AuthInputField
-                  id="username"
-                  name="username"
-                  label="Username"
-                  placeholder="Create a username"
+                  id="first_name"
+                  name="first_name"
+                  label="First Name"
+                  placeholder="John"
                   Icon={FiUser}
-                  value={formData.username}
+                  value={formData.first_name}
                   onChange={handleChange}
-                  autoComplete="username"
+                  autoComplete="given-name"
                   maxLength={30}
                   {...inputTheme}
                 />
-
-                <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-                  <AuthInputField
-                    id="email"
-                    name="email"
-                    type="email"
-                    label="Email Address"
-                    placeholder="john@example.com"
-                    Icon={FiMail}
-                    value={formData.email}
-                    onChange={handleChange}
-                    autoComplete="email"
-                    maxLength={254}
-                    {...inputTheme}
-                  />
-                  <AuthInputField
-                    id="phone_number"
-                    name="phone_number"
-                    type="tel"
-                    label="Phone Number"
-                    placeholder="+1 (555) 000-0000"
-                    Icon={FiPhone}
-                    value={formData.phone_number}
-                    onChange={handleChange}
-                    autoComplete="tel"
-                    inputMode="tel"
-                    maxLength={20}
-                    {...inputTheme}
-                  />
-                </div>
-
-                <div>
-                  <p className="mb-2 block text-sm font-medium text-[#354052]">Gender</p>
-                  <div className="flex flex-wrap items-center gap-5 rounded-[10px] border border-[#d2d8e2] bg-white px-4 py-3 text-[#344054]">
-                    {[
-                      { label: "Male", value: "M" },
-                      { label: "Female", value: "F" },
-                    ].map((option) => (
-                      <label key={option.value} className="inline-flex cursor-pointer items-center gap-2.5 text-base">
-                        <input
-                          type="radio"
-                          name="gender"
-                          value={option.value}
-                          onChange={handleChange}
-                          checked={formData.gender === option.value}
-                          className="h-4 w-4 border-[#98a2b3] text-accent focus:ring-accent"
-                        />
-                        <span>{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-                  <AuthInputField
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    label="Password"
-                    placeholder="Enter your password"
-                    Icon={FiLock}
-                    value={formData.password}
-                    onChange={handleChange}
-                    autoComplete="new-password"
-                    rightNode={(
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        className="text-[#8d98ab] hover:text-accent"
-                      >
-                        {showPassword ? <FiEyeOff className="h-5 w-5" /> : <FiEye className="h-5 w-5" />}
-                      </button>
-                    )}
-                    {...inputTheme}
-                  />
-
-                  <AuthInputField
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    label="Confirm Password"
-                    placeholder="Confirm password"
-                    Icon={FiLock}
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    autoComplete="new-password"
-                    rightNode={(
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword((prev) => !prev)}
-                        className="text-[#8d98ab] hover:text-accent"
-                      >
-                        {showConfirmPassword ? (
-                          <FiEyeOff className="h-5 w-5" />
-                        ) : (
-                          <FiEye className="h-5 w-5" />
-                        )}
-                      </button>
-                    )}
-                    {...inputTheme}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-                  <AuthInputField
-                    id="transactional_password"
-                    name="transactional_password"
-                    type={showTransactionalPassword ? "text" : "password"}
-                    label="Transaction Password"
-                    placeholder="4-digit pin"
-                    Icon={FiLock}
-                    value={formData.transactional_password}
-                    onChange={handleChange}
-                    autoComplete="new-password"
-                    inputMode="numeric"
-                    maxLength={4}
-                    rightNode={(
-                      <button
-                        type="button"
-                        onClick={() => setShowTransactionalPassword((prev) => !prev)}
-                        className="text-[#8d98ab] hover:text-accent"
-                      >
-                        {showTransactionalPassword ? (
-                          <FiEyeOff className="h-5 w-5" />
-                        ) : (
-                          <FiEye className="h-5 w-5" />
-                        )}
-                      </button>
-                    )}
-                    {...inputTheme}
-                  />
-                  {formData.transactional_password && !isTransactionPinValid ? (
-                    <p className="-mt-2 text-xs font-medium text-[#b42318] sm:col-span-2">
-                      Transaction PIN must be exactly 4 digits.
-                    </p>
-                  ) : null}
-
-                  <AuthInputField
-                    id="invitation_code"
-                    name="invitation_code"
-                    label="Invitation Code"
-                    placeholder="Enter code"
-                    Icon={FiUser}
-                    value={formData.invitation_code}
-                    onChange={handleChange}
-                    autoComplete="off"
-                    maxLength={6}
-                    {...inputTheme}
-                  />
-                </div>
-
-                <AuthCheckbox
-                  id="termsAccepted"
-                  checked={formData.termsAccepted}
+                <AuthInputField
+                  id="last_name"
+                  name="last_name"
+                  label="Last Name"
+                  placeholder="Doe"
+                  Icon={FiUser}
+                  value={formData.last_name}
                   onChange={handleChange}
-                  containerClassName="items-start"
-                  textClassName="text-[#475467]"
-                  boxClassName="!h-5 !w-5 !rounded-md !border-2 !border-black !bg-white"
-                  dotClassName="!h-2.5 !w-2.5"
-                  checkedDotClassName="bg-[#101828]"
-                  label={(
-                    <span>
-                      I agree to the <a href="/termsandconds" target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:underline">Terms and Conditions</a> and <a href="/termsandconds" target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:underline">Privacy Policy</a>
-                    </span>
-                  )}
+                  autoComplete="family-name"
+                  maxLength={30}
+                  {...inputTheme}
+                />
+              </div>
+
+              <AuthInputField
+                id="username"
+                name="username"
+                label="Username"
+                placeholder="Create a username"
+                Icon={FiUser}
+                value={formData.username}
+                onChange={handleChange}
+                autoComplete="username"
+                maxLength={30}
+                {...inputTheme}
+              />
+
+              <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+                <AuthInputField
+                  id="email"
+                  name="email"
+                  type="email"
+                  label="Email Address"
+                  placeholder="john@example.com"
+                  Icon={FiMail}
+                  value={formData.email}
+                  onChange={handleChange}
+                  autoComplete="email"
+                  maxLength={254}
+                  {...inputTheme}
+                />
+                <AuthInputField
+                  id="phone_number"
+                  name="phone_number"
+                  type="tel"
+                  label="Phone Number"
+                  placeholder="+1 (555) 000-0000"
+                  Icon={FiPhone}
+                  value={formData.phone_number}
+                  onChange={handleChange}
+                  autoComplete="tel"
+                  inputMode="tel"
+                  maxLength={20}
+                  {...inputTheme}
+                />
+              </div>
+
+              <div>
+                <p className="mb-2 block text-sm font-semibold text-[#2d2d2d]">
+                  Gender
+                </p>
+                <div className="flex flex-wrap items-center gap-5 rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-800">
+                  {[
+                    { label: "Male", value: "M" },
+                    { label: "Female", value: "F" },
+                  ].map((option) => (
+                    <label
+                      key={option.value}
+                      className="inline-flex cursor-pointer items-center gap-2.5 text-base"
+                    >
+                      <input
+                        type="radio"
+                        name="gender"
+                        value={option.value}
+                        onChange={handleChange}
+                        checked={formData.gender === option.value}
+                        className="h-4 w-4 border-gray-300 accent-[#ff6b56]"
+                      />
+                      <span>{option.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+                <AuthInputField
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  label="Password"
+                  placeholder="Enter your password"
+                  Icon={FiLock}
+                  value={formData.password}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  rightNode={
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="text-gray-400 transition-colors hover:text-[#ff6b56]"
+                    >
+                      {showPassword ? (
+                        <FiEyeOff className="h-5 w-5" />
+                      ) : (
+                        <FiEye className="h-5 w-5" />
+                      )}
+                    </button>
+                  }
+                  {...inputTheme}
                 />
 
-                <button
-                  type="submit"
-                  className="mt-1 flex h-[54px] w-full items-center justify-center rounded-[10px] border border-accent/40 bg-accent px-5 text-base font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
-                  disabled={loading || !isTransactionPinValid}
-                >
-                  {loading ? "Submitting..." : "Register Now"}
-                </button>
-
-                <div
-                  className="mt-4 text-center lg:mt-8 lg:border-t lg:border-[#e4e7ec] lg:pt-5"
-                  style={{ paddingBottom: "max(env(safe-area-inset-bottom), 10px)" }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => navigate("/login")}
-                    className="inline-flex items-center gap-2 text-base text-[#667085] hover:text-accent"
-                  >
-                    <FiArrowLeft className="text-lg" />
-                    Back to Login
-                  </button>
-                </div>
-                </form>
+                <AuthInputField
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  label="Confirm Password"
+                  placeholder="Confirm password"
+                  Icon={FiLock}
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  rightNode={
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                      className="text-gray-400 transition-colors hover:text-[#ff6b56]"
+                    >
+                      {showConfirmPassword ? (
+                        <FiEyeOff className="h-5 w-5" />
+                      ) : (
+                        <FiEye className="h-5 w-5" />
+                      )}
+                    </button>
+                  }
+                  {...inputTheme}
+                />
               </div>
-            </div>
+
+              <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+                <AuthInputField
+                  id="transactional_password"
+                  name="transactional_password"
+                  type={showTransactionalPassword ? "text" : "password"}
+                  label="Transaction Password"
+                  placeholder="4-digit pin"
+                  Icon={FiLock}
+                  value={formData.transactional_password}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  inputMode="numeric"
+                  maxLength={4}
+                  rightNode={
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowTransactionalPassword((prev) => !prev)
+                      }
+                      className="text-gray-400 transition-colors hover:text-[#ff6b56]"
+                    >
+                      {showTransactionalPassword ? (
+                        <FiEyeOff className="h-5 w-5" />
+                      ) : (
+                        <FiEye className="h-5 w-5" />
+                      )}
+                    </button>
+                  }
+                  {...inputTheme}
+                />
+
+                <AuthInputField
+                  id="invitation_code"
+                  name="invitation_code"
+                  label="Invitation Code"
+                  placeholder="Enter code"
+                  Icon={FiUser}
+                  value={formData.invitation_code}
+                  onChange={handleChange}
+                  autoComplete="off"
+                  maxLength={6}
+                  {...inputTheme}
+                />
+              </div>
+
+              {formData.transactional_password && !isTransactionPinValid ? (
+                <p className="-mt-2 text-xs font-medium text-[#b42318]">
+                  Transaction PIN must be exactly 4 digits.
+                </p>
+              ) : null}
+
+              <AuthCheckbox
+                id="termsAccepted"
+                checked={formData.termsAccepted}
+                onChange={handleChange}
+                containerClassName="items-start !text-sm !text-gray-700"
+                textClassName="text-gray-700"
+                boxClassName="!h-5 !w-5 !rounded !border !border-gray-300 !bg-white peer-checked:!border-[#ff6b56] peer-checked:!bg-[#ff6b56]/10"
+                dotClassName="!h-2.5 !w-2.5"
+                checkedDotClassName="bg-[#ff6b56]"
+                label={
+                  <span>
+                    I agree to the{" "}
+                    <a
+                      href="/termsandconds"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-[#ff6b56] hover:underline"
+                    >
+                      Terms and Conditions
+                    </a>{" "}
+                    and{" "}
+                    <a
+                      href="/termsandconds"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-[#ff6b56] hover:underline"
+                    >
+                      Privacy Policy
+                    </a>
+                  </span>
+                }
+              />
+
+              <button
+                type="submit"
+                className="mt-8 flex w-full items-center justify-center rounded-lg bg-[#ff6b56] px-5 py-3 font-bold text-white transition-colors hover:bg-[#ff5544] disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={loading || !isTransactionPinValid}
+              >
+                {loading ? "Submitting..." : "Register Now"}
+              </button>
+            </form>
           </div>
         </section>
-      </div>
+      </main>
     </div>
   );
 };

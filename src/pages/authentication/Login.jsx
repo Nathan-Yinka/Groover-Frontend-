@@ -30,7 +30,7 @@ const reviews = [
     role: "Singer-Songwriter",
     image: artist2,
     rating: 5,
-    text: "The Sound Campaign process is clear, transparent, and supportive. I got real curator feedback and meaningful exposure for my releases.",
+    text: "The Groover process is clear, transparent, and supportive. I got real curator feedback and meaningful exposure for my releases.",
   },
   {
     name: "Andy Fox",
@@ -122,9 +122,9 @@ const Login = () => {
       }
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message
-        || error.message
-        || "An unexpected error occurred.";
+        error.response?.data?.message ||
+        error.message ||
+        "An unexpected error occurred.";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -167,11 +167,15 @@ const Login = () => {
                 transition={{ duration: 0.35 }}
                 className="w-full max-w-[560px] text-white"
               >
-                <p className="mb-3 text-[44px] font-semibold leading-none text-accent">”</p>
+                <p className="mb-3 text-[44px] font-semibold leading-none text-accent">
+                  ”
+                </p>
                 <p className="max-w-[520px] text-[22px] font-medium leading-[1.28] text-white [text-shadow:0_8px_24px_rgba(0,0,0,0.55)] xl:text-[24px]">
                   {activeReview.text}
                 </p>
-                <p className="mt-2 text-[44px] font-semibold leading-none text-accent">”</p>
+                <p className="mt-2 text-[44px] font-semibold leading-none text-accent">
+                  ”
+                </p>
 
                 <div className="mt-7 flex items-center gap-3">
                   <img
@@ -180,8 +184,12 @@ const Login = () => {
                     className="h-12 w-12 rounded-full object-cover ring-2 ring-accent/60"
                   />
                   <div>
-                    <p className="text-[17px] font-semibold text-white">{activeReview.name}</p>
-                    <p className="text-sm font-normal text-white/75">{activeReview.role}</p>
+                    <p className="text-[17px] font-semibold text-white">
+                      {activeReview.name}
+                    </p>
+                    <p className="text-sm font-normal text-white/75">
+                      {activeReview.role}
+                    </p>
                     <div className="mt-1 flex gap-0.5">
                       {Array.from({ length: 5 }).map((_, index) => (
                         <FaStar
@@ -213,8 +221,12 @@ const Login = () => {
               </button>
             </div>
 
-            <h1 className="text-3xl font-semibold tracking-tight text-white">Welcome Back</h1>
-            <p className="mt-1 text-sm text-white/65 md:text-base">Please enter your details to sign in.</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-white">
+              Welcome Back
+            </h1>
+            <p className="mt-1 text-sm text-white/65 md:text-base">
+              Please enter your details to sign in.
+            </p>
 
             <form className="mt-7 space-y-5" onSubmit={handleLogin}>
               <AuthInputField
@@ -235,7 +247,7 @@ const Login = () => {
                 placeholder="Enter your password"
                 label="Password"
                 Icon={FiLock}
-                rightNode={(
+                rightNode={
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -247,7 +259,7 @@ const Login = () => {
                       <AiOutlineEye className="h-5 w-5" />
                     )}
                   </button>
-                )}
+                }
               />
 
               <div className="flex items-center justify-between pt-0.5">
@@ -256,7 +268,10 @@ const Login = () => {
                   onChange={(e) => setRememberMe(e.target.checked)}
                 />
 
-                <a href="/contact" className="text-sm font-medium text-accent hover:underline">
+                <a
+                  href="/contact"
+                  className="text-sm font-medium text-accent hover:underline"
+                >
                   Forgot password?
                 </a>
               </div>
@@ -273,7 +288,10 @@ const Login = () => {
             <div className="mt-6 text-center">
               <p className="text-sm text-white/60">
                 Don&apos;t have an account?{" "}
-                <a href="/login/signup" className="font-semibold text-accent hover:underline">
+                <a
+                  href="/login/signup"
+                  className="font-semibold text-accent hover:underline"
+                >
                   Create now
                 </a>
               </p>
@@ -298,7 +316,9 @@ const Login = () => {
         >
           <div className="w-full max-w-xs rounded-xl border border-white/15 bg-[#101315] p-6 text-center shadow-xl">
             <FaCheckCircle className="mx-auto mb-4 text-5xl text-accent" />
-            <h2 className="text-xl font-semibold text-white">Login Successful!</h2>
+            <h2 className="text-xl font-semibold text-white">
+              Login Successful!
+            </h2>
             <p className="mt-2 text-sm text-white/65">
               You have successfully logged in.
             </p>

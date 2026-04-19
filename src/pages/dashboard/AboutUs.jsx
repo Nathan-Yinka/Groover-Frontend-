@@ -12,8 +12,8 @@ const aboutSections = [
     icon: FaPeopleCarry,
     iconClass: "text-accent",
     paragraphs: [
-      "Sound Campaign started with a friendship and grew to be a successful business that still retains its core values: putting great emphasis on teamwork, transparency, commitment, consistency, quality, and always being ready to support and help both clients and colleagues.",
-      "Founded in 2013 by professional affiliate marketers and webmasters with over 20 years of experience, Sound Campaign has developed into a trusted name in the industry. What started as a shared vision has now blossomed into a platform that blends technology and human intelligence to deliver excellence.",
+      "Groover started with a friendship and grew to be a successful business that still retains its core values: putting great emphasis on teamwork, transparency, commitment, consistency, quality, and always being ready to support and help both clients and colleagues.",
+      "Founded in 2013 by professional affiliate marketers and webmasters with over 20 years of experience, Groover has developed into a trusted name in the industry. What started as a shared vision has now blossomed into a platform that blends technology and human intelligence to deliver excellence.",
     ],
   },
   {
@@ -22,7 +22,7 @@ const aboutSections = [
     iconClass: "text-[#ffd166]",
     paragraphs: [
       '"We were friends at school and university, brought together by our shared interest in technology and marketing, as well as the desire to find the best way to attain self-realization and success. While striving to grow financially, we did not want to get tangled up in the complex corporate culture."',
-      "Sound Campaign's founders wanted to create something new, both for themselves and for the market. The result is a company with a professional IT department, experienced account managers, and a team of dedicated employees who strive to provide outstanding support and solutions for advertisers and publishers.",
+      "Groover's founders wanted to create something new, both for themselves and for the market. The result is a company with a professional IT department, experienced account managers, and a team of dedicated employees who strive to provide outstanding support and solutions for advertisers and publishers.",
     ],
   },
   {
@@ -39,7 +39,7 @@ const aboutSections = [
     icon: FaHandshake,
     iconClass: "text-[#66a3ff]",
     paragraphs: [
-      "Today, Sound Campaign is a well-known brand with a strong reputation and has been recognized by numerous bloggers and affiliates as one of the top adtech platforms. Our blend of innovative technology and human intelligence makes us a trusted partner in the industry.",
+      "Today, Groover is a well-known brand with a strong reputation and has been recognized by numerous bloggers and affiliates as one of the top adtech platforms. Our blend of innovative technology and human intelligence makes us a trusted partner in the industry.",
       "We believe that our dedication to excellence and support for both advertisers and publishers is what sets us apart and drives our success.",
     ],
   },
@@ -48,7 +48,7 @@ const aboutSections = [
     icon: GiPowerLightning,
     iconClass: "text-[#ff6b6b]",
     paragraphs: [
-      "Sound Campaign exists to give every artist a fair shot at being heard. Whether you are just starting out or already a platinum-selling musician, our platform connects your music with a global network of bloggers, reviewers, playlisters, radio hosts, and industry tastemakers.",
+      "Groover exists to give every artist a fair shot at being heard. Whether you are just starting out or already a platinum-selling musician, our platform connects your music with a global network of bloggers, reviewers, playlisters, radio hosts, and industry tastemakers.",
       "With curators from over 100 countries, we have already helped generate more than 1.4 million pieces of coverage for artists worldwide.",
     ],
   },
@@ -58,7 +58,7 @@ const aboutSections = [
     iconClass: "text-[#bc8dff]",
     paragraphs: [
       "We are industry professionals who believe music promotion should be fair, affordable, and accessible. Every submission is listened to and vetted, ensuring that if your track makes it onto our platform, it gets genuine coverage from reviews and interviews to playlists, radio plays, features, and influencer shoutouts.",
-      "Sound Campaign is not just a service, it is a mission: to democratize music promotion and make sure grassroots and independent artists thrive. Because great music deserves to be discovered.",
+      "Groover is not just a service, it is a mission: to democratize music promotion and make sure grassroots and independent artists thrive. Because great music deserves to be discovered.",
     ],
   },
 ];
@@ -73,7 +73,7 @@ const AboutUs = () => {
             About Us
           </h1>
           <p className="mx-auto mt-2 max-w-[840px] text-center text-xs text-white/65 md:text-sm">
-            The story, mission, and values behind Sound Campaign.
+            The story, mission, and values behind Groover.
           </p>
         </div>
 

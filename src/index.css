@@ -1,3 +1,6 @@
+@import url('https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro');
+@import url('https://cdn.jsdelivr.net/npm/@vetixy/circular-std@1.0.0/dist/index.min.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

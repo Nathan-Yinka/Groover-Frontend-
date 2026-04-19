@@ -94,7 +94,7 @@ const ContactUs = () => {
         <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#101214] via-[#121417] to-[#0c0d0f] p-5 text-center shadow-[0_20px_50px_-30px_rgba(0,0,0,0.95)] md:p-8">
           <img
             src={logo}
-            alt="Sound Campaign Logo"
+            alt="Groover Logo"
             className="mx-auto mb-4 h-auto w-36 md:w-44"
           />
           <h2 className="text-xl font-bold md:text-2xl">

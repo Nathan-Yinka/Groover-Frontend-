@@ -55,24 +55,24 @@ const quickActions = [
 
 const tierThemes = [
   {
-    card: "from-[#0f3f2a]/90 via-[#195837]/70 to-[#101214]",
-    border: "border-[#2ccd79]/35",
-    icon: "text-[#b7f7d6]",
+    card: "from-[#272727] via-[#302b29] to-[#191919]",
+    border: "border-[#EC6345]/30",
+    icon: "text-[#ffb29f]",
   },
   {
-    card: "from-[#4c2f17]/90 via-[#6a3f1a]/70 to-[#101214]",
-    border: "border-[#d28c41]/35",
+    card: "from-[#3a2b27] via-[#4b302a] to-[#191919]",
+    border: "border-[#EC6345]/25",
     icon: "text-[#f0bc84]",
   },
   {
-    card: "from-[#3a3d44]/95 via-[#5b5d63]/60 to-[#101214]",
-    border: "border-[#a4a8af]/35",
+    card: "from-[#272727] via-[#383431] to-[#191919]",
+    border: "border-[#e5ded3]/30",
     icon: "text-[#e5e7eb]",
   },
   {
-    card: "from-[#4a430a]/95 via-[#7f7112]/60 to-[#101214]",
-    border: "border-[#d9c329]/35",
-    icon: "text-[#ffe866]",
+    card: "from-[#4b302a] via-[#6d3a2e] to-[#191919]",
+    border: "border-[#EC6345]/35",
+    icon: "text-[#ffd1c6]",
   },
 ];
 
@@ -126,7 +126,7 @@ const Home = () => {
       "Review tracks daily and level up faster.",
       "Stay consistent, your payout is getting closer.",
     ],
-    [displayName],
+    [],
   );
   const activeTypingText = typingLines[typingIndex]?.slice(0, typedCharCount) || "";
 
@@ -249,22 +249,22 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#060606] text-white">
-      <div className="hidden h-[68px] border-b border-white/10 bg-[#0b0b0c] px-3 md:px-8 md:flex items-center gap-3 md:gap-6">
+    <div className="min-h-screen w-full bg-[#F7F6F0] text-[#333333]">
+      <div className="hidden h-[68px] border-b border-[#e5ded3] bg-[#F7F6F0] px-3 md:px-8 md:flex items-center gap-3 md:gap-6">
         <div className="ml-auto flex items-center gap-3 md:gap-5">
           <button
             type="button"
             onClick={() => navigate("/home/notifications")}
-            className="relative rounded-full border border-white/10 bg-black/70 p-2.5 hover:border-accent/50 transition"
+            className="relative rounded-full border border-[#e5ded3] bg-white p-2.5 text-[#333333] shadow-sm transition hover:border-[#EC6345]/45 hover:text-[#EC6345]"
           >
             <IoMdNotificationsOutline className="text-xl" />
             {unreadNotifications > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-semibold text-black">
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EC6345] px-1 text-[11px] font-semibold text-white">
                 {unreadNotifications}
               </span>
             )}
           </button>
-          <div className="hidden md:block h-8 w-px bg-white/15" />
+          <div className="hidden md:block h-8 w-px bg-[#e5ded3]" />
           <button
             type="button"
             onClick={() => navigate("/home/profile")}
@@ -277,18 +277,18 @@ const Home = () => {
               <img
                 src={profileImage}
                 alt="Profile"
-                className="h-10 w-10 rounded-full object-cover ring-1 ring-white/20"
+                className="h-10 w-10 rounded-full object-cover ring-1 ring-[#EC6345]/25"
               />
             ) : (
-              <BiUserCircle className="h-10 w-10 text-white/75" />
+              <BiUserCircle className="h-10 w-10 text-[#8b8580]" />
             )}
           </button>
         </div>
       </div>
 
-      <div className="w-full space-y-5 md:space-y-6 px-3 md:px-8 py-4 md:py-6">
+      <div className="w-full space-y-5 px-3 py-4 md:space-y-6 md:px-8 md:py-6">
         <section
-          className="relative overflow-hidden rounded-[26px] border border-white/10 min-h-[320px] md:min-h-[360px]"
+          className="relative overflow-hidden rounded-[26px] border border-[#e5ded3] min-h-[320px] md:min-h-[360px]"
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -321,7 +321,7 @@ const Home = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/20 to-black/35" />
           <div className="relative z-10 max-w-[700px] p-5 md:p-10">
             <h1
-              className="text-xl font-bold leading-snug md:text-5xl md:leading-tight min-h-[56px] md:min-h-[120px]"
+              className="min-h-[56px] text-xl font-bold leading-snug text-white md:min-h-[120px] md:text-5xl md:leading-tight"
               style={{
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
@@ -337,13 +337,13 @@ const Home = () => {
             <p className="mt-3 max-w-[560px] text-sm text-white/80 md:text-lg">
               Ready to discover your next favorite artist and earn from each completed review.
             </p>
-            <p className="mt-2 min-h-[52px] max-w-[560px] text-sm text-accent md:text-lg">
+            <p className="mt-2 min-h-[52px] max-w-[560px] text-sm text-[#ffb29f] md:text-lg">
               {showIntroWelcome ? "Your dashboard is ready." : "Track progress, submit faster, get paid daily."}
             </p>
             <button
               type="button"
               onClick={() => navigate(starting)}
-              className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-accent px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110 md:text-base"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#EC6345] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#BA5225] md:text-base"
             >
               <FiPlusSquare className="text-base" />
               New Submission
@@ -351,7 +351,7 @@ const Home = () => {
           </div>
         </section>
 
-        <section className="rounded-[26px] border border-white/10 bg-[#0d0d0e] px-3 py-5 md:px-8 md:py-7">
+        <section className="rounded-[18px] border border-[#e5ded3] bg-white px-3 py-5 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:px-8 md:py-7">
           <div className="grid grid-cols-4 gap-3 md:flex md:items-center md:justify-center md:flex-wrap md:gap-10">
             {quickActions.map((item) => (
               <button
@@ -360,10 +360,10 @@ const Home = () => {
                 onClick={() => navigate(item.route)}
                 className="group text-center transition"
               >
-                <span className="mx-auto mb-2 grid h-12 w-12 md:h-[74px] md:w-[74px] place-items-center rounded-full border border-white/15 bg-white/5 transition group-hover:border-accent/50 group-hover:bg-accent/10">
-                  <item.icon className="text-lg md:text-3xl text-white/75 group-hover:text-accent" />
+                <span className="mx-auto mb-2 grid h-12 w-12 place-items-center rounded-full border border-[#e5ded3] bg-[#F7F6F0] transition group-hover:border-[#EC6345]/45 group-hover:bg-[#fff5f2] md:h-[74px] md:w-[74px]">
+                  <item.icon className="text-lg text-[#6c6661] group-hover:text-[#EC6345] md:text-3xl" />
                 </span>
-                <p className="text-[11px] md:text-xs font-medium text-white/85">
+                <p className="text-[11px] font-medium text-[#5f5b57] md:text-xs">
                   {item.label}
                 </p>
               </button>
@@ -375,14 +375,14 @@ const Home = () => {
           <div className="flex flex-col items-center justify-center gap-3 text-center">
             <div className="max-w-2xl">
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight">VIP Tier Access</h2>
-              <p className="mt-1 text-xs sm:text-sm lg:text-base text-white/60">
+              <p className="mt-1 text-xs text-[#605E5E] sm:text-sm lg:text-base">
                 Scale your outreach with premium musician tiers.
               </p>
             </div>
             <button
               type="button"
               onClick={() => navigate("/home/level")}
-              className="text-xs md:text-sm font-semibold text-accent hover:underline"
+              className="text-xs font-semibold text-[#EC6345] hover:underline md:text-sm"
             >
               Compare all benefits
             </button>
@@ -412,7 +412,7 @@ const Home = () => {
                       <div className="rounded-full border border-white/25 bg-black/30 p-2">
                         <TierIcon className={`${tierTheme.icon}`} />
                       </div>
-                      <span className="rounded-full bg-accent px-2 py-1 text-[9px] sm:text-[10px] font-bold uppercase text-black">
+                      <span className="rounded-full bg-[#EC6345] px-2 py-1 text-[9px] sm:text-[10px] font-bold uppercase text-white">
                         {index === 0 ? "Default" : `VIP ${index}`}
                       </span>
                     </div>
@@ -425,7 +425,7 @@ const Home = () => {
                         {hasCommission && (
                           <div className="flex items-center justify-between text-white/65">
                             <span>Commission Rate</span>
-                            <span className="font-semibold text-accent">{commissionRate}</span>
+                            <span className="font-semibold text-[#ffb29f]">{commissionRate}</span>
                           </div>
                         )}
                         {hasDailyMissions && (
@@ -440,11 +440,11 @@ const Home = () => {
                 );
               })
             ) : (
-              <p className="text-white/70">No packs available.</p>
+              <p className="text-[#605E5E]">No packs available.</p>
             )}
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/40">
+          <div className="overflow-hidden rounded-2xl border border-[#e5ded3] bg-white">
             <iframe
               title="Spotify Playlist"
               src="https://open.spotify.com/embed/playlist/52ryhemOPZrgqWE98Sr3kl?utm_source=generator&theme=0"
@@ -463,3 +463,5 @@ const Home = () => {
 };
 
 export default Home;
+
+

@@ -4,20 +4,20 @@ import BottomNavMobile from "./components/BottomNavMobile";
 
 const Certificate = () => {
   return (
-    <div className="min-h-screen bg-[#060606] text-white">
+    <div className="min-h-screen bg-[#F7F6F0] text-[#333333]">
       <div className="w-full space-y-5 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
-        <div className="rounded-2xl border border-white/10 bg-[#0d0f10] p-4 shadow-[0_24px_60px_-35px_rgba(0,0,0,0.95)] md:p-6">
+        <div className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6">
           <BackButton className="mb-5" />
           <h1 className="text-center text-2xl font-bold tracking-tight md:text-4xl">
             Certificate
           </h1>
-          <p className="mt-2 text-center text-xs text-white/65 md:text-sm">
+          <p className="mt-2 text-center text-xs text-[#605E5E] md:text-sm">
             Company registration and incorporation certificate.
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#101214] via-[#121417] to-[#0c0d0f] p-3 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.95)] md:p-5">
-          <div className="flex max-h-[78vh] items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-[#0a0c0d]">
+        <div className="overflow-hidden rounded-2xl border border-[#e5ded3] bg-white p-3 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] md:p-5">
+          <div className="flex max-h-[78vh] items-center justify-center overflow-hidden rounded-xl border border-[#e5ded3] bg-[#fbfaf6]">
             <img
               src={certImage}
               alt="Certificate of Incorporation"
@@ -33,3 +33,5 @@ const Certificate = () => {
 };
 
 export default Certificate;
+
+

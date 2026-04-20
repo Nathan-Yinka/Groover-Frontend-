@@ -1,5 +1,3 @@
-import React from "react";
-
 const LoadingSpinner = () => {
   return (
     <div
@@ -8,7 +6,7 @@ const LoadingSpinner = () => {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        background: "#000",
+        background: "#F7F6F0",
       }}
     >
       <div style={{ width: "700px", height: "700px" }}>
@@ -32,7 +30,7 @@ const LoadingSpinner = () => {
               d="M24.3 30C11.4 30 5 43.3 5 50s6.4 20 19.3 20c19.3 0 32.1-40 51.4-40 C88.6 30 95 43.3 95 50s-6.4 20-19.3 20C56.4 70 43.6 30 24.3 30z"
               strokeDasharray="207.83703186035157 48.75189636230468"
               strokeWidth="10"
-              stroke="#1ed760"
+              stroke="#EC6345"
               fill="none"
             >
               <animate

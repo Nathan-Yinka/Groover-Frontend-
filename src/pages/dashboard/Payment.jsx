@@ -81,67 +81,67 @@ const Payment = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#060606] px-3 py-4 text-white md:px-8 md:py-6">
+    <div className="min-h-screen bg-[#F7F6F0] px-3 py-4 text-[#333333] md:px-8 md:py-6">
       <BackButton className="mb-6" />
 
-      <div className="space-y-4 rounded-2xl border border-white/10 bg-[#0d0f10] p-5 shadow-[0_24px_60px_-36px_rgba(0,0,0,0.95)] md:p-6">
-        <p className="mb-4 rounded-lg border border-accent/25 bg-accent/10 p-4 text-sm text-accent md:text-base">
+      <div className="space-y-4 rounded-[18px] border border-[#e5ded3] bg-white p-5 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] md:p-6">
+        <p className="mb-4 rounded-lg border border-[#EC6345]/25 bg-[#EC6345]/10 p-4 text-sm text-[#EC6345] md:text-base">
           Dear user, for your security please do not enter your bank details.
         </p>
         <div>
-          <label className="text-sm font-semibold text-white/85">Name</label>
+          <label className="text-sm font-semibold text-[#4a4642]">Name</label>
           <input
             type="text"
             value={data?.name || ""}
             readOnly
-            className="mt-1 w-full cursor-not-allowed rounded-lg border border-white/10 bg-[#13171a] p-2.5 text-sm text-white/70"
+            className="mt-1 w-full cursor-not-allowed rounded-lg border border-[#e5ded3] bg-[#fbfaf6] p-2.5 text-sm text-[#605E5E]"
           />
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-white/85">Phone Number</label>
+          <label className="text-sm font-semibold text-[#4a4642]">Phone Number</label>
           <input
             type="text"
             value={data?.phone_number || ""}
             readOnly
-            className="mt-1 w-full cursor-not-allowed rounded-lg border border-white/10 bg-[#13171a] p-2.5 text-sm text-white/70"
+            className="mt-1 w-full cursor-not-allowed rounded-lg border border-[#e5ded3] bg-[#fbfaf6] p-2.5 text-sm text-[#605E5E]"
           />
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-white/85">Email Address</label>
+          <label className="text-sm font-semibold text-[#4a4642]">Email Address</label>
           <input
             type="email"
             value={data?.email_address || ""}
             readOnly
-            className="mt-1 w-full cursor-not-allowed rounded-lg border border-white/10 bg-[#13171a] p-2.5 text-sm text-white/70"
+            className="mt-1 w-full cursor-not-allowed rounded-lg border border-[#e5ded3] bg-[#fbfaf6] p-2.5 text-sm text-[#605E5E]"
           />
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-white/85">Wallet Address</label>
+          <label className="text-sm font-semibold text-[#4a4642]">Wallet Address</label>
           <input
             type="text"
             value={data?.wallet || ""}
             onChange={(e) => handleInputChange("wallet", e.target.value)}
-            className="mt-1 w-full rounded-lg border border-white/15 bg-[#14181b] p-2.5 text-sm text-white placeholder:text-white/45 focus:outline-none focus:ring-2 focus:ring-accent/45"
+            className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-2.5 text-sm text-[#333333] placeholder:text-[#8b8580] focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
           />
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-white/85">Exchange</label>
+          <label className="text-sm font-semibold text-[#4a4642]">Exchange</label>
           <input
             type="text"
             value={data?.exchange || ""}
             onChange={(e) => handleInputChange("exchange", e.target.value)}
-            className="mt-1 w-full rounded-lg border border-white/15 bg-[#14181b] p-2.5 text-sm text-white placeholder:text-white/45 focus:outline-none focus:ring-2 focus:ring-accent/45"
+            className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-2.5 text-sm text-[#333333] placeholder:text-[#8b8580] focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
           />
         </div>
       </div>
 
       <button
         onClick={handleConfirm}
-        className="mt-6 mb-52 flex w-full items-center justify-center rounded-lg border border-accent/35 bg-accent py-3 font-semibold text-black transition hover:brightness-110 md:mb-2"
+        className="mt-6 mb-52 flex w-full items-center justify-center rounded-lg border border-[#EC6345]/35 bg-[#EC6345] py-3 font-semibold text-white transition hover:bg-[#BA5225] md:mb-2"
         disabled={isLoading}
       >
         {isLoading ? <ButtonLoader /> : "Confirm"}
@@ -151,3 +151,5 @@ const Payment = () => {
 };
 
 export default Payment;
+
+

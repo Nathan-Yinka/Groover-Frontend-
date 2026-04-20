@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useSelector,useDispatch } from "react-redux";
-import { toast } from "sonner";
 import { fetchSettingsFailure, fetchSettingsStart, fetchSettingsSuccess } from "../../app/slice/auth.slice";
 import authService from "../../app/service/auth.service";
 import ErrorHandler from "../../app/ErrorHandler";
@@ -49,7 +48,7 @@ const TawkTo = () => {
             script.remove();
         };
         }
-    }, [settings?.online_chat_url]);
+    }, [settings?.online_chat_url, settings?.online_embed_url]);
 
     return null; // This component does not render anything
 };
@@ -57,3 +56,5 @@ const TawkTo = () => {
 
 
 export default TawkTo;
+
+

@@ -25,8 +25,8 @@ import logo from "../../../assets/logo.svg";
 
 const navItemClass = ({ isActive }) =>
   isActive
-    ? "text-accent font-semibold tracking-wide flex items-center gap-x-3 w-full px-4 py-3 rounded-xl bg-gradient-to-r from-accent/20 via-accent/10 to-transparent border border-accent/35 shadow-[0_0_24px_-16px_rgba(30,215,96,0.9)]"
-    : "text-white/80 font-medium tracking-wide flex items-center gap-x-3 w-full px-4 py-3 rounded-xl hover:bg-accent/10 hover:text-accent transition";
+    ? "text-[#EC6345] font-semibold tracking-wide flex items-center gap-x-3 w-full px-4 py-3 rounded-lg bg-white border border-[#EC6345]/25 shadow-[0_14px_30px_-24px_rgba(39,39,39,0.65)]"
+    : "text-[#5f5b57] font-medium tracking-wide flex items-center gap-x-3 w-full px-4 py-3 rounded-lg hover:bg-white hover:text-[#EC6345] transition";
 
 function SideBarWeb() {
   const dispatch = useDispatch();
@@ -44,18 +44,21 @@ function SideBarWeb() {
   };
 
   return (
-    <div className="w-[270px] bg-[#0a0a0a] px-4 py-6 hidden md:flex flex-col h-screen border-r border-white/10">
+    <aside className="hidden h-screen w-[284px] flex-col border-r border-[#e5ded3] bg-[#F7F6F0] px-4 py-5 text-[#333333] md:flex">
       <motion.div
         initial={zoomIn(1, "min").initial}
         whileInView={zoomIn(1, "min").animate}
-        className="mb-8"
+        className="mb-6 rounded-xl border border-[#e5ded3] bg-white px-4 py-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)]"
       >
-        <button type="button" onClick={() => navigate(home)}>
-          <img src={logo} alt="Logo" className="w-auto h-auto" />
+        <button type="button" onClick={() => navigate(home)} className="block">
+          <img src={logo} alt="Groover" className="h-auto w-[148px]" />
         </button>
+        <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#8b8580]">
+          Curator dashboard
+        </p>
       </motion.div>
 
-      <div className="flex flex-col gap-2 text-[15px]">
+      <div className="rounded-xl border border-[#e5ded3] bg-[#fbfaf6] p-2 text-[15px] shadow-[0_20px_45px_-40px_rgba(39,39,39,0.55)]">
         <motion.div initial={slideIn("left", 0).initial} whileInView={slideIn("left", 2).animate}>
           <NavLink to={home} end className={navItemClass}>
             <MdOutlineDashboard className="text-xl" />
@@ -89,7 +92,7 @@ function SideBarWeb() {
             <div className="relative flex items-center">
               <IoMdNotificationsOutline className="text-xl" />
               {unreadNotifications > 0 && (
-                <span className="absolute -right-2 -top-1 h-4 min-w-4 rounded-full bg-accent px-1 text-[10px] font-semibold text-black grid place-items-center">
+                <span className="absolute -right-2 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[#EC6345] px-1 text-[10px] font-semibold text-white">
                   {unreadNotifications}
                 </span>
               )}
@@ -123,13 +126,13 @@ function SideBarWeb() {
       <motion.button
         initial={slideIn("up", null).initial}
         whileInView={slideIn("up", 2).animate}
-        className="mt-auto flex items-center gap-x-3 py-2.5 px-4 text-red-300 hover:bg-red-400/10 rounded-xl border border-red-400/20"
+        className="mt-auto flex items-center gap-x-3 rounded-lg border border-[#f2c2b8] bg-white px-4 py-3 font-semibold text-[#BA5225] transition hover:border-[#EC6345]/45 hover:bg-[#fff5f2]"
         onClick={handleLogout}
       >
         <CiLogout className="text-xl" />
         <p>Logout</p>
       </motion.button>
-    </div>
+    </aside>
   );
 }
 

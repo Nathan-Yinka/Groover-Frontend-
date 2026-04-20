@@ -20,10 +20,10 @@ export default {
       },
       colors: {
         background: "#F7F6F0",
-        primary: "#1ed760",
+        primary: "#EC6345",
         primary_dark: "#191919",
         primary_mid: "#272727",
-        secondary: "#1ed760",
+        secondary: "#EC6345",
         card: "#FFFFFF",
         card_dark: "#191919",
         card_mid: "#272727",
@@ -39,8 +39,8 @@ export default {
         xlightshadow: "#A3B1C6",
         ylightshadow: "#FFFFFF",
         accent: {
-          DEFAULT: "#1ed760",
-          hover: "#1aa84a",
+          DEFAULT: "#EC6345",
+          hover: "#BA5225",
           dark: "#191919",
           mid: "#272727",
         },

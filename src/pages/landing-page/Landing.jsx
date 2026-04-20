@@ -310,7 +310,7 @@ You can refine your preferred music genres on your profile. Being as precise as 
       >
         <div className="max-w-[1250px] mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
-            <img src={logo} alt="SoundCampaign" className="w-[150px] h-auto" />
+            <img src={logo} alt="Groover" className="w-[150px] h-auto" />
           </div>
 
           <div className="flex">
@@ -966,7 +966,7 @@ You can refine your preferred music genres on your profile. Being as precise as 
             <div className="flex flex-col items-left mb-8 text-center items-center">
               <img
                 src={logo}
-                alt="SoundCampaign"
+                alt="Groover"
                 className="w-[200px] h-auto mb-6"
               />
 

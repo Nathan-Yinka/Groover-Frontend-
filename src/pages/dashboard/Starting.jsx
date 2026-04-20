@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BiUserCircle } from "react-icons/bi";
 import { GiCrown } from "react-icons/gi";
 import { motion } from "framer-motion";
@@ -10,16 +10,14 @@ import { toast } from "sonner";
 import ErrorHandler from "../../app/ErrorHandler";
 import { fetchProfileFailure, fetchProfileStart, fetchProfileSuccess } from "../../app/slice/profile.slice";
 import authService from "../../app/service/auth.service";
-import LoadingSpinner from "./components/LoadingSpinner";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { formatCurrencyWithCode } from "../../utils/currency";
+import PropTypes from "prop-types";
 
 // Initialize SweetAlert2 with React Content
 const MySwal = withReactContent(Swal);
 
-// Responsive loading spinner component
-// eslint-disable-next-line react/prop-types
 const ResponsiveSpinner = ({ size = "default" }) => {
   const sizeClasses = {
     sm: "w-16 h-16 md:w-32 md:h-32 lg:w-40 lg:h-40",
@@ -28,7 +26,7 @@ const ResponsiveSpinner = ({ size = "default" }) => {
   };
 
   return (
-    <div className={`${sizeClasses[size]} relative text-accent`}>
+    <div className={`${sizeClasses[size]} relative text-[#EC6345]`}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 100 100"
@@ -65,6 +63,9 @@ const ResponsiveSpinner = ({ size = "default" }) => {
   );
 };
 
+ResponsiveSpinner.propTypes = {
+  size: PropTypes.oneOf(["sm", "default", "lg"]),
+};
 
 // const slideVariants = {
 //     enter: (direction) => ({
@@ -85,7 +86,7 @@ const Starting = () => {
     const dispatch = useDispatch();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedStar, setSelectedStar] = useState(5);
+    const [selectedStar] = useState(5);
     const [comments, setComments] = useState("");
     const [shuffledProducts, setShuffledProducts] = useState([]);
     const [imagesReady, setImagesReady] = useState(false);
@@ -97,7 +98,6 @@ const Starting = () => {
     const isLoading_current = useSelector((state) => state.products.isLoading_current);
     const products = useSelector((state) => state.products.products);
     const currentGame = useSelector((state) => state.products.currentGame);
-    const error_msg = useSelector((state) => state.products.error_msg);
 
     useEffect(() => {
         const isMobileModalActive = Boolean(
@@ -134,7 +134,6 @@ const Starting = () => {
 
     // console.log("currentGame", currentGame)
 
-    // eslint-disable-next-line no-unused-vars
     // const images = [
     //     "https://picsum.photos/id/101/150/150", // Random image 1
     //     "https://picsum.photos/id/102/150/150", // Random image 2
@@ -159,7 +158,7 @@ const Starting = () => {
     // ];
 
     // Function to fetch user profile
-        const fetchProfile = async () => {
+        const fetchProfile = useCallback(async () => {
                 dispatch(fetchProfileStart());
                 try {
                     const response = await authService.fetchProfile();
@@ -174,13 +173,13 @@ const Starting = () => {
                     dispatch(fetchProfileFailure("An error occurred while fetching your profile."));
                     toast.error("An error occurred while fetching your profile.");
             }
-        };
+        }, [dispatch]);
 
     useEffect(() => {
         if (!profile) {
         fetchProfile();
         }
-    }, [dispatch, profile]);
+    }, [fetchProfile, profile]);
 
     // useEffect(() => {
     //     const fetchCurrentGameData = async () => {
@@ -292,8 +291,6 @@ const Starting = () => {
     }, [shuffledProducts, isInitialLoad]);
 
     // Utility to check if an image is loaded
-    const isImageLoaded = (src) => loadedImages[src];
-
     // Function to shuffle array randomly
     const shuffleArray = (array) => {
         const shuffled = [...array];
@@ -317,10 +314,6 @@ const Starting = () => {
 
     const handleNextSlide = () => {
         setCurrentSlide((prev) => (prev + 1) % totalSlides);
-    };
-
-    const handlePrevSlide = () => {
-        setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
     };
 
     useEffect(() => {
@@ -380,7 +373,7 @@ const Starting = () => {
             );
             
             let node;
-            while (node = walker.nextNode()) {
+            while ((node = walker.nextNode())) {
                 elements.push(node);
             }
             return elements;
@@ -579,7 +572,7 @@ const Starting = () => {
             },
             background: '#0f1210',
             color: '#f5f5f5',
-            confirmButtonColor: '#2ccd79',
+            confirmButtonColor: '#EC6345',
             backdrop: true, // This makes it cover the modal
             allowOutsideClick: false, // Prevents clicking outside to close
             allowEscapeKey: false, // Prevents escape key from closing
@@ -651,7 +644,7 @@ const Starting = () => {
     }, []);
 
     return (
-      <div className="min-h-screen bg-[#060606] text-white">
+      <div className="min-h-screen bg-[#F7F6F0] text-[#333333]">
         <div className="w-full space-y-5 px-3 py-4 md:space-y-6 md:px-8 md:py-6">
           {/* Modern Header Section */}
           <motion.div
@@ -661,7 +654,7 @@ const Starting = () => {
           >
           <div className="mb-4 md:mb-6 text-center">
             <h1 className="text-2xl md:text-4xl font-semibold tracking-tight">Starting Dashboard</h1>
-            <p className="text-white/60 text-xs md:text-base mt-1">
+            <p className="text-[#6c6661] text-xs md:text-base mt-1">
               Complete submissions and track earnings in real time.
             </p>
           </div>
@@ -670,7 +663,7 @@ const Starting = () => {
           <motion.div
             initial={slideIn("up", null).initial}
             whileInView={slideIn("up", 1 * 2).animate}
-            className="bg-[#0e0e10] border border-white/10 rounded-2xl shadow-[0_20px_50px_-32px_rgba(0,0,0,0.95)] p-5 md:p-8 mb-6"
+            className="bg-white border border-[#e5ded3] rounded-2xl shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] p-5 md:p-8 mb-6"
           >
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center space-x-4">
@@ -679,20 +672,20 @@ const Starting = () => {
                     <img
                       src={profile.profile_picture}
                       alt="Profile"
-                      className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-4 border-white/20 shadow-lg"
+                      className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-4 border-[#EC6345]/20 shadow-lg"
                     />
                   ) : (
-                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/20 flex items-center justify-center border-4 border-white/20 shadow-lg">
-                      <BiUserCircle className="text-3xl md:text-4xl text-white" />
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#fff5f2] flex items-center justify-center border-4 border-[#EC6345]/20 shadow-lg">
+                      <BiUserCircle className="text-3xl md:text-4xl text-[#EC6345]" />
                     </div>
                   )}
-                  <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full border-2 border-white bg-accent"></div>
+                  <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full border-2 border-white bg-[#EC6345]"></div>
                 </div>
                 <div>
-                  <h1 className="text-lg md:text-2xl text-accent font-semibold">
+                  <h1 className="text-lg md:text-2xl text-[#EC6345] font-semibold">
                     Hi, {profile?.first_name} 👋
                   </h1>
-                  <p className="text-white/70 text-xs md:text-sm">
+                  <p className="text-[#605E5E] text-xs md:text-sm">
                     Welcome back to your dashboard
                   </p>
                 </div>
@@ -705,7 +698,7 @@ const Starting = () => {
                     className="w-10 h-10 md:w-12 md:h-12 object-contain"
                   />
                 ) : (
-                  <GiCrown className="text-3xl md:text-4xl text-white" />
+                  <GiCrown className="text-3xl md:text-4xl text-[#EC6345]" />
                 )}
               </div>
             </div>
@@ -713,13 +706,13 @@ const Starting = () => {
             {/* Progress Bar */}
             <div className="mb-2">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-white/80">Daily Progress</span>
-                <span className="text-sm font-semibold text-accent">
+                <span className="text-sm font-medium text-[#5f5b57]">Daily Progress</span>
+                <span className="text-sm font-semibold text-[#EC6345]">
                   {profile?.current_number_count || 0} /{" "}
                   {profile?.total_number_can_play || 0}
                 </span>
               </div>
-              <div className="w-full bg-white/10 rounded-full h-2.5 overflow-hidden">
+              <div className="w-full bg-[#e5ded3] rounded-full h-2.5 overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{
@@ -774,22 +767,22 @@ const Starting = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ scale: 1.05, y: -5 }}
-                className={`bg-[#111214] border border-white/10 rounded-xl p-4 text-white relative overflow-hidden h-full`}
+                className={`bg-white border border-[#e5ded3] rounded-xl p-4 text-[#333333] relative overflow-hidden h-full`}
               >
-                <div className="absolute top-0 right-0 w-16 h-16 bg-accent/10 rounded-full -translate-y-8 translate-x-8"></div>
+                <div className="absolute top-0 right-0 w-16 h-16 bg-[#EC6345]/10 rounded-full -translate-y-8 translate-x-8"></div>
                 <div className="relative z-10 h-full flex flex-col justify-between">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xl">{item.icon}</span>
                     <div className="w-2 h-2 bg-accent/70 rounded-full"></div>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[11px] md:text-sm mb-1 text-white/90">
+                    <h3 className="font-semibold text-[11px] md:text-sm mb-1 text-[#4a4642]">
                       {item.label}
                     </h3>
-                    <p className="text-white/60 text-[11px] mb-2">
+                    <p className="text-[#6c6661] text-[11px] mb-2">
                       {item.description}
                     </p>
-                    <p className="font-semibold text-sm md:text-lg text-accent">
+                    <p className="font-semibold text-sm md:text-lg text-[#EC6345]">
                       {item.amount}
                     </p>
                   </div>
@@ -803,19 +796,19 @@ const Starting = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="w-full bg-[#0e0e10] border border-white/10 rounded-2xl shadow-[0_20px_50px_-32px_rgba(0,0,0,0.95)] p-4 md:p-8"
+            className="w-full bg-white border border-[#e5ded3] rounded-2xl shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] p-4 md:p-8"
           >
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-lg md:text-2xl lg:text-3xl font-semibold text-white mb-2">
+              <h2 className="text-lg md:text-2xl lg:text-3xl font-semibold text-[#333333] mb-2">
                 Start Optimization
               </h2>
-              <p className="text-white/60 text-sm md:text-base">
+              <p className="text-[#6c6661] text-sm md:text-base">
                 Complete tasks to earn rewards
               </p>
             </div>
-            <div className="bg-accent/10 border border-accent/20 rounded-xl px-2 py-1 md:px-4 md:py-2">
-              <p className="text-accent text-sm md:text-lg lg:text-xl font-semibold">
+            <div className="bg-[#EC6345]/10 border border-[#EC6345]/20 rounded-xl px-2 py-1 md:px-4 md:py-2">
+              <p className="text-[#EC6345] text-sm md:text-lg lg:text-xl font-semibold">
                 {profile?.current_number_count || 0} /{" "}
                 {profile?.total_number_can_play || 0}
               </p>
@@ -828,10 +821,10 @@ const Starting = () => {
                 {[...Array(9)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-full w-full aspect-square bg-white/10 rounded-xl animate-pulse"
+                    className="h-full w-full aspect-square bg-[#e5ded3] rounded-xl animate-pulse"
                     style={{ animationDelay: `${i * 0.1}s` }}
                   >
-                    <div className="h-full w-full bg-gradient-to-r from-white/10 via-white/5 to-white/10 rounded-xl" />
+                    <div className="h-full w-full bg-gradient-to-r from-[#e5ded3] via-[#f4efe7] to-[#e5ded3] rounded-xl" />
                   </div>
                 ))}
               </div>
@@ -843,7 +836,7 @@ const Starting = () => {
                   .map((product, idx) => (
                     <div
                       key={product.id || `top-${idx}`}
-                      className="flex justify-center items-center border border-accent/25 rounded-xl bg-[#0f1210] p-1 w-full aspect-square transform hover:scale-105 transition-transform"
+                      className="flex justify-center items-center border border-[#EC6345]/25 rounded-xl bg-white p-1 w-full aspect-square transform hover:scale-105 transition-transform"
                     >
                       <img
                         src={product.image || "https://via.placeholder.com/150"}
@@ -858,7 +851,7 @@ const Starting = () => {
                   ))}
 
                 {/* Middle row left */}
-                <div className="flex justify-center items-center border border-accent/25 rounded-xl bg-[#0f1210] p-1 w-full aspect-square transform hover:scale-105 transition-transform">
+                <div className="flex justify-center items-center border border-[#EC6345]/25 rounded-xl bg-white p-1 w-full aspect-square transform hover:scale-105 transition-transform">
                   {groupedProducts[currentSlide]?.[3] && (
                     <img
                       src={
@@ -880,14 +873,14 @@ const Starting = () => {
                   <motion.button
                     onClick={handleButtonClick}
                     whileHover={{ scale: 1.05 }}
-                    className="bg-accent text-black font-semibold rounded-full flex items-center justify-center shadow-lg shadow-accent/30 text-sm sm:text-base md:text-lg lg:text-xl start-button"
+                    className="bg-[#EC6345] text-white font-semibold rounded-full flex items-center justify-center shadow-lg shadow-[#EC6345]/30 text-sm sm:text-base md:text-lg lg:text-xl start-button"
                   >
                     Start
                   </motion.button>
                 </div>
 
                 {/* Middle row right */}
-                <div className="flex justify-center items-center border border-accent/25 rounded-xl bg-[#0f1210] p-1 w-full aspect-square transform hover:scale-105 transition-transform">
+                <div className="flex justify-center items-center border border-[#EC6345]/25 rounded-xl bg-white p-1 w-full aspect-square transform hover:scale-105 transition-transform">
                   {groupedProducts[currentSlide]?.[4] && (
                     <img
                       src={
@@ -913,7 +906,7 @@ const Starting = () => {
                   return (
                     <div
                       key={`bottom-${i}`}
-                      className="flex justify-center items-center border border-accent/25 rounded-xl bg-[#0f1210] p-1 aspect-square transform hover:scale-105 transition-transform"
+                      className="flex justify-center items-center border border-[#EC6345]/25 rounded-xl bg-white p-1 aspect-square transform hover:scale-105 transition-transform"
                     >
                       <img
                         src={product.image || "https://via.placeholder.com/150"}
@@ -933,9 +926,9 @@ const Starting = () => {
           </motion.div>
 
           {/* Important Hint Section */}
-          <div className="mb-52 w-full rounded-xl border border-white/10 bg-[#0e0e10] p-5 shadow-lg md:mb-2 md:p-8">
-            <h2 className="text-lg font-semibold text-accent">Important Hint</h2>
-            <ul className="list-disc ml-4 mt-2 text-white/70 text-sm md:text-base">
+          <div className="mb-52 w-full rounded-xl border border-[#e5ded3] bg-white p-5 shadow-lg md:mb-2 md:p-8">
+            <h2 className="text-lg font-semibold text-[#EC6345]">Important Hint</h2>
+            <ul className="list-disc ml-4 mt-2 text-[#605E5E] text-sm md:text-base">
             <li>
               Working hours:{" "}
               {profile?.settings?.service_availability_start_time || "00:00"} -{" "}
@@ -974,7 +967,7 @@ const Starting = () => {
                 y: 300,
                 scale: 1,
               }}
-              className="relative w-full max-w-2xl overflow-y-auto rounded-t-3xl border border-accent/30 bg-[#0d0f10] p-4 text-white shadow-[0_30px_70px_-30px_rgba(44,205,121,0.5)] sm:p-8"
+              className="relative w-full max-w-2xl overflow-y-auto rounded-t-3xl border border-[#e5ded3] bg-white p-4 text-[#333333] shadow-[0_30px_70px_-35px_rgba(39,39,39,0.55)] sm:p-8"
               style={{
                 maxHeight: "90vh",
               }}
@@ -989,7 +982,7 @@ const Starting = () => {
               {/* Close Button */}
               <button
                 onClick={toggleModal}
-                className="absolute right-4 top-4 z-[1000001] rounded-full border border-accent/35 bg-accent/10 p-2 text-lg font-bold text-accent transition hover:bg-accent/20"
+                className="absolute right-4 top-4 z-[1000001] rounded-full border border-[#EC6345]/35 bg-[#EC6345]/10 p-2 text-lg font-bold text-[#EC6345] transition hover:bg-[#EC6345]/20"
               >
                 ✕
               </button>
@@ -1000,7 +993,7 @@ const Starting = () => {
               </h2>
 
               {/* Product Images and Details */}
-              <div className="mb-4 flex items-start rounded-2xl border border-white/10 bg-[#111315] p-3 sm:space-x-6 sm:p-4">
+              <div className="mb-4 flex items-start rounded-2xl border border-[#e5ded3] bg-[#fbfaf6] p-3 sm:space-x-6 sm:p-4">
                 {/* Product Images */}
                 <div className="flex space-x-2 sm:space-x-4 overflow-x-auto w-full sm:w-auto">
                   {currentGame?.products?.slice(0, 3).map((product) => (
@@ -1022,12 +1015,12 @@ const Starting = () => {
                   {currentGame?.products?.slice(0, 3).map((product) => (
                     <p
                       key={product?.id}
-                      className="text-sm font-semibold text-white/90 sm:text-lg"
+                      className="text-sm font-semibold text-[#4a4642] sm:text-lg"
                     >
                       {product?.name}
                     </p>
                   ))}
-                  <p className="mt-1 text-sm font-bold text-accent sm:mt-2 sm:text-lg">
+                  <p className="mt-1 text-sm font-bold text-[#EC6345] sm:mt-2 sm:text-lg">
                     USD {currentGame?.amount}
                   </p>
 
@@ -1035,7 +1028,7 @@ const Starting = () => {
                     {/* Comments Section */}
                     <textarea
                       placeholder="Leave your comments here..."
-                      className="mt-3 w-full rounded-lg border border-white/15 bg-black/40 p-2 text-sm text-white placeholder:text-white/45 focus:outline-none focus:ring-2 focus:ring-accent/45"
+                      className="mt-3 w-full rounded-lg border border-[#e5ded3] bg-white p-2 text-sm text-[#333333] placeholder:text-[#8b8580] focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                       value={comments}
                       onChange={(e) => setComments(e.target.value)}
                     ></textarea>
@@ -1044,36 +1037,36 @@ const Starting = () => {
               </div>
 
               {/* Amount and Commission Section */}
-              <div className="mb-4 flex justify-between border-y border-white/10 py-2 text-center sm:py-4">
+              <div className="mb-4 flex justify-between border-y border-[#e5ded3] py-2 text-center sm:py-4">
                 <div>
-                  <p className="text-base font-semibold text-white/55 sm:text-xl">
+                  <p className="text-base font-semibold text-[#7b756f] sm:text-xl">
                     Total amount
                   </p>
-                  <p className="text-base font-bold text-accent sm:text-xl">
+                  <p className="text-base font-bold text-[#EC6345] sm:text-xl">
                     USD {currentGame?.amount}
                   </p>
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-white/55 sm:text-xl">
+                  <p className="text-base font-semibold text-[#7b756f] sm:text-xl">
                     Commission
                   </p>
-                  <p className="text-base font-bold text-accent sm:text-xl">
+                  <p className="text-base font-bold text-[#EC6345] sm:text-xl">
                     USD {currentGame?.commission}
                   </p>
-                  <p className="mt-1 text-sm text-white/55 sm:text-base">
+                  <p className="mt-1 text-sm text-[#7b756f] sm:text-base">
                     Profit: {currentGame?.commission_percentage || 0}%
                   </p>
                 </div>
               </div>
 
               {/* Creation Time and Rating Number */}
-              <div className="mb-2 flex justify-between text-sm text-white/60 sm:mb-4 sm:text-lg">
+              <div className="mb-2 flex justify-between text-sm text-[#6c6661] sm:mb-4 sm:text-lg">
                 <p>Creation time</p>
                 <p>{new Date(currentGame?.created_at).toLocaleString()}</p>
               </div>
-              <div className="mb-4 flex justify-between text-sm text-white/60 sm:mb-6 sm:text-lg">
+              <div className="mb-4 flex justify-between text-sm text-[#6c6661] sm:mb-6 sm:text-lg">
                 <p>Rating No</p>
-                <p className="font-semibold text-accent">{currentGame?.rating_no}</p>
+                <p className="font-semibold text-[#EC6345]">{currentGame?.rating_no}</p>
               </div>
 
               {/* Submit Button */}
@@ -1097,7 +1090,7 @@ const Starting = () => {
                     toggleModal();
                   }
                 }}
-                className="flex w-full items-center justify-center rounded-full border border-accent/30 bg-accent py-2 font-semibold text-black transition hover:brightness-110 sm:py-3"
+                className="flex w-full items-center justify-center rounded-full border border-[#EC6345]/30 bg-[#EC6345] py-2 font-semibold text-white transition hover:bg-[#BA5225] sm:py-3"
               >
                 {currentGame?.pending ? "Confirm Submission" : "Submit"}
               </button>
@@ -1124,7 +1117,7 @@ const Starting = () => {
                 y: 50,
                 scale: 0.95,
               }}
-              className="relative w-full max-w-2xl overflow-y-auto rounded-3xl border border-accent/30 bg-[#0d0f10] p-4 text-white shadow-[0_30px_70px_-30px_rgba(44,205,121,0.5)] sm:p-8"
+              className="relative w-full max-w-2xl overflow-y-auto rounded-3xl border border-[#e5ded3] bg-white p-4 text-[#333333] shadow-[0_30px_70px_-35px_rgba(39,39,39,0.55)] sm:p-8"
               style={{
                 maxHeight: "90vh",
               }}
@@ -1139,7 +1132,7 @@ const Starting = () => {
               {/* Close Button */}
               <button
                 onClick={toggleModal}
-                className="absolute right-4 top-4 z-[1000001] rounded-full border border-accent/35 bg-accent/10 p-2 text-lg font-bold text-accent transition hover:bg-accent/20"
+                className="absolute right-4 top-4 z-[1000001] rounded-full border border-[#EC6345]/35 bg-[#EC6345]/10 p-2 text-lg font-bold text-[#EC6345] transition hover:bg-[#EC6345]/20"
               >
                 ✕
               </button>
@@ -1150,7 +1143,7 @@ const Starting = () => {
               </h2>
 
               {/* Product Images and Details */}
-              <div className="mb-4 flex items-start rounded-2xl border border-white/10 bg-[#111315] p-3 sm:space-x-6 sm:p-4">
+              <div className="mb-4 flex items-start rounded-2xl border border-[#e5ded3] bg-[#fbfaf6] p-3 sm:space-x-6 sm:p-4">
                 {/* Product Images */}
                 <div className="flex space-x-2 sm:space-x-4 overflow-x-auto w-full sm:w-auto">
                   {currentGame?.products?.slice(0, 3).map((product) => (
@@ -1172,12 +1165,12 @@ const Starting = () => {
                   {currentGame?.products?.slice(0, 3).map((product) => (
                     <p
                       key={product?.id}
-                      className="text-sm font-semibold text-white/90 sm:text-lg"
+                      className="text-sm font-semibold text-[#4a4642] sm:text-lg"
                     >
                       {product?.name}
                     </p>
                   ))}
-                  <p className="mt-1 text-sm font-bold text-accent sm:mt-2 sm:text-lg">
+                  <p className="mt-1 text-sm font-bold text-[#EC6345] sm:mt-2 sm:text-lg">
                     USD {currentGame?.amount}
                   </p>
 
@@ -1185,7 +1178,7 @@ const Starting = () => {
                     {/* Comments Section */}
                     <textarea
                       placeholder="Leave your comments here..."
-                      className="mt-3 w-full rounded-lg border border-white/15 bg-black/40 p-2 text-sm text-white placeholder:text-white/45 focus:outline-none focus:ring-2 focus:ring-accent/45"
+                      className="mt-3 w-full rounded-lg border border-[#e5ded3] bg-white p-2 text-sm text-[#333333] placeholder:text-[#8b8580] focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                       value={comments}
                       onChange={(e) => setComments(e.target.value)}
                     ></textarea>
@@ -1194,36 +1187,36 @@ const Starting = () => {
               </div>
 
               {/* Amount and Commission Section */}
-              <div className="mb-4 flex justify-between border-y border-white/10 py-2 text-center sm:py-4">
+              <div className="mb-4 flex justify-between border-y border-[#e5ded3] py-2 text-center sm:py-4">
                 <div>
-                  <p className="text-base font-semibold text-white/55 sm:text-xl">
+                  <p className="text-base font-semibold text-[#7b756f] sm:text-xl">
                     Total amount
                   </p>
-                  <p className="text-base font-bold text-accent sm:text-xl">
+                  <p className="text-base font-bold text-[#EC6345] sm:text-xl">
                     USD {currentGame?.amount}
                   </p>
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-white/55 sm:text-xl">
+                  <p className="text-base font-semibold text-[#7b756f] sm:text-xl">
                     Commission
                   </p>
-                  <p className="text-base font-bold text-accent sm:text-xl">
+                  <p className="text-base font-bold text-[#EC6345] sm:text-xl">
                     USD {currentGame?.commission}
                   </p>
-                  <p className="mt-1 text-sm text-white/55 sm:text-base">
+                  <p className="mt-1 text-sm text-[#7b756f] sm:text-base">
                     Profit: {currentGame?.commission_percentage || 0}%
                   </p>
                 </div>
               </div>
 
               {/* Creation Time and Rating Number */}
-              <div className="mb-2 flex justify-between text-sm text-white/60 sm:mb-4 sm:text-lg">
+              <div className="mb-2 flex justify-between text-sm text-[#6c6661] sm:mb-4 sm:text-lg">
                 <p>Creation time</p>
                 <p>{new Date(currentGame?.created_at).toLocaleString()}</p>
               </div>
-              <div className="mb-4 flex justify-between text-sm text-white/60 sm:mb-6 sm:text-lg">
+              <div className="mb-4 flex justify-between text-sm text-[#6c6661] sm:mb-6 sm:text-lg">
                 <p>Rating No</p>
-                <p className="font-semibold text-accent">{currentGame?.rating_no}</p>
+                <p className="font-semibold text-[#EC6345]">{currentGame?.rating_no}</p>
               </div>
 
               {/* Submit Button */}
@@ -1247,7 +1240,7 @@ const Starting = () => {
                     toggleModal();
                   }
                 }}
-                className="flex w-full items-center justify-center rounded-full border border-accent/30 bg-accent py-2 font-semibold text-black transition hover:brightness-110 sm:py-3"
+                className="flex w-full items-center justify-center rounded-full border border-[#EC6345]/30 bg-[#EC6345] py-2 font-semibold text-white transition hover:bg-[#BA5225] sm:py-3"
               >
                 {currentGame?.pending ? "Confirm Submission" : "Submit"}
               </button>
@@ -1257,10 +1250,10 @@ const Starting = () => {
           <BottomNavMobile className="md:hidden" />
 
           {/* Custom CSS for Start button */}
-          <style jsx>{`
+          <style>{`
           .swal-accent-theme {
-            border: 1px solid rgba(44, 205, 121, 0.35) !important;
-            box-shadow: 0 28px 70px -32px rgba(44, 205, 121, 0.55) !important;
+            border: 1px solid rgba(236, 99, 69, 0.35) !important;
+            box-shadow: 0 28px 70px -32px rgba(236, 99, 69, 0.45) !important;
           }
 
           .start-button {
@@ -1269,7 +1262,7 @@ const Starting = () => {
             min-width: 80px;
             min-height: 80px;
             border: 1px solid rgba(44, 205, 121, 0.35);
-            background: radial-gradient(circle at 30% 20%, #55e694 0%, #2ccd79 55%, #18a95f 100%);
+            background: radial-gradient(circle at 30% 20%, #ffb29f 0%, #EC6345 55%, #BA5225 100%);
             box-shadow: 0 18px 45px -20px rgba(44, 205, 121, 0.8);
           }
 
@@ -1306,3 +1299,5 @@ const Starting = () => {
 };
 
 export default Starting;
+
+

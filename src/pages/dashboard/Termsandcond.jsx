@@ -1,19 +1,19 @@
 const TermsandCond = () => {
   return (
-    <div className="bg-darker p-2 md:p-12 font-sans text-gray-300 h-screen overflow-y-auto">
-      <h1 className="text-3xl font-bold text-center mb-8 text-accent">
+    <div className="h-screen overflow-y-auto bg-[#F7F6F0] p-4 font-sans text-[#4a4642] md:p-12">
+      <h1 className="text-3xl font-bold text-center mb-8 text-[#EC6345]">
         Contract Rules
       </h1>
 
-      <div className="space-y-6 text-white leading-relaxed">
+      <div className="mx-auto max-w-4xl space-y-6 rounded-[18px] border border-[#e5ded3] bg-white p-5 leading-relaxed shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] md:p-8">
         <section>
-          <h2 className="text-xl font-semibold mb-2 text-white">
+          <h2 className="text-xl font-semibold mb-2 text-[#333333]">
             1. Task Reset
           </h2>
-          <p className="text-gray-300">
+          <p>
             To reset a task, you must complete the current task first. The
             account balance must be at least{" "}
-            <span className="font-semibold text-accent">$100</span>.
+            <span className="font-semibold text-[#EC6345]">$100</span>.
           </p>
         </section>
 
@@ -67,7 +67,7 @@ const TermsandCond = () => {
           <h2 className="text-xl font-semibold mb-2">6. Account Protection</h2>
           <p>
             If the account balance exceeds{" "}
-            <span className="font-semibold text-primary">$50,000</span> and the
+            <span className="font-semibold text-[#EC6345]">$50,000</span> and the
             wrong transaction password is entered more than 3 times, the account
             will enter protection mode. To release it, a deposit of 30%–50% of
             the total account balance is required, ensuring fund security.
@@ -118,7 +118,7 @@ const TermsandCond = () => {
               result in complaints and a breach of contract.
             </li>
             <li>
-              Long-term extensions will lower a user's credit score. Accounts
+              Long-term extensions will lower a user&apos;s credit score. Accounts
               with a score below 100 must be repaired before withdrawals.
             </li>
           </ul>
@@ -159,3 +159,5 @@ const TermsandCond = () => {
 };
 
 export default TermsandCond;
+
+

@@ -84,57 +84,57 @@ const HomeLayout = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex bg-black h-screen text-white">
+    <div className="flex h-screen bg-[#F7F6F0] text-[#333333]">
       <SideBarWeb />
 
       <div className="flex flex-col w-full h-full">
         <div
-          className={`nav-bar fixed left-0 right-0 top-0 z-40 flex h-[68px] items-center border-b border-white/10 bg-[#0b0b0c] px-3 transition-transform duration-200 will-change-transform md:hidden ${
+          className={`nav-bar fixed left-0 right-0 top-0 z-40 flex h-[68px] items-center border-b border-[#e5ded3] bg-[#F7F6F0]/95 px-3 shadow-sm backdrop-blur transition-transform duration-200 will-change-transform md:hidden ${
             isMobileTopBarHidden ? "-translate-y-full" : "translate-y-0"
           }`}
         >
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(true)}
-            className="rounded-lg border border-white/10 bg-black/70 p-2 text-white"
+            className="rounded-lg border border-[#e5ded3] bg-white p-2 text-[#333333] shadow-sm"
           >
             <HiOutlineMenuAlt3 className="text-xl" />
           </button>
 
           <button type="button" className="ml-3 flex items-center" onClick={() => navigate(home)}>
-            <img src={logo} alt="Logo" className="w-20 h-auto" />
+            <img src={logo} alt="Groover" className="h-auto w-[112px]" />
           </button>
 
           <div className="ml-auto flex items-center gap-3">
             <button
               type="button"
               onClick={() => navigate("/home/notifications")}
-              className="relative rounded-full border border-white/10 bg-black/70 p-2.5"
+              className="relative rounded-full border border-[#e5ded3] bg-white p-2.5 shadow-sm"
             >
-              <IoMdNotificationsOutline className="text-xl text-white" />
+              <IoMdNotificationsOutline className="text-xl text-[#333333]" />
               {unreadNotifications > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-semibold text-black">
+                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EC6345] px-1 text-[11px] font-semibold text-white">
                   {unreadNotifications}
                 </span>
               )}
             </button>
-            <div className="h-8 w-px bg-white/15" />
+            <div className="h-8 w-px bg-[#e5ded3]" />
             <button
               type="button"
               onClick={() => navigate("/home/profile")}
-              className="flex items-center justify-center space-x-2 text-accent"
+              className="flex items-center justify-center space-x-2 text-[#EC6345]"
             >
-              <span className="text-sm font-medium text-white max-w-[120px] truncate">
+              <span className="text-sm font-medium text-[#333333] max-w-[120px] truncate">
                 {displayName}
               </span>
               {profileImage ? (
                 <img
                   src={profileImage}
                   alt="Profile"
-                  className="w-8 h-8 rounded-full object-cover ring-1 ring-white/20"
+                  className="w-8 h-8 rounded-full object-cover ring-1 ring-[#EC6345]/25"
                 />
               ) : (
-                <BiUserCircle className="w-8 h-8 text-white/75" />
+                <BiUserCircle className="w-8 h-8 text-[#8b8580]" />
               )}
             </button>
           </div>
@@ -151,12 +151,12 @@ const HomeLayout = () => {
             >
               <button
                 type="button"
-                className="absolute inset-0 bg-black/55"
+                className="absolute inset-0 bg-[#272727]/45"
                 onClick={() => setIsMobileMenuOpen(false)}
                 aria-label="Close menu backdrop"
               />
               <motion.div
-                className="relative h-full w-[82%] max-w-[320px] bg-[#0b0b0c] border-r border-white/10 p-4"
+                className="relative h-full w-[82%] max-w-[320px] border-r border-[#e5ded3] bg-[#F7F6F0] p-4 text-[#333333]"
                 initial={{ x: -110, opacity: 0.4, scale: 0.94 }}
                 animate={{ x: 0, opacity: 1, scale: 1 }}
                 exit={{ x: -110, opacity: 0, scale: 0.94 }}
@@ -170,12 +170,12 @@ const HomeLayout = () => {
                       setIsMobileMenuOpen(false);
                     }}
                   >
-                    <img src={logo} alt="Logo" className="w-20 h-auto" />
+                    <img src={logo} alt="Groover" className="h-auto w-[124px]" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="rounded-lg border border-white/10 bg-black/70 p-2 text-white"
+                    className="rounded-lg border border-[#e5ded3] bg-white p-2 text-[#333333]"
                   >
                     <HiOutlineX className="text-xl" />
                   </button>
@@ -205,8 +205,8 @@ const HomeLayout = () => {
                           onClick={() => setIsMobileMenuOpen(false)}
                           className={({ isActive }) =>
                             isActive
-                              ? "flex items-center gap-3 rounded-xl border border-accent/35 bg-accent/10 px-3 py-3 text-accent font-semibold"
-                              : "flex items-center gap-3 rounded-xl px-3 py-3 text-white/85 hover:bg-accent/10 hover:text-accent"
+                              ? "flex items-center gap-3 rounded-lg border border-[#EC6345]/25 bg-white px-3 py-3 text-[#EC6345] font-semibold"
+                              : "flex items-center gap-3 rounded-lg px-3 py-3 text-[#5f5b57] hover:bg-white hover:text-[#EC6345]"
                           }
                         >
                           <item.icon className="text-lg" />
@@ -222,7 +222,7 @@ const HomeLayout = () => {
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.32 }}
-                    className="mb-3 mt-auto flex w-full items-center gap-3 rounded-xl border border-red-400/20 px-3 py-3 text-red-300 hover:bg-red-400/10"
+                    className="mb-3 mt-auto flex w-full items-center gap-3 rounded-lg border border-[#f2c2b8] bg-white px-3 py-3 text-[#BA5225] hover:bg-[#fff5f2]"
                   >
                     <CiLogout className="text-lg" />
                     <span className="text-sm tracking-wide">Logout</span>
@@ -246,3 +246,5 @@ const HomeLayout = () => {
 };
 
 export default HomeLayout;
+
+

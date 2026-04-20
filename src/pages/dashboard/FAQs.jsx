@@ -18,11 +18,11 @@ const faqSections = [
   {
     title: "1. Start the music album data submission task",
     icon: FaTasks,
-    iconClass: "text-accent",
+    iconClass: "text-[#EC6345]",
     points: [
       <>
         (1.1) You need to top up at least{" "}
-        <span className="font-semibold text-accent">100 USDT</span> to reset
+        <span className="font-semibold text-[#EC6345]">100 USDT</span> to reset
         your account and start a new task.
       </>,
       "(1.2) After all tasks are completed, users must apply for a full withdrawal and receive the withdrawal amount before they can apply to reset their account.",
@@ -31,7 +31,7 @@ const faqSections = [
   {
     title: "2. Withdrawal",
     icon: FaDollarSign,
-    iconClass: "text-[#66a3ff]",
+    iconClass: "text-[#BA5225]",
     points: [
       "(2.1) If the user has completed the task for the day and needs to withdraw money, please contact our online customer service to withdraw money.",
       "VIP Withdrawal Limits:",
@@ -50,7 +50,7 @@ const faqSections = [
   {
     title: "3. Funds",
     icon: FaMoneyBillWave,
-    iconClass: "text-[#61d39b]",
+    iconClass: "text-[#EC6345]",
     points: [
       "(3.1) All funds will be safely stored in the user's account and can be fully withdrawn after submitting all music album data.",
       "(3.2) To avoid fund loss, all data will be processed by the system.",
@@ -61,7 +61,7 @@ const faqSections = [
   {
     title: "4. Ordinary music albums",
     icon: FaBox,
-    iconClass: "text-[#ffd166]",
+    iconClass: "text-[#BA5225]",
     points: [
       "(4.1) The platform commission is divided into ordinary commission and 12 times commission. Each user will have 1-6 opportunities to obtain 12-48 times optimization task commission every day. All users can usually obtain up to 1-3 combination product tasks per group.",
       "(4.2) VIP 1 will receive 0.5% of the income for each ordinary music album completed.",
@@ -74,7 +74,7 @@ const faqSections = [
   {
     title: "5. Premium Music Albums",
     icon: FaBoxes,
-    iconClass: "text-[#57d1c9]",
+    iconClass: "text-[#EC6345]",
     points: [
       "(5.1) Users will receive 12x-48x commission for each completed combination music album.",
       "(5.2) When you receive the combination music album data, all funds will be used to submit the combination album transaction, and after you complete the data submission of each album in the combination album, the funds will be returned to your account balance.",
@@ -84,7 +84,7 @@ const faqSections = [
   {
     title: "6. Deposit",
     icon: FaMoneyCheckAlt,
-    iconClass: "text-[#8ca2ff]",
+    iconClass: "text-[#7b756f]",
     points: [
       "(6.1) The deposit amount is selected by the user. We cannot determine the user's deposit amount. It is recommended that users pay in advance according to their own ability.",
       "(6.2) If the user needs to pay a deposit when receiving the combination music album, we recommend that the user pay the deposit based on the difference shown in the account.",
@@ -94,7 +94,7 @@ const faqSections = [
   {
     title: "7. What are the merchant cooperation rules?",
     icon: FaHandshake,
-    iconClass: "text-[#ff7ac1]",
+    iconClass: "text-[#BA5225]",
     points: [
       "Merchants depend on users to complete tasks promptly.",
       "If task data is not submitted for a long time, it will delay merchant operations.",
@@ -105,7 +105,7 @@ const faqSections = [
   {
     title: "8. Can I invite other users?",
     icon: FaUserFriends,
-    iconClass: "text-[#ff9f43]",
+    iconClass: "text-[#EC6345]",
     points: [
       "Only VIP4 users are eligible to invite new users.",
       "To qualify, you must work on the platform for 10 working days.",
@@ -126,14 +126,14 @@ const faqSections = [
 
 const FAQs = () => {
   return (
-    <div className="min-h-screen bg-[#060606] text-white">
+    <div className="min-h-screen bg-[#F7F6F0] text-[#333333]">
       <div className="w-full space-y-5 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
-        <div className="rounded-2xl border border-white/10 bg-[#0d0f10] p-4 shadow-[0_24px_60px_-35px_rgba(0,0,0,0.95)] md:p-6">
+        <div className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6">
           <BackButton className="mb-5" />
-          <h1 className="text-center text-2xl font-bold tracking-tight text-white md:text-4xl">
+          <h1 className="text-center text-2xl font-bold tracking-tight text-[#333333] md:text-4xl">
             FAQ
           </h1>
-          <p className="mx-auto mt-2 max-w-[840px] text-center text-xs text-white/65 md:text-sm">
+          <p className="mx-auto mt-2 max-w-[840px] text-center text-xs text-[#605E5E] md:text-sm">
             Quick answers to deposits, withdrawals, tasks, and account rules.
           </p>
         </div>
@@ -147,18 +147,18 @@ const FAQs = () => {
                 initial={fadeIn("up", null).initial}
                 whileInView={fadeIn("up", (sectionIndex + 1) * 2).animate}
                 viewport={{ once: false, amount: 0.2 }}
-                className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#101214] via-[#121417] to-[#0c0d0f] p-4 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.95)] md:p-6"
+                className="rounded-2xl border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] md:p-6"
               >
                 <div className="mb-4 flex items-center gap-3">
-                  <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-[#15181b]">
+                  <span className="grid h-10 w-10 place-items-center rounded-xl border border-[#e5ded3] bg-[#fbfaf6]">
                     <SectionIcon className={`text-xl ${section.iconClass}`} />
                   </span>
-                  <h2 className="text-base font-semibold text-white md:text-2xl">
+                  <h2 className="text-base font-semibold text-[#333333] md:text-2xl">
                     {section.title}
                   </h2>
                 </div>
 
-                <ul className="list-inside list-disc space-y-2 pl-1 text-sm text-white/75 md:text-base">
+                <ul className="list-inside list-disc space-y-2 pl-1 text-sm text-[#5f5b57] md:text-base">
                   {section.points.map((point, idx) => {
                     if (
                       section.nestedFromIndex !== undefined &&
@@ -181,7 +181,7 @@ const FAQs = () => {
                       return (
                         <li key={`${section.title}-${idx}`}>
                           {point}
-                          <ul className="mt-2 list-inside list-disc space-y-1 pl-4 text-white/70">
+                          <ul className="mt-2 list-inside list-disc space-y-1 pl-4 text-[#605E5E]">
                             {section.points
                               .slice(section.nestedFromIndex, section.nestedToIndex + 1)
                               .map((nestedPoint, nestedIdx) => (
@@ -209,3 +209,5 @@ const FAQs = () => {
 };
 
 export default FAQs;
+
+

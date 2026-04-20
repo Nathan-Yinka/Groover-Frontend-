@@ -292,7 +292,7 @@ const PersonalInfo = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#060606] px-3 py-4 text-white md:px-8 md:py-6">
+        <div className="min-h-screen bg-[#F7F6F0] px-3 py-4 text-[#333333] md:px-8 md:py-6">
             {/* Back Button */}
             <BackButton className="mb-6" />
 
@@ -302,19 +302,19 @@ const PersonalInfo = () => {
                 whileInView={fadeIn("up", 1 * 2).animate}
                 className="text-center mb-8"
             >
-                <h1 className="mb-2 text-2xl font-bold tracking-tight text-white md:text-3xl">Personal Information</h1>
-                <p className="text-sm text-white/70 md:text-base">Manage your account details and security settings</p>
+                <h1 className="mb-2 text-2xl font-bold tracking-tight text-[#333333] md:text-3xl">Personal Information</h1>
+                <p className="text-sm text-[#605E5E] md:text-base">Manage your account details and security settings</p>
             </motion.div>
 
             {/* Profile Picture Section */}
             <motion.div
                 initial={slideIn("up", null).initial}
                 whileInView={slideIn("up", 1 * 2).animate}
-                className="mb-6 rounded-2xl border border-white/10 bg-[#0d0f10] p-5 shadow-[0_24px_60px_-36px_rgba(0,0,0,0.95)] md:p-6"
+                className="mb-6 rounded-[18px] border border-[#e5ded3] bg-white p-5 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] md:p-6"
             >
                 <div className="flex flex-col items-center space-y-4">
                     <div className="relative">
-                        <div className="h-24 w-24 overflow-hidden rounded-full border-2 border-accent/30 shadow-lg">
+                        <div className="h-24 w-24 overflow-hidden rounded-full border-2 border-[#EC6345]/30 shadow-lg">
                             {(imagePreview || profilePicture) ? (
                                 <img
                                     src={imagePreview || profilePicture}
@@ -322,12 +322,12 @@ const PersonalInfo = () => {
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <div className="flex h-full w-full items-center justify-center bg-[#15191b]">
-                                    <FaUser className="text-3xl text-white/40" />
+                                <div className="flex h-full w-full items-center justify-center bg-[#fff5f2]">
+                                    <FaUser className="text-3xl text-[#EC6345]" />
                                 </div>
                             )}
                         </div>
-                        <label className="absolute bottom-0 right-0 cursor-pointer rounded-full border border-accent/30 bg-accent p-2 text-black shadow-lg transition hover:brightness-110">
+                        <label className="absolute bottom-0 right-0 cursor-pointer rounded-full border border-[#EC6345]/30 bg-[#EC6345] p-2 text-white shadow-lg shadow-[#EC6345]/20 transition hover:bg-[#BA5225]">
                             <MdOutlinePhotoCamera className="text-lg" />
                             <input
                                 type="file"
@@ -337,7 +337,7 @@ const PersonalInfo = () => {
                             />
                         </label>
                     </div>
-                    <p className="text-center text-xs text-white/70 md:text-sm">Click the camera icon to update your profile picture</p>
+                    <p className="text-center text-xs text-[#605E5E] md:text-sm">Click the camera icon to update your profile picture</p>
                 </div>
             </motion.div>
 
@@ -345,17 +345,17 @@ const PersonalInfo = () => {
             <motion.div
                 initial={slideIn("up", null).initial}
                 whileInView={slideIn("up", 2 * 2).animate}
-                className="mb-6 rounded-2xl border border-white/10 bg-[#0d0f10] p-5 shadow-[0_24px_60px_-36px_rgba(0,0,0,0.95)] md:p-6"
+                className="mb-6 rounded-[18px] border border-[#e5ded3] bg-white p-5 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] md:p-6"
             >
-                <h2 className="mb-6 flex items-center text-xl font-bold text-white">
-                    <FaIdCard className="mr-3 text-accent" />
+                <h2 className="mb-6 flex items-center text-xl font-bold text-[#333333]">
+                    <FaIdCard className="mr-3 text-[#EC6345]" />
                     Basic Information
                 </h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <label className="flex items-center text-sm font-semibold text-white/90">
-                            <FaUser className="mr-2 text-sm text-accent" />
+                        <label className="flex items-center text-sm font-semibold text-[#4a4642]">
+                            <FaUser className="mr-2 text-sm text-[#EC6345]" />
                             Username
                         </label>
                         <input
@@ -363,14 +363,14 @@ const PersonalInfo = () => {
                             name="username"
                             value={formData.username || ""}
                             onChange={handleChange}
-                            className="w-full rounded-lg border border-white/15 bg-[#14181b] p-3 text-sm text-white placeholder:text-white/45 transition-all focus:outline-none focus:ring-2 focus:ring-accent/45"
+                            className="w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                             placeholder="Enter your username"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="flex items-center text-sm font-semibold text-white/90">
-                            <FaEnvelope className="mr-2 text-sm text-accent" />
+                        <label className="flex items-center text-sm font-semibold text-[#4a4642]">
+                            <FaEnvelope className="mr-2 text-sm text-[#EC6345]" />
                             Email
                         </label>
                         <input
@@ -378,14 +378,14 @@ const PersonalInfo = () => {
                             name="email"
                             value={formData.email || ""}
                             onChange={handleChange}
-                            className="w-full rounded-lg border border-white/15 bg-[#14181b] p-3 text-sm text-white placeholder:text-white/45 transition-all focus:outline-none focus:ring-2 focus:ring-accent/45"
+                            className="w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                             placeholder="Enter your email"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="flex items-center text-sm font-semibold text-white/90">
-                            <FaPhone className="mr-2 text-sm text-accent" />
+                        <label className="flex items-center text-sm font-semibold text-[#4a4642]">
+                            <FaPhone className="mr-2 text-sm text-[#EC6345]" />
                             Phone Number
                         </label>
                         <input
@@ -393,37 +393,37 @@ const PersonalInfo = () => {
                             name="phone_number"
                             value={formData.phone_number || ""}
                             onChange={handleChange}
-                            className="w-full rounded-lg border border-white/15 bg-[#14181b] p-3 text-sm text-white placeholder:text-white/45 transition-all focus:outline-none focus:ring-2 focus:ring-accent/45"
+                            className="w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                             placeholder="Enter your phone number"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-white/90">First Name</label>
+                        <label className="text-sm font-semibold text-[#4a4642]">First Name</label>
                         <input
                             type="text"
                             name="first_name"
                             value={formData.first_name || ""}
                             onChange={handleChange}
-                            className="w-full rounded-lg border border-white/15 bg-[#14181b] p-3 text-sm text-white placeholder:text-white/45 transition-all focus:outline-none focus:ring-2 focus:ring-accent/45"
+                            className="w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                             placeholder="Enter your first name"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-white/90">Last Name</label>
+                        <label className="text-sm font-semibold text-[#4a4642]">Last Name</label>
                         <input
                             type="text"
                             name="last_name"
                             value={formData.last_name || ""}
                             onChange={handleChange}
-                            className="w-full rounded-lg border border-white/15 bg-[#14181b] p-3 text-sm text-white placeholder:text-white/45 transition-all focus:outline-none focus:ring-2 focus:ring-accent/45"
+                            className="w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                             placeholder="Enter your last name"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-white/90">Gender</label>
+                        <label className="text-sm font-semibold text-[#4a4642]">Gender</label>
                         <div className="flex space-x-6 mt-2">
                             <label className="flex items-center space-x-2 cursor-pointer">
                                 <input
@@ -432,9 +432,9 @@ const PersonalInfo = () => {
                                     value="M"
                                     checked={formData.gender === "M"}
                                     onChange={handleChange}
-                                    className="h-4 w-4 border-white/30 text-accent focus:ring-accent"
+                                    className="h-4 w-4 border-[#d9d0c4] text-[#EC6345] focus:ring-[#EC6345]"
                                 />
-                                <span className="text-sm text-white/85">Male</span>
+                                <span className="text-sm text-[#4a4642]">Male</span>
                             </label>
                             <label className="flex items-center space-x-2 cursor-pointer">
                                 <input
@@ -443,21 +443,21 @@ const PersonalInfo = () => {
                                     value="F"
                                     checked={formData.gender === "F"}
                                     onChange={handleChange}
-                                    className="h-4 w-4 border-white/30 text-accent focus:ring-accent"
+                                    className="h-4 w-4 border-[#d9d0c4] text-[#EC6345] focus:ring-[#EC6345]"
                                 />
-                                <span className="text-sm text-white/85">Female</span>
+                                <span className="text-sm text-[#4a4642]">Female</span>
                             </label>
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-white/90">Referral Code</label>
+                        <label className="text-sm font-semibold text-[#4a4642]">Referral Code</label>
                         <input
                             type="text"
                             name="referral_code"
                             value={formData.referral_code || ""}
                             readOnly
-                            className="w-full cursor-not-allowed rounded-lg border border-white/10 bg-[#13171a] p-3 text-sm text-white/75"
+                            className="w-full cursor-not-allowed rounded-lg border border-[#e5ded3] bg-[#fbfaf6] p-3 text-sm text-[#5f5b57]"
                         />
                     </div>
                 </div>
@@ -474,7 +474,7 @@ const PersonalInfo = () => {
                     whileTap={{ scale: 0.98 }}
                     onClick={handleUpdateProfile}
                     disabled={isUpdatingProfile}
-                    className="flex items-center justify-center space-x-2 rounded-xl border border-accent/35 bg-accent px-6 py-3.5 font-semibold text-black transition duration-200 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex items-center justify-center space-x-2 rounded-xl border border-[#EC6345]/35 bg-[#EC6345] px-6 py-3.5 font-semibold text-white transition duration-200 hover:bg-[#BA5225] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {isUpdatingProfile ? (
                         <ButtonLoader />
@@ -490,7 +490,7 @@ const PersonalInfo = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={toggleLoginPasswordModal}
-                    className="flex items-center justify-center space-x-2 rounded-xl border border-white/15 bg-[#11151b] px-6 py-3.5 font-semibold text-white transition duration-200 hover:border-accent/35 hover:text-accent"
+                    className="flex items-center justify-center space-x-2 rounded-xl border border-[#e5ded3] bg-white px-6 py-3.5 font-semibold text-[#333333] shadow-[0_14px_30px_-26px_rgba(39,39,39,0.45)] transition duration-200 hover:border-[#EC6345]/35 hover:text-[#EC6345]"
                 >
                     <FaLock className="text-lg" />
                     <span>Change Login Password</span>
@@ -500,7 +500,7 @@ const PersonalInfo = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={toggleTransactionPasswordModal}
-                    className="flex items-center justify-center space-x-2 rounded-xl border border-white/15 bg-[#11151b] px-6 py-3.5 font-semibold text-white transition duration-200 hover:border-accent/35 hover:text-accent"
+                    className="flex items-center justify-center space-x-2 rounded-xl border border-[#e5ded3] bg-white px-6 py-3.5 font-semibold text-[#333333] shadow-[0_14px_30px_-26px_rgba(39,39,39,0.45)] transition duration-200 hover:border-[#EC6345]/35 hover:text-[#EC6345]"
                 >
                     <FaShieldAlt className="text-lg" />
                     <span>Change Transaction Password</span>
@@ -520,50 +520,50 @@ const PersonalInfo = () => {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
-                        className="relative w-full max-w-md rounded-2xl border border-accent/25 bg-[#0d1012] p-6 text-white shadow-[0_30px_70px_-35px_rgba(44,205,121,0.45)]"
+                        className="relative w-full max-w-md rounded-2xl border border-[#e5ded3] bg-white p-6 text-[#333333] shadow-[0_30px_70px_-35px_rgba(39,39,39,0.55)]"
                     >
                         <button
                             onClick={toggleLoginPasswordModal}
-                            className="absolute right-4 top-4 rounded-full border border-accent/30 bg-accent/10 px-2 text-xl font-bold text-accent transition hover:bg-accent/20"
+                            className="absolute right-4 top-4 rounded-full border border-[#EC6345]/30 bg-[#EC6345]/10 px-2 text-xl font-bold text-[#EC6345] transition hover:bg-[#EC6345]/20"
                         >
                             ✕
                         </button>
                         <div className="text-center mb-6">
-                            <FaLock className="mx-auto mb-3 text-4xl text-accent" />
-                            <h2 className="text-2xl font-bold text-white">Change Login Password</h2>
-                            <p className="mt-2 text-sm text-white/65">Enter your current and new password</p>
+                            <FaLock className="mx-auto mb-3 text-4xl text-[#EC6345]" />
+                            <h2 className="text-2xl font-bold text-[#333333]">Change Login Password</h2>
+                            <p className="mt-2 text-sm text-[#605E5E]">Enter your current and new password</p>
                         </div>
                         <form className="space-y-4">
                             <div>
-                                <label className="text-sm font-semibold text-white/85">Current Password</label>
+                                <label className="text-sm font-semibold text-[#4a4642]">Current Password</label>
                                 <input
                                     type="password"
                                     name="current_password"
                                     value={passwordData.current_password}
                                     onChange={handlePasswordChange}
-                                    className="mt-1 w-full rounded-lg border border-white/15 bg-[#15191d] p-3 text-sm text-white placeholder:text-white/45 transition-all focus:outline-none focus:ring-2 focus:ring-accent/45"
+                                    className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                                     placeholder="Enter current password"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-semibold text-white/85">New Password</label>
+                                <label className="text-sm font-semibold text-[#4a4642]">New Password</label>
                                 <input
                                     type="password"
                                     name="new_password"
                                     value={passwordData.new_password}
                                     onChange={handlePasswordChange}
-                                    className="mt-1 w-full rounded-lg border border-white/15 bg-[#15191d] p-3 text-sm text-white placeholder:text-white/45 transition-all focus:outline-none focus:ring-2 focus:ring-accent/45"
+                                    className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                                     placeholder="Enter new password"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-semibold text-white/85">Confirm New Password</label>
+                                <label className="text-sm font-semibold text-[#4a4642]">Confirm New Password</label>
                                 <input
                                     type="password"
                                     name="confirm_new_password"
                                     value={passwordData.confirm_new_password}
                                     onChange={handlePasswordChange}
-                                    className="mt-1 w-full rounded-lg border border-white/15 bg-[#15191d] p-3 text-sm text-white placeholder:text-white/45 transition-all focus:outline-none focus:ring-2 focus:ring-accent/45"
+                                    className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                                     placeholder="Confirm new password"
                                 />
                             </div>
@@ -572,7 +572,7 @@ const PersonalInfo = () => {
                                 whileTap={{ scale: 0.98 }}
                                 type="button"
                                 onClick={handleChangePassword}
-                                className="mt-4 flex w-full items-center justify-center space-x-2 rounded-lg border border-accent/35 bg-accent py-3 font-semibold text-black transition duration-200 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="mt-4 flex w-full items-center justify-center space-x-2 rounded-lg border border-[#EC6345]/35 bg-[#EC6345] py-3 font-semibold text-white transition duration-200 hover:bg-[#BA5225] disabled:cursor-not-allowed disabled:opacity-50"
                                 disabled={isSavingPassword}
                             >
                                 {isSavingPassword ? (
@@ -602,52 +602,52 @@ const PersonalInfo = () => {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
-                        className="relative w-full max-w-md rounded-2xl border border-accent/25 bg-[#0d1012] p-6 text-white shadow-[0_30px_70px_-35px_rgba(44,205,121,0.45)]"
+                        className="relative w-full max-w-md rounded-2xl border border-[#e5ded3] bg-white p-6 text-[#333333] shadow-[0_30px_70px_-35px_rgba(39,39,39,0.55)]"
                     >
                         <button
                             onClick={toggleTransactionPasswordModal}
-                            className="absolute right-4 top-4 rounded-full border border-accent/30 bg-accent/10 px-2 text-xl font-bold text-accent transition hover:bg-accent/20"
+                            className="absolute right-4 top-4 rounded-full border border-[#EC6345]/30 bg-[#EC6345]/10 px-2 text-xl font-bold text-[#EC6345] transition hover:bg-[#EC6345]/20"
                         >
                             ✕
                         </button>
                         <div className="text-center mb-6">
-                            <FaShieldAlt className="mx-auto mb-3 text-4xl text-accent" />
-                            <h2 className="text-2xl font-bold text-white">Change Transaction Password</h2>
-                            <p className="mt-2 text-sm text-white/65">Enter your 4-digit transaction password</p>
+                            <FaShieldAlt className="mx-auto mb-3 text-4xl text-[#EC6345]" />
+                            <h2 className="text-2xl font-bold text-[#333333]">Change Transaction Password</h2>
+                            <p className="mt-2 text-sm text-[#605E5E]">Enter your 4-digit transaction password</p>
                         </div>
                         <form className="space-y-4">
                             <div>
-                                <label className="text-sm font-semibold text-white/85">Current Password</label>
+                                <label className="text-sm font-semibold text-[#4a4642]">Current Password</label>
                                 <input
                                     type="password"
                                     name="current_password"
                                     value={transactionPasswordData.current_password}
                                     onChange={handleTransactionPasswordChange}
-                                    className="mt-1 w-full rounded-lg border border-white/15 bg-[#15191d] p-3 text-sm text-white placeholder:text-white/45 transition-all focus:outline-none focus:ring-2 focus:ring-accent/45"
+                                    className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                                     placeholder="Enter current password"
                                     maxLength="4"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-semibold text-white/85">New Password</label>
+                                <label className="text-sm font-semibold text-[#4a4642]">New Password</label>
                                 <input
                                     type="password"
                                     name="new_password"
                                     value={transactionPasswordData.new_password}
                                     onChange={handleTransactionPasswordChange}
-                                    className="mt-1 w-full rounded-lg border border-white/15 bg-[#15191d] p-3 text-sm text-white placeholder:text-white/45 transition-all focus:outline-none focus:ring-2 focus:ring-accent/45"
+                                    className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                                     placeholder="Enter new 4-digit password"
                                     maxLength="4"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-semibold text-white/85">Confirm New Password</label>
+                                <label className="text-sm font-semibold text-[#4a4642]">Confirm New Password</label>
                                 <input
                                     type="password"
                                     name="confirm_new_password"
                                     value={transactionPasswordData.confirm_new_password}
                                     onChange={handleTransactionPasswordChange}
-                                    className="mt-1 w-full rounded-lg border border-white/15 bg-[#15191d] p-3 text-sm text-white placeholder:text-white/45 transition-all focus:outline-none focus:ring-2 focus:ring-accent/45"
+                                    className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                                     placeholder="Confirm new password"
                                     maxLength="4"
                                 />
@@ -657,7 +657,7 @@ const PersonalInfo = () => {
                                 whileTap={{ scale: 0.98 }}
                                 type="button"
                                 onClick={handleTransactionPasswordSave}
-                                className="mt-4 flex w-full items-center justify-center space-x-2 rounded-lg border border-accent/35 bg-accent py-3 font-semibold text-black transition duration-200 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="mt-4 flex w-full items-center justify-center space-x-2 rounded-lg border border-[#EC6345]/35 bg-[#EC6345] py-3 font-semibold text-white transition duration-200 hover:bg-[#BA5225] disabled:cursor-not-allowed disabled:opacity-50"
                                 disabled={isTransactionPasswordSaving}
                             >
                                 {isTransactionPasswordSaving ? (
@@ -678,3 +678,5 @@ const PersonalInfo = () => {
 };
 
 export default PersonalInfo;
+
+

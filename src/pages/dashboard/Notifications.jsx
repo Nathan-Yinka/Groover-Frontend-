@@ -109,13 +109,13 @@ const Notification = () => {
   }, [activeFilter]);
 
   return (
-    <div className="min-h-screen bg-[#060606] text-white">
+    <div className="min-h-screen bg-[#F7F6F0] text-[#333333]">
       <div className="w-full space-y-4 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border border-white/10 bg-[#0d0f10] p-3 shadow-[0_20px_45px_-30px_rgba(0,0,0,0.9)] md:p-6"
+          className="rounded-[18px] border border-[#e5ded3] bg-white p-3 shadow-[0_20px_45px_-30px_rgba(0,0,0,0.9)] md:p-6"
         >
           {/* Back Button */}
           <BackButton className="mb-3 md:mb-5" />
@@ -123,14 +123,14 @@ const Notification = () => {
           {/* Page Title */}
           <div className="mb-1 flex flex-col justify-between gap-2 sm:flex-row sm:items-center md:gap-4">
             <div className="flex items-center space-x-3">
-              <div className="rounded-lg border border-accent/25 bg-accent/10 p-2 md:rounded-xl md:p-3">
-                <IoNotifications className="text-lg text-accent md:text-2xl" />
+              <div className="rounded-lg border border-[#EC6345]/25 bg-[#EC6345]/10 p-2 md:rounded-xl md:p-3">
+                <IoNotifications className="text-lg text-[#EC6345] md:text-2xl" />
               </div>
               <div>
-                <h1 className="text-xl font-bold tracking-tight text-white md:text-3xl">
+                <h1 className="text-xl font-bold tracking-tight text-[#333333] md:text-3xl">
                   Notifications
                 </h1>
-                <p className="text-[11px] text-white/65 md:text-sm">
+                <p className="text-[11px] text-[#605E5E] md:text-sm">
                   {filteredNotifications.length} notification
                   {filteredNotifications.length !== 1 ? "s" : ""}
                 </p>
@@ -142,7 +142,7 @@ const Notification = () => {
               disabled={
                 isLoading || notifications.every((notif) => notif.is_read)
               }
-              className="flex items-center space-x-1.5 self-start rounded-lg border border-accent/35 bg-accent px-2.5 py-1.5 text-xs font-semibold text-black transition hover:brightness-110 disabled:cursor-not-allowed disabled:border-white/20 disabled:bg-[#2a2d2f] disabled:text-white/45 sm:self-auto md:px-3 md:py-2 md:text-sm"
+              className="flex items-center space-x-1.5 self-start rounded-lg border border-[#EC6345]/35 bg-[#EC6345] px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-[#BA5225] disabled:cursor-not-allowed disabled:border-[#e5ded3] disabled:bg-[#fbfaf6] disabled:text-[#8b8580] sm:self-auto md:px-3 md:py-2 md:text-sm"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -152,15 +152,15 @@ const Notification = () => {
           </div>
 
           <div className="mt-3 hidden grid-cols-4 gap-2 md:grid">
-            <div className="rounded-xl border border-white/10 bg-[#121518] px-3 py-2.5">
-              <p className="text-xs text-white/55">Total</p>
-              <p className="text-base font-semibold text-white">
+            <div className="rounded-xl border border-[#e5ded3] bg-[#fbfaf6] px-3 py-2.5">
+              <p className="text-xs text-[#7b756f]">Total</p>
+              <p className="text-base font-semibold text-[#333333]">
                 {notifications.length}
               </p>
             </div>
-            <div className="rounded-xl border border-accent/25 bg-accent/10 px-3 py-2.5">
-              <p className="text-xs text-white/65">Unread</p>
-              <p className="text-base font-semibold text-accent">
+            <div className="rounded-xl border border-[#EC6345]/25 bg-[#EC6345]/10 px-3 py-2.5">
+              <p className="text-xs text-[#605E5E]">Unread</p>
+              <p className="text-base font-semibold text-[#EC6345]">
                 {unreadCount}
               </p>
             </div>
@@ -168,8 +168,8 @@ const Notification = () => {
               type="button"
               onClick={() => setActiveFilter("All")}
               className={`rounded-xl border px-3 py-2.5 text-left transition ${activeFilter === "All"
-                ? "border-accent/35 bg-accent text-black"
-                : "border-white/10 bg-[#121518] text-white/80 hover:border-accent/30 hover:text-accent"}`}
+                ? "border-[#EC6345]/35 bg-[#EC6345] text-white"
+                : "border-[#e5ded3] bg-[#fbfaf6] text-[#5f5b57] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
             >
               <p className="text-xs">Filter</p>
               <p className="text-base font-semibold">All</p>
@@ -181,8 +181,8 @@ const Notification = () => {
                   type="button"
                   onClick={() => setActiveFilter(type)}
                   className={`rounded-xl border px-2 py-2 text-xs font-semibold transition ${activeFilter === type
-                    ? "border-accent/35 bg-accent text-black"
-                    : "border-white/10 bg-[#121518] text-white/75 hover:border-accent/30 hover:text-accent"}`}
+                    ? "border-[#EC6345]/35 bg-[#EC6345] text-white"
+                    : "border-[#e5ded3] bg-[#fbfaf6] text-[#5f5b57] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
                 >
                   {type}
                 </button>
@@ -197,11 +197,11 @@ const Notification = () => {
             {[...Array(4)].map((_, idx) => (
               <div
                 key={`skeleton-${idx}`}
-                className="animate-pulse rounded-2xl border border-white/10 bg-[#0f1113] p-4 md:p-5"
+                className="animate-pulse rounded-2xl border border-[#e5ded3] bg-[#fbfaf6] p-4 md:p-5"
               >
-                <div className="h-3 w-11/12 rounded bg-white/10" />
-                <div className="mt-2 h-3 w-8/12 rounded bg-white/10" />
-                <div className="mt-3 h-2 w-4/12 rounded bg-white/10" />
+                <div className="h-3 w-11/12 rounded bg-[#e5ded3]" />
+                <div className="mt-2 h-3 w-8/12 rounded bg-[#e5ded3]" />
+                <div className="mt-3 h-2 w-4/12 rounded bg-[#e5ded3]" />
               </div>
             ))}
           </div>
@@ -217,23 +217,23 @@ const Notification = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.06 }}
-                className={`overflow-hidden rounded-2xl border bg-gradient-to-br from-[#101214] via-[#121417] to-[#0c0d0f] shadow-[0_20px_50px_-30px_rgba(0,0,0,0.95)] transition-all duration-300 hover:border-accent/30 hover:shadow-[0_24px_55px_-35px_rgba(44,205,121,0.6)] ${
+                className={`overflow-hidden rounded-2xl border bg-white shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#EC6345]/30 hover:shadow-[0_24px_55px_-35px_rgba(236,99,69,0.28)] ${
                   !notif.is_read
-                    ? "border-accent/30 ring-1 ring-accent/20"
-                    : "border-white/10"
+                    ? "border-[#EC6345]/30 ring-1 ring-[#EC6345]/20"
+                    : "border-[#e5ded3]"
                 }`}
               >
                 <div className="p-4 md:p-5">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       {/* Message */}
-                      <p className="whitespace-pre-line text-sm leading-relaxed text-white/95 md:text-base">
+                      <p className="whitespace-pre-line text-sm leading-relaxed text-[#333333] md:text-base">
                         {notif.message}
                       </p>
 
                       {/* Timestamp */}
-                      <p className="mt-2 flex items-center text-[11px] text-white/55 md:text-xs">
-                        <span className="mr-2 h-1 w-1 rounded-full bg-accent/70"></span>
+                      <p className="mt-2 flex items-center text-[11px] text-[#7b756f] md:text-xs">
+                        <span className="mr-2 h-1 w-1 rounded-full bg-[#EC6345]"></span>
                         {formatDistanceToNow(new Date(notif.created_at), {
                           addSuffix: true,
                         })}
@@ -244,7 +244,7 @@ const Notification = () => {
                     {!notif.is_read && (
                       <motion.button
                         onClick={() => handleMarkAsRead(notif.id)}
-                        className="ml-4 flex flex-shrink-0 items-center space-x-1 rounded-lg border border-accent/30 bg-accent px-3 py-1.5 text-xs font-semibold text-black transition hover:brightness-110"
+                        className="ml-4 flex flex-shrink-0 items-center space-x-1 rounded-lg border border-[#EC6345]/30 bg-[#EC6345] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#BA5225]"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
@@ -264,15 +264,15 @@ const Notification = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="rounded-2xl border border-white/10 bg-[#0d0f10] py-12 text-center"
+            className="rounded-[18px] border border-[#e5ded3] bg-white py-12 text-center"
           >
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-accent/25 bg-accent/10">
-              <IoNotifications className="text-3xl text-accent" />
+            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-[#EC6345]/25 bg-[#EC6345]/10">
+              <IoNotifications className="text-3xl text-[#EC6345]" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-white">
+            <h3 className="mb-2 text-lg font-semibold text-[#333333]">
               No {activeFilter.toLowerCase()} notifications
             </h3>
-            <p className="text-sm text-white/65">You are all caught up.</p>
+            <p className="text-sm text-[#605E5E]">You are all caught up.</p>
           </motion.div>
         )}
 
@@ -284,26 +284,26 @@ const Notification = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 50 }}
               transition={{ duration: 0.3 }}
-              className="fixed bottom-16 left-3 right-3 z-50 flex items-center justify-between rounded-2xl border border-white/10 bg-[#0f1113]/95 p-3 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.95)] backdrop-blur md:bottom-4 md:left-[286px] md:right-8 lg:left-[374px]"
+              className="fixed bottom-16 left-3 right-3 z-50 flex items-center justify-between rounded-2xl border border-[#e5ded3] bg-[#fbfaf6]/95 p-3 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] backdrop-blur md:bottom-4 md:left-[286px] md:right-8 lg:left-[374px]"
             >
               <motion.button
                 onClick={handlePreviousPage}
                 disabled={currentPage === 1}
-                className="rounded-lg border border-white/10 bg-[#171a1d] px-3 py-1.5 text-sm font-medium text-white/85 transition hover:border-accent/30 hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-[#e5ded3] bg-white px-3 py-1.5 text-sm font-medium text-[#4a4642] transition hover:border-[#EC6345]/30 hover:text-[#EC6345] disabled:cursor-not-allowed disabled:opacity-50"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 Previous
               </motion.button>
 
-              <span className="text-sm font-medium text-white/80">
+              <span className="text-sm font-medium text-[#5f5b57]">
                 Page {currentPage} of {totalPages}
               </span>
 
               <motion.button
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
-                className="rounded-lg border border-white/10 bg-[#171a1d] px-3 py-1.5 text-sm font-medium text-white/85 transition hover:border-accent/30 hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-[#e5ded3] bg-white px-3 py-1.5 text-sm font-medium text-[#4a4642] transition hover:border-[#EC6345]/30 hover:text-[#EC6345] disabled:cursor-not-allowed disabled:opacity-50"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -319,3 +319,5 @@ const Notification = () => {
 };
 
 export default Notification;
+
+

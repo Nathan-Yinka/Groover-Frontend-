@@ -152,9 +152,9 @@ const Deposit = () => {
     };
 
     const statusClasses = {
-      Confirmed: "border-[#2ccd79]/35 bg-[#132319] text-[#7ef1b2]",
-      Pending: "border-[#d6a44f]/35 bg-[#241d12] text-[#f3c879]",
-      Rejected: "border-[#b85454]/35 bg-[#2a1717] text-[#f3a7a7]",
+      Confirmed: "border-[#EC6345]/30 bg-[#EC6345]/10 text-[#EC6345]",
+      Pending: "border-[#d6a44f]/35 bg-[#fff8e8] text-[#9b6b13]",
+      Rejected: "border-[#d46a5d]/35 bg-[#fff1ee] text-[#BA5225]",
     };
     const canConfirmDeposit = Boolean(amount && Number(amount) > 0 && receipt);
 
@@ -162,20 +162,20 @@ const Deposit = () => {
       <motion.div
         initial={fadeIn("right", null).initial}
         whileInView={fadeIn("right", 1 * 2).animate}
-        className="min-h-screen bg-[#060606] text-white"
+        className="min-h-screen bg-[#F7F6F0] text-[#333333]"
       >
         <div className="w-full space-y-5 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
-          <div className="rounded-2xl border border-white/10 bg-[#0d0f10] p-4 shadow-[0_24px_60px_-35px_rgba(0,0,0,0.95)] md:p-6">
+          <div className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6">
             <BackButton className="mb-5" />
             <div className="flex items-center justify-between gap-3">
               <div>
                 <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Deposit</h1>
-                <p className="text-xs text-white/65 md:text-sm">
+                <p className="text-xs text-[#605E5E] md:text-sm">
                   Add funds securely and track your deposit status.
                 </p>
               </div>
-              <div className="hidden rounded-xl border border-accent/25 bg-accent/10 p-2.5 md:grid md:place-items-center">
-                <IoWalletOutline className="text-xl text-accent" />
+              <div className="hidden rounded-xl border border-[#EC6345]/25 bg-[#EC6345]/10 p-2.5 md:grid md:place-items-center">
+                <IoWalletOutline className="text-xl text-[#EC6345]" />
               </div>
             </div>
           </div>
@@ -191,7 +191,7 @@ const Deposit = () => {
               <p className="mb-4 text-red-300">Failed to load profile data</p>
               <button
                 onClick={() => window.location.reload()}
-                className="rounded-lg border border-accent/35 bg-accent px-4 py-2 font-semibold text-black transition hover:brightness-110"
+                className="rounded-lg border border-[#EC6345]/35 bg-[#EC6345] px-4 py-2 font-semibold text-white transition hover:bg-[#BA5225]"
               >
                 Retry
               </button>
@@ -200,11 +200,11 @@ const Deposit = () => {
 
           {!isProfileLoading && profile && (
             <div className="space-y-5">
-              <div className="rounded-2xl border border-accent/25 bg-accent/10 p-4 md:p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.1em] text-white/70">
+              <div className="rounded-2xl border border-[#EC6345]/25 bg-[#EC6345]/10 p-4 md:p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#605E5E]">
                   Total Balance
                 </p>
-                <p className="mt-2 text-2xl font-bold text-accent md:text-4xl">
+                <p className="mt-2 text-2xl font-bold text-[#EC6345] md:text-4xl">
                   {profile?.wallet?.balance || "0.00"} USD
                 </p>
               </div>
@@ -214,55 +214,55 @@ const Deposit = () => {
                   key="deposit-confirmation"
                   initial={slideIn("right", null).initial}
                   whileInView={slideIn("right", 1 * 2).animate}
-                  className="rounded-2xl border border-white/10 bg-[#0d0f10] p-4 shadow-[0_24px_60px_-35px_rgba(0,0,0,0.95)] md:p-6"
+                  className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6"
                 >
-                  <div className="space-y-3 rounded-xl border border-white/10 bg-[#121518] p-4">
+                  <div className="space-y-3 rounded-xl border border-[#e5ded3] bg-[#fbfaf6] p-4">
                     <div className="flex items-start justify-between gap-2">
-                      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-white/65">
+                      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#605E5E]">
                         ETH Address
                       </p>
                       <button
                         type="button"
                         onClick={() => copyToClipboard(profile?.settings?.erc_address)}
-                        className="rounded-md border border-accent/25 bg-accent/10 p-1.5 text-accent transition hover:bg-accent/20"
+                        className="rounded-md border border-[#EC6345]/25 bg-[#EC6345]/10 p-1.5 text-[#EC6345] transition hover:bg-[#EC6345]/20"
                       >
                         <BiCopy className="cursor-pointer" />
                       </button>
                     </div>
-                    <p className="break-all text-sm text-accent">
+                    <p className="break-all text-sm text-[#EC6345]">
                       {profile?.settings?.erc_address || "0x2835a3a46a193946b395d877a29dc3bc51bd49"}
                     </p>
 
                     <div className="mt-2 flex items-start justify-between gap-2">
-                      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-white/65">
+                      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#605E5E]">
                         TRC20 Address
                       </p>
                       <button
                         type="button"
                         onClick={() => copyToClipboard(profile?.settings?.trc_address)}
-                        className="rounded-md border border-accent/25 bg-accent/10 p-1.5 text-accent transition hover:bg-accent/20"
+                        className="rounded-md border border-[#EC6345]/25 bg-[#EC6345]/10 p-1.5 text-[#EC6345] transition hover:bg-[#EC6345]/20"
                       >
                         <BiCopy className="cursor-pointer" />
                       </button>
                     </div>
-                    <p className="break-all text-sm text-accent">
+                    <p className="break-all text-sm text-[#EC6345]">
                       {profile?.settings?.trc_address || "TTXWm4XjoRXem2Ce1KeevUcBrzK2Whpv61"}
                     </p>
                   </div>
 
-                  <div className="mt-4 rounded-xl border border-white/10 bg-[#121518] px-4 py-3 text-center">
-                    <p className="text-xs uppercase tracking-[0.08em] text-white/65">Deposit Amount</p>
-                    <p className="mt-1 text-lg font-semibold text-white">
+                  <div className="mt-4 rounded-xl border border-[#e5ded3] bg-[#fbfaf6] px-4 py-3 text-center">
+                    <p className="text-xs uppercase tracking-[0.08em] text-[#605E5E]">Deposit Amount</p>
+                    <p className="mt-1 text-lg font-semibold text-[#333333]">
                       {amount || "N/A"} USD
                     </p>
                   </div>
 
                   <div className="mt-5 mb-6">
-                    <label className="mb-2 block text-sm font-semibold text-white/85">
+                    <label className="mb-2 block text-sm font-semibold text-[#4a4642]">
                       Deposit Receipt
                     </label>
                     {receipt && (
-                      <div className="mb-3 overflow-hidden rounded-xl border border-accent/25 bg-[#101417]">
+                      <div className="mb-3 overflow-hidden rounded-xl border border-[#e5ded3] bg-white">
                         <img
                           src={
                             typeof receipt === "string"
@@ -272,14 +272,14 @@ const Deposit = () => {
                           alt="Receipt Preview"
                           className="h-56 w-full object-cover md:h-72"
                         />
-                        <div className="flex items-center justify-between gap-2 border-t border-white/10 px-3 py-2">
-                          <p className="truncate text-xs text-white/70">
+                        <div className="flex items-center justify-between gap-2 border-t border-[#e5ded3] px-3 py-2">
+                          <p className="truncate text-xs text-[#605E5E]">
                             {typeof receipt === "string" ? "Uploaded receipt" : receipt.name}
                           </p>
                           <button
                             type="button"
                             onClick={() => setReceipt(null)}
-                            className="rounded-md border border-white/15 bg-[#171b1e] px-2 py-1 text-[11px] font-semibold text-white/75 transition hover:border-accent/30 hover:text-accent"
+                            className="rounded-md border border-[#e5ded3] bg-white px-2 py-1 text-[11px] font-semibold text-[#5f5b57] transition hover:border-[#EC6345]/30 hover:text-[#EC6345]"
                           >
                             Remove
                           </button>
@@ -290,7 +290,7 @@ const Deposit = () => {
                       type="file"
                       accept="image/*"
                       onChange={handleReceiptUpload}
-                      className="block w-full rounded-lg border border-white/15 bg-[#14181b] p-2.5 text-sm text-white file:mr-3 file:rounded-md file:border-0 file:bg-accent file:px-3 file:py-1.5 file:font-semibold file:text-black"
+                      className="block w-full rounded-lg border border-[#e5ded3] bg-white p-2.5 text-sm text-[#333333] file:mr-3 file:rounded-md file:border-0 file:bg-[#EC6345] file:px-3 file:py-1.5 file:font-semibold file:text-white"
                     />
                   </div>
 
@@ -299,8 +299,8 @@ const Deposit = () => {
                     disabled={isSubmitting || !canConfirmDeposit}
                     className={`flex w-full items-center justify-center rounded-lg border py-3 font-semibold transition ${
                       isSubmitting || !canConfirmDeposit
-                        ? "cursor-not-allowed border-white/15 bg-[#1a1d20] text-white/45"
-                        : "border-accent/35 bg-accent text-black hover:brightness-110"
+                        ? "cursor-not-allowed border-[#e5ded3] bg-[#fbfaf6] text-[#8b8580]"
+                        : "border-[#EC6345]/35 bg-[#EC6345] text-white hover:bg-[#BA5225]"
                     }`}
                   >
                     {isSubmitting ? <Loader /> : "Confirm Deposit"}
@@ -308,13 +308,13 @@ const Deposit = () => {
                 </motion.div>
               ) : (
                 <div className="space-y-5">
-                  <div className="grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-[#0d0f10] p-2 md:inline-grid md:grid-cols-2 md:gap-3">
+                  <div className="grid grid-cols-2 gap-2 rounded-[18px] border border-[#e5ded3] bg-white p-2 md:inline-grid md:grid-cols-2 md:gap-3">
                     <button
                       type="button"
                       onClick={() => handleTabChange("deposit")}
                       className={`rounded-xl px-3 py-2 text-xs font-semibold transition md:px-4 md:py-2.5 md:text-sm ${activeTab === "deposit"
-                        ? "border border-accent/35 bg-accent text-black"
-                        : "border border-white/10 bg-[#15181b] text-white/80 hover:border-accent/30 hover:text-accent"}`}
+                        ? "border border-[#EC6345]/35 bg-[#EC6345] text-white"
+                        : "border border-[#e5ded3] bg-white text-[#5f5b57] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
                     >
                       Deposit Now
                     </button>
@@ -322,8 +322,8 @@ const Deposit = () => {
                       type="button"
                       onClick={() => handleTabChange("history")}
                       className={`rounded-xl px-3 py-2 text-xs font-semibold transition md:px-4 md:py-2.5 md:text-sm ${activeTab === "history"
-                        ? "border border-accent/35 bg-accent text-black"
-                        : "border border-white/10 bg-[#15181b] text-white/80 hover:border-accent/30 hover:text-accent"}`}
+                        ? "border border-[#EC6345]/35 bg-[#EC6345] text-white"
+                        : "border border-[#e5ded3] bg-white text-[#5f5b57] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
                     >
                       Deposit History
                     </button>
@@ -334,7 +334,7 @@ const Deposit = () => {
                       key="deposit"
                       initial={slideIn("right", null).initial}
                       whileInView={slideIn("right", 1 * 2).animate}
-                      className="rounded-2xl border border-white/10 bg-[#0d0f10] p-4 shadow-[0_24px_60px_-35px_rgba(0,0,0,0.95)] md:p-6"
+                      className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6"
                     >
                       <div className="mb-6 grid grid-cols-3 gap-3 md:hidden">
                         {[10, 50, 100].map((value) => (
@@ -342,8 +342,8 @@ const Deposit = () => {
                             key={value}
                             onClick={() => handlePresetAmount(value)}
                             className={`rounded-xl border p-3 text-left transition ${Number(amount) === value
-                              ? "border-accent/35 bg-accent text-black"
-                              : "border-white/10 bg-[#15181b] text-white hover:border-accent/30 hover:text-accent"}`}
+                              ? "border-[#EC6345]/35 bg-[#EC6345] text-white"
+                              : "border-[#e5ded3] bg-white text-[#333333] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
                           >
                             <p className="text-[11px] uppercase tracking-[0.08em]">USD</p>
                             <p className="text-base font-semibold">{value}.00</p>
@@ -356,8 +356,8 @@ const Deposit = () => {
                             key={value}
                             onClick={() => handlePresetAmount(value)}
                             className={`rounded-xl border p-3 text-left transition ${Number(amount) === value
-                              ? "border-accent/35 bg-accent text-black"
-                              : "border-white/10 bg-[#15181b] text-white hover:border-accent/30 hover:text-accent"}`}
+                              ? "border-[#EC6345]/35 bg-[#EC6345] text-white"
+                              : "border-[#e5ded3] bg-white text-[#333333] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
                           >
                             <p className="text-[11px] uppercase tracking-[0.08em]">USD</p>
                             <p className="text-base font-semibold">{value}.00</p>
@@ -368,7 +368,7 @@ const Deposit = () => {
                       <div className="mb-6">
                         <label
                           htmlFor="amount"
-                          className="block text-sm font-semibold text-white/85"
+                          className="block text-sm font-semibold text-[#4a4642]"
                         >
                           Deposit Amount
                         </label>
@@ -380,7 +380,7 @@ const Deposit = () => {
                           step="0.01"
                           onChange={(e) => setAmount(e.target.value)}
                           placeholder="Enter amount"
-                          className="mt-2 w-full rounded-lg border border-white/15 bg-[#14181b] px-3 py-2.5 text-sm text-white placeholder:text-white/45 focus:outline-none focus:ring-2 focus:ring-accent/45"
+                          className="mt-2 w-full rounded-lg border border-[#e5ded3] bg-white px-3 py-2.5 text-sm text-[#333333] placeholder:text-[#8b8580] focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
                           required
                         />
                       </div>
@@ -390,8 +390,8 @@ const Deposit = () => {
                         disabled={!amount || amount <= 0}
                         className={`w-full rounded-lg border py-3 font-semibold transition ${
                           !amount || amount <= 0
-                            ? "cursor-not-allowed border-white/15 bg-[#1a1d20] text-white/45"
-                            : "border-accent/35 bg-accent text-black hover:brightness-110"
+                            ? "cursor-not-allowed border-[#e5ded3] bg-[#fbfaf6] text-[#8b8580]"
+                            : "border-[#EC6345]/35 bg-[#EC6345] text-white hover:bg-[#BA5225]"
                         }`}
                       >
                         Next
@@ -412,17 +412,17 @@ const Deposit = () => {
                           return (
                             <div
                               key={transaction.id}
-                              className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#101214] via-[#121417] to-[#0c0d0f] p-4 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.95)]"
+                              className="rounded-2xl border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)]"
                             >
                               <div className="flex items-start justify-between gap-4">
                                 <div className="min-w-0">
-                                  <p className="text-sm font-semibold text-white md:text-base">
+                                  <p className="text-sm font-semibold text-[#333333] md:text-base">
                                     Deposit
                                   </p>
-                                  <p className="truncate text-xs text-white/60 md:text-sm">
+                                  <p className="truncate text-xs text-[#6c6661] md:text-sm">
                                     {transaction.transaction_id || transaction.date}
                                   </p>
-                                  <p className="mt-2 text-lg font-bold text-accent md:text-2xl">
+                                  <p className="mt-2 text-lg font-bold text-[#EC6345] md:text-2xl">
                                     {transaction.amount} USD
                                   </p>
                                 </div>
@@ -432,8 +432,8 @@ const Deposit = () => {
                                   {label}
                                 </span>
                               </div>
-                              <div className="mt-3 flex items-center gap-2 text-[11px] text-white/55 md:text-xs">
-                                <IoTimeOutline className="text-white/60" />
+                              <div className="mt-3 flex items-center gap-2 text-[11px] text-[#7b756f] md:text-xs">
+                                <IoTimeOutline className="text-[#6c6661]" />
                                 <span>
                                   {new Date(
                                     transaction.created_at,
@@ -456,9 +456,9 @@ const Deposit = () => {
                           );
                         })
                       ) : (
-                        <div className="rounded-2xl border border-white/10 bg-[#0d0f10] py-10 text-center">
-                          <IoCheckmarkCircle className="mx-auto mb-3 text-3xl text-accent/70" />
-                          <p className="text-sm text-white/70">
+                        <div className="rounded-[18px] border border-[#e5ded3] bg-white py-10 text-center">
+                          <IoCheckmarkCircle className="mx-auto mb-3 text-3xl text-[#EC6345]/70" />
+                          <p className="text-sm text-[#605E5E]">
                             No deposit history available.
                           </p>
                         </div>
@@ -476,3 +476,5 @@ const Deposit = () => {
 };
 
 export default Deposit;
+
+

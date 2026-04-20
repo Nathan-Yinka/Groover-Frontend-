@@ -35,7 +35,7 @@ function BottomNavMobile({ className = "" }) {
 
   return (
     <div
-      className={`fixed bottom-0 left-0 z-40 w-full border-t border-white/10 bg-[#0b0b0c]/95 shadow-inner shadow-accent/10 backdrop-blur-sm transition-transform duration-300 md:hidden ${
+      className={`fixed bottom-0 left-0 z-40 w-full border-t border-[#e5ded3] bg-[#F7F6F0]/95 shadow-[0_-18px_40px_-34px_rgba(39,39,39,0.7)] backdrop-blur-sm transition-transform duration-300 md:hidden ${
         isHidden ? "translate-y-full" : "translate-y-0"
       } ${className}`}
     >
@@ -46,8 +46,8 @@ function BottomNavMobile({ className = "" }) {
         end
         className={({ isActive }) =>
           isActive
-            ? "text-accent font-semibold tracking-wide flex flex-col items-center"
-            : "flex flex-col items-center text-gray-300 font-medium tracking-wide"
+            ? "text-[#EC6345] font-semibold tracking-wide flex flex-col items-center"
+            : "flex flex-col items-center text-[#6c6661] font-medium tracking-wide"
         }
       >
         <BiHome className="text-xl" />
@@ -59,13 +59,13 @@ function BottomNavMobile({ className = "" }) {
         to="/home/starting"
         className={({ isActive }) =>
           isActive
-            ? "text-accent font-semibold tracking-wide flex flex-col items-center relative -top-3"
-            : "flex flex-col items-center relative -top-3 text-gray-300 font-medium tracking-wide"
+            ? "text-[#EC6345] font-semibold tracking-wide flex flex-col items-center relative -top-3"
+            : "flex flex-col items-center relative -top-3 text-[#6c6661] font-medium tracking-wide"
         }
       >
-        <div className="rounded-full border border-accent bg-[#0b0b0c] p-2.5">
-          <div className="w-10 overflow-hidden rounded-full shadow-lg">
-            <img src={logo} alt="Logo" className="w-auto h-auto" />
+        <div className="rounded-full border border-[#EC6345]/35 bg-white p-2.5 shadow-[0_12px_28px_-22px_rgba(39,39,39,0.7)]">
+          <div className="w-10 overflow-hidden rounded-full">
+            <img src={logo} alt="Groover" className="h-auto w-full" />
           </div>
           <p className="text-[11px] mt-1">Starting</p>
         </div>
@@ -76,8 +76,8 @@ function BottomNavMobile({ className = "" }) {
         to="/home/records"
         className={({ isActive }) =>
           isActive
-            ? "text-accent font-semibold tracking-wide flex flex-col items-center"
-            : "flex flex-col items-center text-gray-300 font-medium tracking-wide"
+            ? "text-[#EC6345] font-semibold tracking-wide flex flex-col items-center"
+            : "flex flex-col items-center text-[#6c6661] font-medium tracking-wide"
         }
       >
         <BiBookOpen className="text-xl" />

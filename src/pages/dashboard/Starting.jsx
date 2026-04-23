@@ -20,45 +20,30 @@ const MySwal = withReactContent(Swal);
 
 const ResponsiveSpinner = ({ size = "default" }) => {
   const sizeClasses = {
-    sm: "w-16 h-16 md:w-32 md:h-32 lg:w-40 lg:h-40",
-    default: "w-32 h-32 md:w-80 md:h-80 lg:w-96 lg:h-96",
-    lg: "w-48 h-48 md:w-96 md:h-96 lg:w-[500px] lg:h-[500px]",
+    sm: "h-20 w-20 md:h-28 md:w-28",
+    default: "h-28 w-28 md:h-44 md:w-44 lg:h-52 lg:w-52",
+    lg: "h-40 w-40 md:h-56 md:w-56 lg:h-[320px] lg:w-[320px]",
   };
 
   return (
-    <div className={`${sizeClasses[size]} relative text-[#EC6345]`}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="xMidYMid"
-        width="100%"
-        height="100%"
-        style={{
-          shapeRendering: "auto",
-          display: "block",
-          background: "transparent",
-        }}
-      >
-        <g>
-          <path
-            style={{ transform: "scale(0.8)", transformOrigin: "50px 50px" }}
-            strokeLinecap="round"
-            d="M24.3 30C11.4 30 5 43.3 5 50s6.4 20 19.3 20c19.3 0 32.1-40 51.4-40 C88.6 30 95 43.3 95 50s-6.4 20-19.3 20C56.4 70 43.6 30 24.3 30z"
-            strokeDasharray="207.83703186035157 48.75189636230468"
-            strokeWidth="10"
-            stroke="currentColor"
-            fill="none"
-          >
-            <animate
-              values="0;256.58892822265625"
-              keyTimes="0;1"
-              dur="1s"
-              repeatCount="indefinite"
-              attributeName="stroke-dashoffset"
-            />
-          </path>
-        </g>
-      </svg>
+    <div className={`${sizeClasses[size]} relative flex items-center justify-center`}>
+      <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,#ffb29f_0%,rgba(236,99,69,0.26)_38%,rgba(14,10,8,0)_72%)] blur-2xl" />
+      <div className="absolute inset-[8%] rounded-full border border-white/10 bg-[#140f0d]/90 shadow-[0_30px_80px_-45px_rgba(0,0,0,0.95)]" />
+      <div className="absolute inset-[14%] rounded-full border-2 border-[#EC6345]/25 border-t-[#ffb29f] animate-spin" />
+      <div
+        className="absolute inset-[24%] rounded-full border border-[#ffcfbf]/20 border-b-[#EC6345]"
+        style={{ animation: "spin 3.1s linear infinite reverse" }}
+      />
+      <div className="absolute inset-[32%] flex items-end justify-center gap-1 rounded-full bg-[radial-gradient(circle_at_top,#2d201d_0%,#171111_80%)] px-[18%] pb-[18%]">
+        {[0, 1, 2, 3].map((bar) => (
+          <span
+            key={bar}
+            className="task-spinner-bar w-[9%] rounded-full bg-gradient-to-t from-[#EC6345] via-[#ff9f88] to-[#ffe0d8]"
+            style={{ animationDelay: `${bar * 0.12}s` }}
+          />
+        ))}
+      </div>
+      <div className="absolute h-[14%] w-[14%] rounded-full border border-white/45 bg-[#fff7f2] shadow-[0_0_0_7px_rgba(255,255,255,0.06)]" />
     </div>
   );
 };
@@ -643,6 +628,186 @@ const Starting = () => {
         };
     }, []);
 
+    const handleSubmitCurrentTask = async () => {
+        try {
+            const response = await dispatch(
+                submitCurrentGame(selectedStar, comments),
+            );
+
+            if (response?.success) {
+                toast.success("Submission successful!");
+                setComments("");
+                toggleModal();
+            } else {
+                ErrorHandler(response.message);
+                toggleModal();
+            }
+        } catch (error) {
+            ErrorHandler(error);
+            toggleModal();
+        }
+    };
+
+    const renderTaskModal = (isMobile) => (
+        <motion.div
+            initial={{
+                opacity: 0,
+                y: isMobile ? 220 : 40,
+                scale: isMobile ? 1 : 0.96,
+            }}
+            animate={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+            }}
+            exit={{
+                opacity: 0,
+                y: isMobile ? 220 : 40,
+                scale: isMobile ? 1 : 0.96,
+            }}
+            className={`relative w-full max-w-3xl overflow-y-auto border border-white/10 bg-[#1d1613] text-white shadow-[0_35px_95px_-45px_rgba(0,0,0,0.95)] ${
+                isMobile
+                    ? "rounded-t-[32px] p-4 sm:p-6"
+                    : "rounded-[32px] p-5 sm:p-8"
+            }`}
+            style={{
+                maxHeight: "90vh",
+            }}
+        >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,178,159,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(236,99,69,0.12),transparent_36%)]" />
+
+            {isLoading && (
+                <div
+                    className={`absolute inset-0 z-[1000000] flex flex-col items-center justify-center gap-4 bg-[#120d0b]/82 backdrop-blur-md ${
+                        isMobile ? "rounded-t-[32px]" : "rounded-[32px]"
+                    }`}
+                >
+                    <ResponsiveSpinner size="default" />
+                    <div className="text-center">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#ffb29f]">
+                            Processing
+                        </p>
+                        <p className="mt-2 text-sm text-white/70">
+                            Finishing your task submission...
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            <button
+                onClick={toggleModal}
+                className="absolute right-4 top-4 z-[1000001] flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/10 text-lg text-white/80 transition hover:border-white/20 hover:bg-white/15 hover:text-white"
+            >
+                ×
+            </button>
+
+            <div className="relative">
+                <div className="mb-6 flex flex-col gap-4 border-b border-white/10 pb-5 pr-12 md:flex-row md:items-start md:justify-between">
+                    <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#ffb29f]">
+                            Live Assignment
+                        </p>
+                        <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+                            Task Submission
+                        </h2>
+                        <p className="mt-2 max-w-xl text-sm leading-6 text-white/68">
+                            Review the selected tracks, add your note, and confirm this round
+                            without leaving the flow.
+                        </p>
+                    </div>
+
+                    <div className="self-start rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium text-white/75">
+                        {currentGame?.pending ? "Pending review" : "Ready to submit"}
+                    </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-[1.18fr_0.82fr]">
+                    <div className="rounded-[26px] border border-white/10 bg-white/5 p-4 backdrop-blur-sm sm:p-5">
+                        <div className="grid grid-cols-3 gap-3">
+                            {currentGame?.products?.slice(0, 3).map((product) => (
+                                <div
+                                    key={product?.id}
+                                    className="overflow-hidden rounded-2xl border border-white/10 bg-[#2a211e]"
+                                >
+                                    <img
+                                        src={product?.image}
+                                        alt={product?.name}
+                                        className="aspect-square h-full w-full object-cover"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-4 rounded-[22px] border border-white/10 bg-[#140f0d] p-4">
+                            <div className="flex flex-wrap gap-2">
+                                {currentGame?.products?.slice(0, 3).map((product) => (
+                                    <span
+                                        key={product?.id}
+                                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/72"
+                                    >
+                                        {product?.name}
+                                    </span>
+                                ))}
+                            </div>
+
+                            <textarea
+                                placeholder="Leave your comments here..."
+                                className="mt-4 min-h-[140px] w-full rounded-[22px] border border-white/10 bg-white/5 p-4 text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-[#EC6345]/35"
+                                value={comments}
+                                onChange={(e) => setComments(e.target.value)}
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div className="rounded-[26px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-4 sm:p-5">
+                            <p className="text-[11px] uppercase tracking-[0.24em] text-white/42">
+                                Total amount
+                            </p>
+                            <p className="mt-2 text-2xl font-semibold text-white">
+                                USD {currentGame?.amount}
+                            </p>
+                            <div className="mt-5 h-px bg-white/10" />
+                            <p className="mt-5 text-[11px] uppercase tracking-[0.24em] text-white/42">
+                                Commission
+                            </p>
+                            <p className="mt-2 text-2xl font-semibold text-[#ffb29f]">
+                                USD {currentGame?.commission}
+                            </p>
+                            <p className="mt-1 text-sm text-white/60">
+                                Profit: {currentGame?.commission_percentage || 0}%
+                            </p>
+                        </div>
+
+                        <div className="rounded-[26px] border border-white/10 bg-white/5 p-4 sm:p-5">
+                            <div className="space-y-4 text-sm">
+                                <div className="flex items-start justify-between gap-4">
+                                    <p className="text-white/45">Creation time</p>
+                                    <p className="max-w-[180px] text-right text-white/82">
+                                        {new Date(currentGame?.created_at).toLocaleString()}
+                                    </p>
+                                </div>
+                                <div className="flex items-center justify-between gap-4">
+                                    <p className="text-white/45">Rating No</p>
+                                    <p className="font-semibold text-[#ffb29f]">
+                                        {currentGame?.rating_no}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button
+                    onClick={handleSubmitCurrentTask}
+                    className="mt-5 flex w-full items-center justify-center rounded-full bg-[#EC6345] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#d9583b] sm:py-3.5 sm:text-base"
+                >
+                    {currentGame?.pending ? "Confirm Submission" : "Submit Task"}
+                </button>
+            </div>
+        </motion.div>
+    );
+
     return (
       <div className="min-h-screen bg-[#F7F6F0] text-[#333333]">
         <div className="w-full space-y-5 px-3 py-4 md:space-y-6 md:px-8 md:py-6">
@@ -943,14 +1108,29 @@ const Starting = () => {
 
         {/* Current Game Loading */}
         {isLoading_current && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[999999]">
-            <ResponsiveSpinner size="lg" />
+          <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-[#120d0b]/72 px-4 backdrop-blur-md">
+            <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[#1d1613] px-8 py-10 text-center text-white shadow-[0_35px_90px_-45px_rgba(0,0,0,0.95)]">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,178,159,0.2),transparent_34%),radial-gradient(circle_at_bottom,rgba(236,99,69,0.14),transparent_40%)]" />
+              <div className="relative flex flex-col items-center gap-4">
+                <ResponsiveSpinner size="lg" />
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#ffb29f]">
+                    Matching
+                  </p>
+                  <p className="mt-2 text-sm text-white/70 md:text-base">
+                    Curating your next task...
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
         {/* Modal - Mobile Version (Dialog from bottom) */}
         {isModalOpen && currentGame && window.innerWidth < 768 && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-[999999]">
+          <div className="fixed inset-0 z-[999999] flex items-end justify-center bg-[#120d0b]/72 backdrop-blur-md">
+              {renderTaskModal(true)}
+              {false && (
               <motion.div
                 initial={{
                   opacity: 0,
@@ -1095,12 +1275,15 @@ const Starting = () => {
                 {currentGame?.pending ? "Confirm Submission" : "Submit"}
               </button>
             </motion.div>
+              )}
           </div>
         )}
 
         {/* Modal - Desktop/Tablet Version (Centered) */}
         {isModalOpen && currentGame && window.innerWidth >= 768 && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[999999]">
+          <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-[#120d0b]/72 px-4 backdrop-blur-md">
+            {renderTaskModal(false)}
+            {false && (
             <motion.div
               initial={{
                 opacity: 0,
@@ -1245,6 +1428,7 @@ const Starting = () => {
                 {currentGame?.pending ? "Confirm Submission" : "Submit"}
               </button>
             </motion.div>
+            )}
           </div>
         )}
           <BottomNavMobile className="md:hidden" />
@@ -1264,6 +1448,23 @@ const Starting = () => {
             border: 1px solid rgba(44, 205, 121, 0.35);
             background: radial-gradient(circle at 30% 20%, #ffb29f 0%, #EC6345 55%, #BA5225 100%);
             box-shadow: 0 18px 45px -20px rgba(44, 205, 121, 0.8);
+          }
+
+          .task-spinner-bar {
+            height: 18%;
+            animation: taskSpinnerWave 1.1s ease-in-out infinite;
+            transform-origin: center bottom;
+          }
+
+          @keyframes taskSpinnerWave {
+            0%, 100% {
+              height: 18%;
+              opacity: 0.42;
+            }
+            50% {
+              height: 52%;
+              opacity: 1;
+            }
           }
 
           @media (min-width: 640px) {

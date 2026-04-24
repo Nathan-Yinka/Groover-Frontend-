@@ -1,64 +1,87 @@
-import { useCallback, useEffect, useState } from "react";
-import { BiUserCircle } from "react-icons/bi";
-import { GiCrown } from "react-icons/gi";
-import { motion } from "framer-motion";
-import { slideIn } from "../../motion";
-import BottomNavMobile from "./components/BottomNavMobile";
+import { useCallback, useEffect, useState, useMemo } from "react";
+import { 
+  BiUserCircle, 
+  BiWallet, 
+  BiTrendingUp, 
+  BiLockAlt, 
+  BiBriefcase, 
+  BiPulse 
+} from "react-icons/bi";
+import { 
+  IoStar, 
+  IoTrophy, 
+  IoLayersOutline, 
+  IoWalletOutline, 
+  IoNotificationsOutline, 
+  IoRocketOutline, 
+  IoPlayOutline, 
+  IoMusicalNotesOutline, 
+  IoChevronForwardOutline, 
+  IoShieldCheckmarkOutline, 
+  IoTimeOutline, 
+  IoPulseOutline,
+  IoClose
+} from "react-icons/io5";
+import { FiPlusSquare, FiMusic, FiClock } from "react-icons/fi";
+import { HiOutlineLightningBolt, HiOutlineRefresh } from "react-icons/hi";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCurrentGame, fetchProducts, submitCurrentGame } from "../../app/service/products.service";
 import { toast } from "sonner";
-import ErrorHandler from "../../app/ErrorHandler";
-import { fetchProfileFailure, fetchProfileStart, fetchProfileSuccess } from "../../app/slice/profile.slice";
-import authService from "../../app/service/auth.service";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { formatCurrencyWithCode } from "../../utils/currency";
 import PropTypes from "prop-types";
 
-// Initialize SweetAlert2 with React Content
+// Services and Assets
+import { fetchCurrentGame, fetchProducts, submitCurrentGame } from "../../app/service/products.service";
+import ErrorHandler from "../../app/ErrorHandler";
+import authService from "../../app/service/auth.service";
+import { fetchProfileFailure, fetchProfileStart, fetchProfileSuccess } from "../../app/slice/profile.slice";
+import { showAlert, hideAlert } from "../../app/slice/ui.slice";
+import { formatCurrencyWithCode } from "../../utils/currency";
+import { profile as profileRoute, level as levelRoute } from "../../constants/app.routes";
+import Loader from "./components/Load";
+import MusicVisualizer from "./components/MusicVisualizer";
+import BottomNavMobile from "./components/BottomNavMobile";
+
+// Assets (Using V2 assets for consistency)
+import v2HeroStudioCurator from "../../assets/v2_hero_studio_curator.png";
+import missionBg from "../../assets/v2_mission_bg.png";
+
 const MySwal = withReactContent(Swal);
 
 const ResponsiveSpinner = ({ size = "default" }) => {
   const sizeClasses = {
-    sm: "w-16 h-16 md:w-32 md:h-32 lg:w-40 lg:h-40",
-    default: "w-32 h-32 md:w-80 md:h-80 lg:w-96 lg:h-96",
-    lg: "w-48 h-48 md:w-96 md:h-96 lg:w-[500px] lg:h-[500px]",
+    sm: { height: "70px", width: "w-2", bars: 12 },
+    default: { height: "180px", width: "w-3", bars: 20 },
+    lg: { height: "240px", width: "w-4", bars: 25 },
   };
 
+  const current = sizeClasses[size] || sizeClasses.default;
+
   return (
-    <div className={`${sizeClasses[size]} relative text-[#EC6345]`}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="xMidYMid"
-        width="100%"
-        height="100%"
-        style={{
-          shapeRendering: "auto",
-          display: "block",
-          background: "transparent",
-        }}
-      >
-        <g>
-          <path
-            style={{ transform: "scale(0.8)", transformOrigin: "50px 50px" }}
-            strokeLinecap="round"
-            d="M24.3 30C11.4 30 5 43.3 5 50s6.4 20 19.3 20c19.3 0 32.1-40 51.4-40 C88.6 30 95 43.3 95 50s-6.4 20-19.3 20C56.4 70 43.6 30 24.3 30z"
-            strokeDasharray="207.83703186035157 48.75189636230468"
-            strokeWidth="10"
-            stroke="currentColor"
-            fill="none"
-          >
-            <animate
-              values="0;256.58892822265625"
-              keyTimes="0;1"
-              dur="1s"
-              repeatCount="indefinite"
-              attributeName="stroke-dashoffset"
-            />
-          </path>
-        </g>
-      </svg>
+    <div className="flex items-end gap-1.5 h-full" style={{ height: current.height }}>
+      {[...Array(current.bars)].map((_, i) => (
+        <motion.div
+          key={i}
+          className={`${current.width} bg-[#EC6345] rounded-full shadow-[0_0_25px_rgba(236,99,69,0.4)]`}
+          animate={{
+            height: [
+              "15%", 
+              `${30 + Math.random() * 70}%`, 
+              `${15 + Math.random() * 30}%`, 
+              `${50 + Math.random() * 50}%`, 
+              "15%"
+            ],
+          }}
+          transition={{
+            duration: 0.9 + Math.random() * 0.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: i * 0.04,
+          }}
+        />
+      ))}
     </div>
   );
 };
@@ -67,31 +90,9 @@ ResponsiveSpinner.propTypes = {
   size: PropTypes.oneOf(["sm", "default", "lg"]),
 };
 
-// const slideVariants = {
-//     enter: (direction) => ({
-//         x: direction < 0 ? 1000 : -1000,
-//         opacity: 0,
-//     }),
-//     center: {
-//         x: 0,
-//         opacity: 1,
-//     },
-//     exit: (direction) => ({
-//         x: direction > 0 ? 1000 : -1000,
-//         opacity: 0,
-//     }),
-// };
-
 const Starting = () => {
     const dispatch = useDispatch();
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedStar] = useState(5);
-    const [comments, setComments] = useState("");
-    const [shuffledProducts, setShuffledProducts] = useState([]);
-    const [imagesReady, setImagesReady] = useState(false);
-    const [isInitialLoad, setIsInitialLoad] = useState(true);
-
+    const navigate = useNavigate();
 
     const profile = useSelector((state) => state.profile.user);
     const isLoading = useSelector((state) => state.products.isLoading);
@@ -99,199 +100,54 @@ const Starting = () => {
     const products = useSelector((state) => state.products.products);
     const currentGame = useSelector((state) => state.products.currentGame);
 
-    useEffect(() => {
-        const isMobileModalActive = Boolean(
-            isModalOpen
-            && currentGame
-            && typeof window !== "undefined"
-            && window.innerWidth < 768,
-        );
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedStar, setSelectedStar] = useState(0);
+    const [comments, setComments] = useState("");
+    const [shuffledProducts, setShuffledProducts] = useState([]);
+    const [imagesReady, setImagesReady] = useState(false);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [isLoadingTerminal, setIsLoadingTerminal] = useState(false);
+    const [loadedImages, setLoadedImages] = useState({});
 
-        const scrollContainer = document.getElementById("dashboard-scroll-container");
-        const previousBodyOverflow = document.body.style.overflow;
-        const previousHtmlOverflow = document.documentElement.style.overflow;
-        const previousContainerOverflow = scrollContainer?.style.overflow;
-        const previousContainerTouch = scrollContainer?.style.touchAction;
+    // Logic for interacting with the Global Terminal HUD
+    const showGlobalAlert = (type, title, message) => {
+        dispatch(showAlert({ type, title, message }));
+    };
 
-        if (isMobileModalActive) {
-            document.body.style.overflow = "hidden";
-            document.documentElement.style.overflow = "hidden";
-            if (scrollContainer) {
-                scrollContainer.style.overflow = "hidden";
-                scrollContainer.style.touchAction = "none";
+    // --- LOGIC PORTED FROM STARTING.JSX ---
+
+    const fetchProfileData = useCallback(async () => {
+        dispatch(fetchProfileStart());
+        try {
+            const response = await authService.fetchProfile();
+            if (response.success) {
+                dispatch(fetchProfileSuccess(response.data));
+            } else {
+                dispatch(fetchProfileFailure(response.message || "Failed to load profile."));
+                toast.error(response.message || "Failed to load profile.");
             }
+        } catch (error) {
+            dispatch(fetchProfileFailure("An error occurred while fetching your profile."));
         }
-
-        return () => {
-            document.body.style.overflow = previousBodyOverflow;
-            document.documentElement.style.overflow = previousHtmlOverflow;
-            if (scrollContainer) {
-                scrollContainer.style.overflow = previousContainerOverflow || "";
-                scrollContainer.style.touchAction = previousContainerTouch || "";
-            }
-        };
-    }, [isModalOpen, currentGame]);
-
-    // console.log("currentGame", currentGame)
-
-    // const images = [
-    //     "https://picsum.photos/id/101/150/150", // Random image 1
-    //     "https://picsum.photos/id/102/150/150", // Random image 2
-    //     "https://picsum.photos/id/103/150/150", // Random image 3
-    //     "https://picsum.photos/id/104/150/150", // Random image 4
-    //     "https://picsum.photos/id/105/150/150", // Random image 5
-    //     "https://picsum.photos/id/106/150/150", // Random image 6
-    //     "https://picsum.photos/id/107/150/150", // Random image 7
-    //     "https://picsum.photos/id/108/150/150", // Random image 8
-    //     "https://picsum.photos/id/109/150/150", // Random image 9
-    //     "https://picsum.photos/id/110/150/150", // Random image 10
-    //     "https://picsum.photos/id/111/150/150", // Random image 11
-    //     "https://picsum.photos/id/112/150/150", // Random image 12
-    //     "https://picsum.photos/id/113/150/150", // Random image 13
-    //     "https://picsum.photos/id/114/150/150", // Random image 14
-    //     "https://picsum.photos/id/115/150/150", // Random image 15
-    //     "https://picsum.photos/id/116/150/150", // Random image 16
-    //     "https://picsum.photos/id/117/150/150", // Random image 17
-    //     "https://picsum.photos/id/118/150/150", // Random image 18
-    //     "https://picsum.photos/id/119/150/150", // Random image 19
-    //     "https://picsum.photos/id/120/150/150", // Random image 20
-    // ];
-
-    // Function to fetch user profile
-        const fetchProfile = useCallback(async () => {
-                dispatch(fetchProfileStart());
-                try {
-                    const response = await authService.fetchProfile();
-                    if (response.success) {
-                        dispatch(fetchProfileSuccess(response.data));
-                    } else {
-                        dispatch(fetchProfileFailure(response.message || "Failed to load profile."));
-                        toast.error(response.message || "Failed to load profile.");
-                    }
-                } catch (error) {
-                    console.error("Error fetching profile:", error);
-                    dispatch(fetchProfileFailure("An error occurred while fetching your profile."));
-                    toast.error("An error occurred while fetching your profile.");
-            }
-        }, [dispatch]);
+    }, [dispatch]);
 
     useEffect(() => {
-        if (!profile) {
-        fetchProfile();
+        if (!profile) fetchProfileData();
+    }, [fetchProfileData, profile]);
+
+    useEffect(() => {
+        if (!products || products.length === 0) {
+            dispatch(fetchProducts());
         }
-    }, [fetchProfile, profile]);
-
-    // useEffect(() => {
-    //     const fetchCurrentGameData = async () => {
-    //         if (!currentGame || Object.keys(currentGame).length === 0) {
-    //             dispatch(fetchCurrentGame());
-    //         }
-    //     };
-
-    //     fetchCurrentGameData();
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [dispatch]);
-
-    useEffect(() => {
-        const fetchProductsData = async () => {
-            if (!products || products.length === 0) {
-                dispatch(fetchProducts());
-            }
-        };
-
-        fetchProductsData();
     }, [dispatch, products]);
 
-    // Shuffle products whenever products change
     useEffect(() => {
         if (products && products.length > 0) {
             setShuffledProducts(shuffleArray(products));
         }
     }, [products]);
 
-    // Function to preload and swap images smoothly
-    const preloadAndSwapImages = (newProducts) => {
-        const newLoadedImages = {};
-        let loadedCount = 0;
-        const totalImages = newProducts.length;
-        
-        newProducts.forEach((product) => {
-            const img = new Image();
-            img.src = product.image || "https://via.placeholder.com/150";
-            img.onload = () => {
-                newLoadedImages[product.image] = true;
-                loadedCount++;
-                // When all images are loaded, swap them
-                if (loadedCount === totalImages) {
-                    setLoadedImages(prev => ({ ...prev, ...newLoadedImages }));
-                    setShuffledProducts(newProducts);
-                }
-            };
-            img.onerror = () => {
-                loadedCount++;
-                if (loadedCount === totalImages) {
-                    setLoadedImages(prev => ({ ...prev, ...newLoadedImages }));
-                    setShuffledProducts(newProducts);
-                }
-            };
-        });
-    };
-
-    // Timer to reshuffle products every 18 seconds
-    useEffect(() => {
-        if (products && products.length > 0 && !isInitialLoad) {
-            const reshuffleInterval = setInterval(() => {
-                const newShuffledProducts = shuffleArray(products);
-                preloadAndSwapImages(newShuffledProducts);
-            }, 20000); // Reshuffle every 20 seconds
-
-            return () => clearInterval(reshuffleInterval);
-        }
-    }, [products, isInitialLoad]);
-
-    // New state for tracking loaded images
-    const [loadedImages, setLoadedImages] = useState({});
-
-    // Preload images when shuffled products change
-    useEffect(() => {
-        if (shuffledProducts && shuffledProducts.length > 0) {
-            // Only show loading state on initial load, not during reshuffle
-            if (isInitialLoad) {
-                setImagesReady(false);
-            }
-            
-            let loadedCount = 0;
-            const totalImages = shuffledProducts.length;
-            
-            shuffledProducts.forEach((product) => {
-                const img = new Image();
-                img.src = product.image || "https://via.placeholder.com/150";
-                img.onload = () => {
-                    setLoadedImages((prev) => ({
-                        ...prev,
-                        [product.image]: true,
-                    }));
-                    loadedCount++;
-                    // Only set images ready when all images are loaded
-                    if (loadedCount === totalImages) {
-                        setImagesReady(true);
-                        setIsInitialLoad(false); // Mark initial load as complete
-                    }
-                };
-                img.onerror = () => {
-                    // Handle image load error
-                    loadedCount++;
-                    if (loadedCount === totalImages) {
-                        setImagesReady(true);
-                        setIsInitialLoad(false);
-                    }
-                };
-            });
-        }
-    }, [shuffledProducts, isInitialLoad]);
-
-    // Utility to check if an image is loaded
-    // Function to shuffle array randomly
     const shuffleArray = (array) => {
         const shuffled = [...array];
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -301,1003 +157,613 @@ const Starting = () => {
         return shuffled;
     };
 
-    const groupProducts = (products, groupSize) => {
-        const grouped = [];
-        for (let i = 0; i < products.length; i += groupSize) {
-            grouped.push(products.slice(i, i + groupSize));
-        }
-        return grouped;
-    };
-
-    const groupedProducts = shuffledProducts?.length > 0 ? groupProducts(shuffledProducts, 7) : [[]];
-    const totalSlides = groupedProducts.length;
-
-    const handleNextSlide = () => {
-        setCurrentSlide((prev) => (prev + 1) % totalSlides);
-    };
-
-    useEffect(() => {
-        if (currentSlide >= totalSlides) {
-            setCurrentSlide(0);
-        }
-    }, [currentSlide, totalSlides]);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            handleNextSlide();
-        }, 3000); // Autoplay every 3 seconds
-
-        return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentSlide]);
-
-    const toggleModal = () => {
-        setIsModalOpen(!isModalOpen);
-    };
-
-    const handleButtonClick = async () => {
-        if (!currentGame || Object.keys(currentGame).length === 0) {
-            const response = await dispatch(fetchCurrentGame());
-            console.log("response", response)
-            if (response.success) {
-                const special_product = response?.data?.special_product
-                if (special_product) {
-                    // Fetch profile again to show updated balance (including negative balance)
-                    await fetchProfile();
-                    
-                    // Show SweetAlert that covers the modal
-                    await showSpecialAlbumAlert();
-                }
-            }
-        }
-        toggleModal(); // Call toggleModal after fetching game data
-        if (currentGame && currentGame.special_product) {
-            // Fetch profile again to show updated balance (including negative balance)
-            await fetchProfile();
-            
-            // Show SweetAlert that covers the modal
-            await showSpecialAlbumAlert();
-        }
-    };
-
-    // Helper function to create SweetAlert with maximum z-index
-    const showSpecialAlbumAlert = () => {
-        // Find the highest z-index on the page and set SweetAlert above it
-        const getAllElements = () => {
-            const elements = [];
-            const walker = document.createTreeWalker(
-                document.body,
-                NodeFilter.SHOW_ELEMENT,
-                null,
-                false
-            );
-            
-            let node;
-            while ((node = walker.nextNode())) {
-                elements.push(node);
-            }
-            return elements;
-        };
-        
-        const getHighestZIndex = () => {
-            const elements = getAllElements();
-            let highest = 0;
-            
-            elements.forEach(el => {
-                const zIndex = parseInt(window.getComputedStyle(el).zIndex);
-                if (!isNaN(zIndex) && zIndex > highest) {
-                    highest = zIndex;
-                }
-            });
-            
-            return highest;
-        };
-        
-        // Check for common modal/overlay selectors
-        const checkForModals = () => {
-            const modalSelectors = [
-                '.modal', '.overlay', '.popup', '.dialog', '.drawer',
-                '[role="dialog"]', '[role="modal"]', '.ant-modal',
-                '.MuiModal-root', '.MuiDialog-root', '.el-dialog',
-                '.van-popup', '.van-overlay', '.van-modal',
-                '.chakra-modal', '.chakra-overlay', '.chakra-drawer',
-                '.bootstrap-modal', '.bootstrap-overlay',
-                '.semantic-modal', '.semantic-overlay',
-                '.foundation-modal', '.foundation-overlay',
-                '.bulma-modal', '.bulma-overlay'
-            ];
-            
-            let modalZIndex = 0;
-            modalSelectors.forEach(selector => {
-                const elements = document.querySelectorAll(selector);
-                elements.forEach(el => {
-                    const zIndex = parseInt(window.getComputedStyle(el).zIndex);
-                    if (!isNaN(zIndex) && zIndex > modalZIndex) {
-                        modalZIndex = zIndex;
-                    }
-                });
-            });
-            
-            return modalZIndex;
-        };
-        
-        // Check for common CSS framework z-index values
-        const getFrameworkZIndex = () => {
-            const frameworkZIndexes = {
-                'ant-design': 1000,
-                'material-ui': 1300,
-                'element-ui': 2000,
-                'vant': 2000,
-                'chakra-ui': 1400,
-                'bootstrap': 1050,
-                'semantic-ui': 1000,
-                'foundation': 1000,
-                'bulma': 1000
+    const preloadAndSwapImages = (newProducts) => {
+        let loadedCount = 0;
+        const totalImages = newProducts.length;
+        newProducts.forEach((product) => {
+            const img = new Image();
+            img.src = product.image || "https://via.placeholder.com/150";
+            img.onload = () => {
+                loadedCount++;
+                if (loadedCount === totalImages) setShuffledProducts(newProducts);
             };
-            
-            return Math.max(...Object.values(frameworkZIndexes));
-        };
-        
-        // Check for inline styles and dynamically set z-index values
-        const checkInlineZIndex = () => {
-            const elements = document.querySelectorAll('*');
-            let highestInline = 0;
-            
-            elements.forEach(el => {
-                const inlineZIndex = el.style.zIndex;
-                if (inlineZIndex) {
-                    const zIndex = parseInt(inlineZIndex);
-                    if (!isNaN(zIndex) && zIndex > highestInline) {
-                        highestInline = zIndex;
-                    }
-                }
-            });
-            
-            return highestInline;
-        };
-        
-        // Check for CSS animations and transitions that might affect z-index
-        const checkCSSAnimations = () => {
-            const animatedElements = document.querySelectorAll('*');
-            let highestAnimated = 0;
-            
-            animatedElements.forEach(el => {
-                const computedStyle = window.getComputedStyle(el);
-                const hasAnimation = computedStyle.animation !== 'none' || computedStyle.transition !== 'none';
-                
-                if (hasAnimation) {
-                    const zIndex = parseInt(computedStyle.zIndex);
-                    if (!isNaN(zIndex) && zIndex > highestAnimated) {
-                        highestAnimated = zIndex;
-                    }
-                }
-            });
-            
-            return highestAnimated;
-        };
-        
-        // Check for CSS custom properties that might set z-index values
-        const checkCSSVariables = () => {
-            const root = document.documentElement;
-            const computedStyle = window.getComputedStyle(root);
-            let highestVariable = 0;
-            
-            // Check common CSS variable names for z-index
-            const zIndexVariables = [
-                '--z-index', '--zindex', '--z', '--layer',
-                '--modal-z', '--overlay-z', '--popup-z',
-                '--drawer-z', '--dialog-z', '--tooltip-z'
-            ];
-            
-            zIndexVariables.forEach(varName => {
-                const value = computedStyle.getPropertyValue(varName);
-                if (value) {
-                    const zIndex = parseInt(value);
-                    if (!isNaN(zIndex) && zIndex > highestVariable) {
-                        highestVariable = zIndex;
-                    }
-                }
-            });
-            
-            return highestVariable;
-        };
-        
-        // Check for CSS frameworks and libraries that might set high z-index values
-        const checkCSSFrameworks = () => {
-            const frameworkSelectors = [
-                '.ant-', '.antd-', '.ant-design-',
-                '.mui-', '.Mui', '.material-ui-',
-                '.el-', '.element-', '.element-ui-',
-                '.van-', '.vant-',
-                '.chakra-', '.chakra-ui-',
-                '.bs-', '.bootstrap-',
-                '.ui-', '.semantic-', '.semantic-ui-',
-                '.foundation-', '.bulma-'
-            ];
-            
-            let highestFramework = 0;
-            frameworkSelectors.forEach(selector => {
-                const elements = document.querySelectorAll(`[class*="${selector}"]`);
-                elements.forEach(el => {
-                    const zIndex = parseInt(window.getComputedStyle(el).zIndex);
-                    if (!isNaN(zIndex) && zIndex > highestFramework) {
-                        highestFramework = zIndex;
-                    }
-                });
-            });
-            
-            return highestFramework;
-        };
-        
-        const highestZIndex = Math.max(
-            getHighestZIndex(), 
-            checkForModals(), 
-            getFrameworkZIndex(),
-            checkInlineZIndex(),
-            checkCSSAnimations(),
-            checkCSSVariables(),
-            checkCSSFrameworks()
-        );
-        const sweetAlertZIndex = Math.max(highestZIndex + 1000, 999999);
-        
-        // Force SweetAlert to have maximum z-index
-        const style = document.createElement('style');
-        style.textContent = `
-            .swal2-container {
-                z-index: ${sweetAlertZIndex} !important;
-            }
-            .swal2-popup {
-                z-index: ${sweetAlertZIndex} !important;
-            }
-            .swal2-backdrop {
-                z-index: ${sweetAlertZIndex - 1} !important;
-            }
-            .swal2-shown {
-                z-index: ${sweetAlertZIndex} !important;
-            }
-            .swal2-height-auto {
-                z-index: ${sweetAlertZIndex} !important;
-            }
-        `;
-        document.head.appendChild(style);
-        
-        return MySwal.fire({
-            title: 'Congratulations!!! You Got A Special Album!!!',
-            text: 'This submission contains a special album. Enjoy!',
-                icon: 'success',
-                confirmButtonText: 'OK',
-                customClass: {
-                popup: 'custom-swal-mobile-size swal-accent-theme',
-                backdrop: 'swal2-backdrop-show'
-            },
-            background: '#0f1210',
-            color: '#f5f5f5',
-            confirmButtonColor: '#EC6345',
-            backdrop: true, // This makes it cover the modal
-            allowOutsideClick: false, // Prevents clicking outside to close
-            allowEscapeKey: false, // Prevents escape key from closing
-            heightAuto: false, // Prevents height auto adjustment
-            zIndex: sweetAlertZIndex, // Dynamically calculated highest z-index
-            showClass: {
-                popup: 'animate__animated animate__fadeInDown'
-            },
-            hideClass: {
-                popup: 'animate__animated animate__fadeOutUp'
-            },
-            position: 'center', // Center the alert
-            grow: false, // Prevent growing
-            width: 'auto', // Auto width
-            padding: '2rem' // Add padding
-        }).then((result) => {
-            // Force SweetAlert to be visible after it's shown
-            setTimeout(() => {
-                const swalContainer = document.querySelector('.swal2-container');
-                const swalPopup = document.querySelector('.swal2-popup');
-                if (swalContainer) {
-                    swalContainer.style.zIndex = `${sweetAlertZIndex} !important`;
-                }
-                if (swalPopup) {
-                    swalPopup.style.zIndex = `${sweetAlertZIndex} !important`;
-                }
-            }, 100);
-            
-            return result;
-        }).finally(() => {
-            // Clean up the style after SweetAlert is closed
-            document.head.removeChild(style);
+            img.onerror = () => {
+                loadedCount++;
+                if (loadedCount === totalImages) setShuffledProducts(newProducts);
+            };
         });
     };
 
-    // Set global SweetAlert z-index to be above everything
     useEffect(() => {
-        // Override SweetAlert2 default z-index
-        const style = document.createElement('style');
-        style.textContent = `
-            .swal2-container {
-                z-index: 999999 !important;
-            }
-            .swal2-popup {
-                z-index: 999999 !important;
-            }
-            .swal2-backdrop {
-                z-index: 999998 !important;
-            }
-            .swal2-shown {
-                z-index: 999999 !important;
-            }
-            .swal2-height-auto {
-                z-index: 999999 !important;
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Also set SweetAlert2 global options
-        if (window.Swal) {
-            window.Swal.mixin({
-                zIndex: 999999
+        if (products && products.length > 0 && !isInitialLoad) {
+            const reshuffleInterval = setInterval(() => {
+                const newShuffledProducts = shuffleArray(products);
+                preloadAndSwapImages(newShuffledProducts);
+            }, 20000);
+            return () => clearInterval(reshuffleInterval);
+        }
+    }, [products, isInitialLoad]);
+
+    useEffect(() => {
+        if (shuffledProducts && shuffledProducts.length > 0) {
+            if (isInitialLoad) setImagesReady(false);
+            let loadedCount = 0;
+            shuffledProducts.forEach((product) => {
+                const img = new Image();
+                img.src = product.image || "https://via.placeholder.com/150";
+                img.onload = () => {
+                    loadedCount++;
+                    if (loadedCount === shuffledProducts.length) {
+                        setImagesReady(true);
+                        setIsInitialLoad(false);
+                    }
+                };
+                img.onerror = () => {
+                    loadedCount++;
+                    if (loadedCount === shuffledProducts.length) {
+                        setImagesReady(true);
+                        setIsInitialLoad(false);
+                    }
+                };
             });
         }
+    }, [shuffledProducts, isInitialLoad]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % Math.ceil((shuffledProducts?.length || 1) / 7));
+        }, 3000);
+        return () => clearInterval(interval);
+    }, [shuffledProducts]);
+
+    const handleStartOptimization = async () => {
+        if (currentGame && Object.keys(currentGame).length > 0) {
+            if (currentGame.special_product) {
+                showGlobalAlert('success', 'Special Album Detected', 'A premium track has entered the curation queue.');
+            }
+            setIsModalOpen(true);
+            return;
+        }
+
+        setIsLoadingTerminal(true);
+        showGlobalAlert('sync', 'System Sync', 'Retrieving available task...');
         
-        return () => {
-            document.head.removeChild(style);
-        };
-    }, []);
+        try {
+            // FIX: Use fetchCurrentGame() as per V1 logic
+            const response = await dispatch(fetchCurrentGame());
+            if (response?.success) {
+                dispatch(hideAlert());
+                if (response?.data?.special_product) {
+                    showGlobalAlert('success', 'Special Album', 'A premium special track has entered the queue.');
+                }
+                // AUTO-OPEN MODAL after procurement
+                setIsModalOpen(true);
+            } else {
+                ErrorHandler(response);
+            }
+        } catch (error) {
+            ErrorHandler(error);
+        } finally {
+            setIsLoadingTerminal(false);
+        }
+    };
+
+    const handleSubmit = async () => {
+        if (isLoadingTerminal) return;
+        if (selectedStar === 0) {
+            ErrorHandler("Please provide a rating before submission.");
+            return;
+        }
+        
+        setIsLoadingTerminal(true);
+        showGlobalAlert('sync', 'Submission', 'Committing curation data...');
+
+        try {
+            const response = await dispatch(submitCurrentGame(selectedStar, comments));
+            if (response?.success) {
+                setComments("");
+                setSelectedStar(0);
+                setIsModalOpen(false);
+                showGlobalAlert('success', 'Success', response?.data?.message || response?.message || 'Curation successfully submitted.');
+                await fetchProfileData();
+            } else {
+                ErrorHandler(response);
+            }
+        } catch (error) {
+            ErrorHandler(error);
+        } finally {
+            setIsLoadingTerminal(false);
+        }
+    };
+
+    if (isLoading && isInitialLoad) return <Loader fullScreen={true} size="large" />;
 
     return (
-      <div className="min-h-screen bg-[#F7F6F0] text-[#333333]">
-        <div className="w-full space-y-5 px-3 py-4 md:space-y-6 md:px-8 md:py-6">
-          {/* Modern Header Section */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full"
-          >
-          <div className="mb-4 md:mb-6 text-center">
-            <h1 className="text-2xl md:text-4xl font-semibold tracking-tight">Starting Dashboard</h1>
-            <p className="text-[#6c6661] text-xs md:text-base mt-1">
-              Complete submissions and track earnings in real time.
-            </p>
-          </div>
-
-          {/* Profile and Greeting Card */}
-          <motion.div
-            initial={slideIn("up", null).initial}
-            whileInView={slideIn("up", 1 * 2).animate}
-            className="bg-white border border-[#e5ded3] rounded-2xl shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] p-5 md:p-8 mb-6"
-          >
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  {profile?.profile_picture ? (
-                    <img
-                      src={profile.profile_picture}
-                      alt="Profile"
-                      className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-4 border-[#EC6345]/20 shadow-lg"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#fff5f2] flex items-center justify-center border-4 border-[#EC6345]/20 shadow-lg">
-                      <BiUserCircle className="text-3xl md:text-4xl text-[#EC6345]" />
+        <div className="min-h-screen grow bg-[#f6f1ea] text-[#221d1a] selection:bg-[#EC6345]/30 overflow-x-hidden font-sans">
+            {/* BRAND TOP BAR */}
+            <div className="px-4 pt-4 md:px-8 md:pt-6 sticky top-0 z-[100]">
+                <div className="mx-auto flex max-w-[1600px] items-center justify-between rounded-[22px] md:rounded-[26px] border border-white/60 bg-white/70 px-4 md:px-6 py-2.5 md:py-3 shadow-[0_20px_55px_-40px_rgba(26,20,18,0.55)] backdrop-blur-xl">
+                    <div className="flex items-center gap-4 md:gap-8">
+                        <div>
+                            <p className="text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.32em] text-[#a56657]">
+                                Optimization Lab
+                            </p>
+                            <p className="hidden md:block mt-1 text-[11px] font-medium text-[#8b8580]">
+                                Precision tuning for high-fidelity music assets.
+                            </p>
+                        </div>
                     </div>
-                  )}
-                  <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full border-2 border-white bg-[#EC6345]"></div>
+
+                    <div className="flex items-center gap-2 md:gap-4">
+                        <button 
+                            type="button"
+                            onClick={() => navigate(notificationsRoute)}
+                            className="relative flex h-9 w-9 md:h-11 md:w-11 items-center justify-center rounded-full border border-[#eadfd4] bg-[#fffaf6] text-[#2f2724] transition hover:-translate-y-0.5"
+                        >
+                            <IoNotificationsOutline className="text-lg md:text-xl" />
+                        </button>
+
+                        <button 
+                            type="button"
+                            onClick={() => navigate(profileRoute)}
+                            className="flex items-center gap-2 md:gap-3 rounded-full border border-[#eadfd4] bg-[#fffaf6] p-1 md:p-1.5 md:pr-5 transition hover:-translate-y-0.5"
+                        >
+                            {profile?.profile_picture ? (
+                                <img src={profile.profile_picture} alt="Profile" className="h-7 w-7 md:h-9 md:h-9 rounded-full object-cover ring-2 ring-[#EC6345]/10" />
+                            ) : (
+                                <div className="h-7 w-7 md:h-9 md:w-9 rounded-full bg-slate-100 flex items-center justify-center">
+                                    <BiUserCircle className="text-xl md:text-2xl text-slate-300" />
+                                </div>
+                            )}
+                            <div className="hidden md:block text-left">
+                                <p className="text-xs font-bold text-[#221d1a] uppercase tracking-wider">{profile?.first_name || 'Curator'}</p>
+                                <p className="text-[10px] font-medium text-[#a56657] uppercase tracking-tighter">{profile?.wallet?.package?.name || 'VIP 0'}</p>
+                            </div>
+                        </button>
+                    </div>
                 </div>
-                <div>
-                  <h1 className="text-lg md:text-2xl text-[#EC6345] font-semibold">
-                    Hi, {profile?.first_name} 👋
-                  </h1>
-                  <p className="text-[#605E5E] text-xs md:text-sm">
-                    Welcome back to your dashboard
-                  </p>
+            </div>
+
+            <main className="mx-auto w-full max-w-[1600px] px-4 py-8 md:px-8 lg:py-16">
+                
+                {/* THE ORBITAL COMMAND CENTER */}
+                <section className="relative min-h-[750px] lg:min-h-[850px] flex items-center justify-center overflow-hidden rounded-[60px] bg-[#120d0c] shadow-3xl border border-white/5">
+                    {/* AVANT-GARDE BACKGROUND */}
+                    <div className="absolute inset-0 z-0">
+                        <img src={v2HeroStudioCurator} className="h-full w-full object-cover opacity-20 scale-110 blur-[2px]" alt="" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-[#120d0c] via-transparent to-[#120d0c]" />
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(236,99,69,0.15)_0%,transparent_70%)]" />
+                    </div>
+
+                    {/* THE MUSIC FLUX TICKER (TOP RAIL) */}
+                    <div className="absolute top-0 left-0 right-0 z-0 overflow-hidden opacity-80 pointer-events-none">
+                        <motion.div 
+                            animate={{ x: [0, -2000] }}
+                            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                            className="flex gap-16 whitespace-nowrap pt-8"
+                        >
+                            {[...shuffledProducts, ...shuffledProducts, ...shuffledProducts].map((p, i) => (
+                                <div key={i} className="h-44 w-44 rounded-[40px] border border-white/20 bg-[#1b1513] overflow-hidden flex-shrink-0 shadow-2xl relative">
+                                    <img src={p.image || missionBg} className="h-full w-full object-cover grayscale brightness-90 transition-all duration-700" alt="" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                                </div>
+                            ))}
+                        </motion.div>
+                    </div>
+
+                    {/* THE MUSIC FLUX TICKER (BOTTOM RAIL) */}
+                    <div className="absolute bottom-0 left-0 right-0 z-0 overflow-hidden opacity-80 pointer-events-none">
+                        <motion.div 
+                            animate={{ x: [-2000, 0] }}
+                            transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
+                            className="flex gap-16 whitespace-nowrap pb-8"
+                        >
+                            {/* Reversing for diversity so top and bottom rails don't show the same images at once */}
+                            {[...shuffledProducts, ...shuffledProducts, ...shuffledProducts].reverse().map((p, i) => (
+                                <div key={i} className="h-44 w-44 rounded-[40px] border border-white/20 bg-[#1b1513] overflow-hidden flex-shrink-0 shadow-2xl relative">
+                                    <img src={p.image || missionBg} className="h-full w-full object-cover grayscale brightness-90 transition-all duration-700" alt="" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                                </div>
+                            ))}
+                        </motion.div>
+                    </div>
+
+                    {/* DECORATIVE ROTATING RINGS */}
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                        <motion.div 
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                          className="h-[400px] w-[400px] rounded-full border border-dashed border-white/5 sm:h-[500px] sm:w-[500px]" 
+                        />
+                        <motion.div 
+                          animate={{ rotate: -360 }}
+                          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[300px] w-[300px] rounded-full border border-white/10 opacity-40 sm:h-[350px] sm:w-[350px]" 
+                        />
+                    </div>
+
+                    <div className="relative z-10 w-full max-w-7xl px-6 py-12 flex flex-col items-center justify-center gap-16">
+
+                        <div className="flex flex-col lg:flex-row items-center justify-between w-full gap-16 lg:gap-8">
+                            
+                            {/* LEFT WING: FINANCIAL MODULES */}
+                            <div className="flex flex-col gap-6 order-2 lg:order-1 w-full lg:w-auto">
+                                <motion.div 
+                                    initial={{ opacity: 0, x: -30 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="group rounded-[32px] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl shadow-2xl transition-all hover:bg-white/[0.05]"
+                                >
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#EC6345]/20 text-[#EC6345]">
+                                            <IoWalletOutline className="text-xl" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Balance</p>
+                                            <p className="text-2xl font-bold text-white tracking-tighter">{formatCurrencyWithCode(profile?.wallet?.balance || 0)}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-[9px] font-bold text-green-500 uppercase tracking-widest">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                                        Live Balance Terminal
+                                    </div>
+                                </motion.div>
+
+                                <motion.div 
+                                    initial={{ opacity: 0, x: -30 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.1 }}
+                                    className="group rounded-[32px] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl shadow-2xl transition-all hover:bg-white/[0.05]"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-green-500/10 text-green-500">
+                                            <BiTrendingUp className="text-xl" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Daily Yield</p>
+                                            <p className="text-xl font-bold text-white">{formatCurrencyWithCode(profile?.today_profit || 0)}</p>
+                                        </div>
+                                    </div>
+                                </motion.div>
+
+                                <motion.div 
+                                    initial={{ opacity: 0, x: -30 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.2 }}
+                                    className="group rounded-[32px] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl shadow-2xl transition-all hover:bg-white/[0.05]"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-500">
+                                            <IoWalletOutline className="text-xl" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Salary</p>
+                                            <p className="text-xl font-bold text-white">{formatCurrencyWithCode(profile?.wallet?.salary || 0)}</p>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </div>
+
+                            {/* CENTER: THE START CORE */}
+                            <div className="relative order-1 lg:order-2">
+                                <motion.div 
+                                  initial={{ scale: 0.8, opacity: 0 }}
+                                  animate={{ scale: 1, opacity: 1 }}
+                                  className="relative flex h-[160px] w-[160px] sm:h-[200px] sm:w-[200px] items-center justify-center"
+                                >
+                                    {/* Glowing Aura (Concentrated for compact core) */}
+                                    <div className="absolute inset-0 rounded-full bg-[#EC6345]/30 blur-[40px] animate-pulse" />
+                                    <div className="absolute -inset-3 rounded-full border border-white/5 animate-[spin_20s_linear_infinite]" />
+                                    
+                                    <button
+                                        onClick={handleStartOptimization}
+                                        disabled={isLoadingTerminal}
+                                        className="group relative flex h-full w-full flex-col items-center justify-center rounded-full border border-white/20 bg-[#1b1513] text-white shadow-3xl transition-all hover:border-[#EC6345]/50 active:scale-95 disabled:opacity-50 overflow-hidden"
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-[#EC6345]/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        
+                                        <IoMusicalNotesOutline className="mb-1 text-2xl text-[#EC6345] group-hover:scale-110 transition-transform duration-700" />
+                                        <div className="text-center">
+                                            <span className="block text-[6px] font-black uppercase tracking-[0.6em] text-white/30 mb-0.5 leading-none">Access</span>
+                                            <span className="block text-xl font-black uppercase tracking-tighter sm:text-2xl leading-none">
+                                                {isLoading_current ? "..." : "START"}
+                                            </span>
+                                        </div>
+                                    </button>
+                                </motion.div>
+                            </div>
+
+                            {/* RIGHT WING: MISSION MODULES */}
+                            <div className="flex flex-col gap-6 order-3 w-full lg:w-auto">
+                            <motion.div 
+                                initial={{ opacity: 0, x: 30 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="group rounded-[32px] border border-white/10 bg-white/[0.03] p-7 backdrop-blur-xl shadow-2xl transition-all hover:bg-white/[0.05]"
+                            >
+                                <div className="flex items-center justify-between gap-12 mb-4">
+                                    <div>
+                                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Assignment Delta</p>
+                                        <p className="text-2xl font-bold text-white tracking-tighter">{profile?.current_number_count || 0} / {profile?.total_number_can_play || 0}</p>
+                                    </div>
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EC6345]/10 text-[#EC6345]">
+                                        <p className="text-[10px] font-black">{Math.round(((profile?.current_number_count || 0) / (profile?.total_number_can_play || 1)) * 100)}%</p>
+                                    </div>
+                                </div>
+                                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                     <motion.div 
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${Math.min(((profile?.current_number_count || 0) / (profile?.total_number_can_play || 1)) * 100, 100)}%` }}
+                                        className="h-full bg-[#EC6345] rounded-full shadow-[0_0_10px_rgba(236,99,69,0.5)]"
+                                    />
+                                </div>
+                            </motion.div>
+
+                            <motion.div 
+                                initial={{ opacity: 0, x: 30 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.1 }}
+                                className="group rounded-[32px] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl shadow-2xl transition-all hover:bg-white/[0.05]"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-yellow-500/10 text-yellow-500">
+                                        <BiLockAlt className="text-xl" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Frozen Amount</p>
+                                        <p className="text-xl font-bold text-white">{formatCurrencyWithCode(profile?.wallet?.on_hold || 0)}</p>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div className="flex items-center space-x-3">
-                {profile?.wallet?.package?.icon ? (
-                  <img
-                    src={profile.wallet.package.icon}
-                    alt="Package"
-                    className="w-10 h-10 md:w-12 md:h-12 object-contain"
-                  />
-                ) : (
-                  <GiCrown className="text-3xl md:text-4xl text-[#EC6345]" />
+                </section>
+
+
+                {/* LIVE ALBUM FEED */}
+                <section className="mt-24 overflow-hidden rounded-[40px] bg-[#1b1513] p-8 lg:p-12 relative shadow-3xl">
+                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#EC6345]/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+                     
+                     <div className="relative z-10 flex flex-wrap items-end justify-between gap-6 mb-16">
+                        <div className="space-y-4">
+                            <span className="text-[11px] font-black text-[#EC6345] uppercase tracking-[0.4em] block">Global Network</span>
+                            <h2 className="text-3xl lg:text-4xl font-bold tracking-tighter text-white">Live Submission Feed</h2>
+                        </div>
+                        <div className="flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-6 py-3 backdrop-blur-md">
+                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                            <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">Network Live</span>
+                        </div>
+                     </div>
+
+                     <div className="relative">
+                        <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 gap-4 lg:gap-6">
+                            {shuffledProducts.slice(0, 7).map((product, i) => (
+                                <motion.div 
+                                    key={product.id || i}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: i * 0.1 }}
+                                    className="group relative"
+                                >
+                                    <div className="aspect-square overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-xl transition-all group-hover:scale-105 group-hover:-translate-y-2 group-hover:shadow-[#EC6345]/20">
+                                        <img 
+                                            src={product.image || missionBg} 
+                                            className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" 
+                                            alt="" 
+                                        />
+                                    </div>
+                                    <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <p className="text-[8px] font-bold text-white/40 uppercase tracking-widest text-center truncate">{product.name || 'Anonymous hit'}</p>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                     </div>
+                </section>
+
+                {/* COMMAND STATUS BAR (INTEGRATED FOOTER) */}
+                <div className="mt-12">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 rounded-[32px] border border-white/10 bg-[#0d0908] p-6 md:p-8 backdrop-blur-md relative overflow-hidden group shadow-2xl">
+                        {/* Status Ambient Glow */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#EC6345]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                        
+                        <div className="relative z-10 flex items-center gap-5">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#EC6345]">
+                                <IoTimeOutline className="text-2xl animate-pulse" />
+                            </div>
+                            <div>
+                                <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.4em] mb-1.5">Network Availability</p>
+                                <div className="flex items-center gap-3">
+                                    <span className="text-xl font-bold text-[#EC6345] tracking-tight tabular-nums">
+                                        {profile?.settings?.service_availability_start_time || "00:00:00"} — {profile?.settings?.service_availability_end_time || "23:59:59"}
+                                    </span>
+                                    <div className="h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="hidden md:block h-10 w-px bg-white/5" />
+
+                        <div className="relative z-10 flex items-center gap-5">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#EC6345]">
+                                <IoRocketOutline className="text-2xl" />
+                            </div>
+                            <div>
+                                <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.4em] mb-1.5">Curation Inquiries</p>
+                                <p className="text-sm font-medium text-white/70">
+                                    Reach out via the <span className="text-white hover:text-[#EC6345] transition-colors cursor-pointer underline underline-offset-6 font-black decoration-[#EC6345] uppercase tracking-tighter">Support Terminal</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            {/* OPTIMIZATION MODAL (HIGH-FIDELITY TASK SUBMISSION) */}
+            <AnimatePresence>
+                {isModalOpen && currentGame && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/95 p-4 backdrop-blur-2xl"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.9, y: 30, opacity: 0 }}
+                            animate={{ scale: 1, y: 0, opacity: 1 }}
+                            className={`relative w-full max-w-[480px] rounded-[32px] sm:rounded-[40px] border p-5 sm:p-8 shadow-[0_0_100px_rgba(0,0,0,0.8)] transition-all duration-700 ${
+                                currentGame?.special_product 
+                                ? 'bg-gradient-to-b from-[#1b1513] to-[#2d2208] border-amber-500/40 shadow-amber-500/20' 
+                                : 'bg-[#1b1513] border-white/10'
+                            }`}
+                        >
+                            {/* Special Product Badge */}
+                            {currentGame?.special_product && (
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 px-4 py-0.5 bg-amber-500 rounded-b-xl shadow-[0_0_15px_rgba(245,158,11,0.4)] z-50 animate-bounce">
+                                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-black">Special Product</span>
+                                </div>
+                            )}
+
+                            {/* Close Command (Top) */}
+                            <div className="absolute top-6 right-6 sm:top-8 sm:right-8 flex flex-col items-center gap-1 z-20">
+                                <button 
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-white/5 text-white/40 hover:bg-[#EC6345]/20 hover:text-[#EC6345] transition-all"
+                                >
+                                    <IoClose className="text-xl sm:text-2xl" />
+                                </button>
+                                <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-widest text-white/20">Close</span>
+                            </div>
+
+                            {/* Merry Animation for Special Product */}
+                            {currentGame?.special_product && (
+                                <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                                    {[...Array(12)].map((_, i) => (
+                                        <motion.div
+                                            key={i}
+                                            initial={{ y: '110%', x: Math.random() * 100 + '%' }}
+                                            animate={{ 
+                                                y: '-110%', 
+                                                transition: { duration: 3 + Math.random() * 2, repeat: Infinity, delay: Math.random() * 2 } 
+                                            }}
+                                            className="absolute text-amber-500/20"
+                                        >
+                                            <FiMusic className="text-2xl" />
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            )}
+
+                            <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                                <IoLayersOutline className="text-[120px]" />
+                            </div>
+
+                            {/* Modal Header */}
+                            <div className="mb-4 text-center">
+                                <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[#EC6345]/10 text-[#EC6345] mb-2">
+                                    <HiOutlineLightningBolt className="text-xl animate-pulse" />
+                                </div>
+                                <h2 className="text-xl font-black tracking-tighter text-white mb-1 uppercase">Task Submission</h2>
+                            </div>
+
+                            {/* Product Layout (Handles Combos) */}
+                            <div className="mb-3 p-3 rounded-2xl bg-white/[0.03] border border-white/5">
+                                <div className="flex items-center justify-center -space-x-4">
+                                    {currentGame?.products && currentGame.products.length > 0 ? (
+                                        currentGame.products.slice(0, 3).map((product, idx) => (
+                                            <motion.div 
+                                                key={product.id || idx}
+                                                className="h-16 w-16 rounded-2xl border-2 border-[#1b1513] bg-[#1b1513] overflow-hidden shadow-2xl flex-shrink-0"
+                                            >
+                                                <img src={product.image || missionBg} className="h-full w-full object-cover" alt="" />
+                                            </motion.div>
+                                        ))
+                                    ) : (
+                                        <div className="h-16 w-16 rounded-2xl border border-white/10 bg-white/5 overflow-hidden shadow-2xl">
+                                            <img src={currentGame?.image || missionBg} className="h-full w-full object-cover" alt="" />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="mt-2 text-center">
+                                    <h3 className="text-[10px] font-bold text-white truncate max-w-[200px] mx-auto">
+                                        {currentGame?.products?.[0]?.name || currentGame?.name || 'Curation Hit'}
+                                    </h3>
+                                </div>
+                            </div>
+
+                            {/* Star Rating Interaction */}
+                            <div className="mb-3 text-center">
+                                <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.3em] mb-2">Quality Score</p>
+                                <div className="flex justify-center gap-2">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <button 
+                                            key={star}
+                                            onClick={() => setSelectedStar(star)}
+                                            className="group transition-all active:scale-90"
+                                        >
+                                            <IoStar className={`text-2xl transition-all ${
+                                                selectedStar >= star ? 'text-[#EC6345] drop-shadow-[0_0_10px_rgba(236,99,69,0.4)]' : 'text-white/10 group-hover:text-white/20'
+                                            }`} />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Technical Specifications Grid */}
+                            <div className="grid grid-cols-2 gap-2 mb-4">
+                                <div className="rounded-2xl bg-white/[0.02] border border-white/5 p-3">
+                                    <p className="text-[8px] font-black text-white/20 uppercase tracking-widest mb-0.5">Amount</p>
+                                    <p className="text-sm font-bold text-[#EC6345] tabular-nums">USD {currentGame?.amount}</p>
+                                </div>
+                                <div className="rounded-2xl bg-white/[0.02] border border-white/5 p-3">
+                                    <p className="text-[8px] font-black text-white/20 uppercase tracking-widest mb-0.5">Profit</p>
+                                    <p className="text-sm font-bold text-green-500 tabular-nums">USD {currentGame?.commission}</p>
+                                </div>
+                            </div>
+
+                            {/* Curation Metadata */}
+                            <div className="space-y-1.5 mb-4 px-1">
+                                <div className="flex justify-between items-center text-[8px]">
+                                    <span className="font-black text-white/20 uppercase tracking-widest">Protocol ID</span>
+                                    <span className="font-bold text-white/50 tracking-widest">{currentGame?.rating_no}</span>
+                                </div>
+                            </div>
+
+                            {/* Comment Entry */}
+                            <div className="mb-6 text-left">
+                                <p className="text-[8px] font-black text-[#EC6345] uppercase tracking-[0.2em] mb-2">Intelligence Comment</p>
+                                <textarea 
+                                    value={comments}
+                                    onChange={(e) => setComments(e.target.value)}
+                                    placeholder="Add intelligence..."
+                                    className="w-full rounded-2xl bg-white/[0.03] border border-white/5 p-3 text-[11px] text-white placeholder:text-white/10 focus:outline-none focus:border-[#EC6345]/30 transition-all h-20 resize-none"
+                                />
+                            </div>
+
+                            {/* Master Actions */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <button 
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="h-12 rounded-2xl border border-white/10 bg-white/5 text-[9px] font-black text-white/40 uppercase tracking-widest hover:text-red-400 transition-all"
+                                >
+                                    Abort
+                                </button>
+                                <button 
+                                    onClick={handleSubmit}
+                                    className="group relative h-12 rounded-2xl bg-[#EC6345] overflow-hidden text-[9px] font-black text-white shadow-xl transition-all active:scale-95"
+                                >
+                                    {isLoading ? "SYNCING..." : "COMMIT"}
+                                </button>
+                            </div>
+
+                        </motion.div>
+                    </motion.div>
                 )}
-              </div>
-            </div>
+            </AnimatePresence>
 
-            {/* Progress Bar */}
-            <div className="mb-2">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-[#5f5b57]">Daily Progress</span>
-                <span className="text-sm font-semibold text-[#EC6345]">
-                  {profile?.current_number_count || 0} /{" "}
-                  {profile?.total_number_can_play || 0}
-                </span>
-              </div>
-              <div className="w-full bg-[#e5ded3] rounded-full h-2.5 overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{
-                    width: `${Math.min(((profile?.current_number_count || 0) / (profile?.total_number_can_play || 1)) * 100, 100)}%`,
-                  }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                  className="h-full bg-gradient-to-r from-accent/70 to-accent rounded-full shadow-lg"
-                />
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Wallet Information Cards */}
-            <motion.div
-              initial={slideIn("up", null).initial}
-              whileInView={slideIn("up", 2 * 2).animate}
-              className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4"
-            >
-            {[
-              {
-                label: "Wallet Balance",
-                amount: formatCurrencyWithCode(profile?.wallet?.balance || 0),
-                description: "Available funds",
-                icon: "💰",
-                gradient: "from-primary/90 to-primary",
-              },
-              {
-                label: "Today's Profit",
-                amount: formatCurrencyWithCode(profile?.today_profit || 0),
-                description: "Earnings today",
-                icon: "📈",
-                gradient: "from-primary/80 to-primary/90",
-              },
-              {
-                label: "Frozen",
-                amount: formatCurrencyWithCode(profile?.wallet?.on_hold || 0),
-                description: "Frozen funds",
-                icon: "❄️",
-                gradient: "from-primary/70 to-primary/80",
-              },
-              {
-                label: "Salary",
-                amount: formatCurrencyWithCode(profile?.wallet?.salary || 0),
-                description: "Daily salary",
-                icon: "💼",
-                gradient: "from-primary/60 to-primary/70",
-              },
-            ].map((item, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                whileHover={{ scale: 1.05, y: -5 }}
-                className={`bg-white border border-[#e5ded3] rounded-xl p-4 text-[#333333] relative overflow-hidden h-full`}
-              >
-                <div className="absolute top-0 right-0 w-16 h-16 bg-[#EC6345]/10 rounded-full -translate-y-8 translate-x-8"></div>
-                <div className="relative z-10 h-full flex flex-col justify-between">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xl">{item.icon}</span>
-                    <div className="w-2 h-2 bg-accent/70 rounded-full"></div>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-[11px] md:text-sm mb-1 text-[#4a4642]">
-                      {item.label}
-                    </h3>
-                    <p className="text-[#6c6661] text-[11px] mb-2">
-                      {item.description}
-                    </p>
-                    <p className="font-semibold text-sm md:text-lg text-[#EC6345]">
-                      {item.amount}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-            </motion.div>
-          </motion.div>
-
-          {/* Start Optimization Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="w-full bg-white border border-[#e5ded3] rounded-2xl shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] p-4 md:p-8"
-          >
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-lg md:text-2xl lg:text-3xl font-semibold text-[#333333] mb-2">
-                Start Optimization
-              </h2>
-              <p className="text-[#6c6661] text-sm md:text-base">
-                Complete tasks to earn rewards
-              </p>
-            </div>
-            <div className="bg-[#EC6345]/10 border border-[#EC6345]/20 rounded-xl px-2 py-1 md:px-4 md:py-2">
-              <p className="text-[#EC6345] text-sm md:text-lg lg:text-xl font-semibold">
-                {profile?.current_number_count || 0} /{" "}
-                {profile?.total_number_can_play || 0}
-              </p>
-            </div>
-          </div>
-
-          <div className="relative flex justify-center items-center w-full min-h-[340px] md:min-h-[400px]">
-            {isLoading || (isInitialLoad && !imagesReady) ? (
-              <div className="grid grid-cols-3 grid-rows-3 gap-3 md:gap-6 w-full max-w-4xl">
-                {[...Array(9)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-full w-full aspect-square bg-[#e5ded3] rounded-xl animate-pulse"
-                    style={{ animationDelay: `${i * 0.1}s` }}
-                  >
-                    <div className="h-full w-full bg-gradient-to-r from-[#e5ded3] via-[#f4efe7] to-[#e5ded3] rounded-xl" />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-3 grid-rows-3 gap-3 md:gap-6 w-full max-w-4xl">
-                {/* Top row */}
-                {groupedProducts[currentSlide]
-                  ?.slice(0, 3)
-                  .map((product, idx) => (
-                    <div
-                      key={product.id || `top-${idx}`}
-                      className="flex justify-center items-center border border-[#EC6345]/25 rounded-xl bg-white p-1 w-full aspect-square transform hover:scale-105 transition-transform"
-                    >
-                      <img
-                        src={product.image || "https://via.placeholder.com/150"}
-                        alt={product.name || `Product ${idx + 1}`}
-                        className={`w-full h-full object-cover rounded-lg transition-opacity duration-500 ${
-                          loadedImages[product.image]
-                            ? "opacity-100"
-                            : "opacity-0"
-                        }`}
-                      />
-                    </div>
-                  ))}
-
-                {/* Middle row left */}
-                <div className="flex justify-center items-center border border-[#EC6345]/25 rounded-xl bg-white p-1 w-full aspect-square transform hover:scale-105 transition-transform">
-                  {groupedProducts[currentSlide]?.[3] && (
-                    <img
-                      src={
-                        groupedProducts[currentSlide][3].image ||
-                        "https://via.placeholder.com/150"
-                      }
-                      alt={groupedProducts[currentSlide][3].name || "Product 4"}
-                      className={`w-full h-full object-cover rounded-lg transition-opacity duration-500 ${
-                        loadedImages[groupedProducts[currentSlide][3].image]
-                          ? "opacity-100"
-                          : "opacity-0"
-                      }`}
-                    />
-                  )}
-                </div>
-
-                {/* Center button */}
-                <div className="flex justify-center items-center w-full h-full">
-                  <motion.button
-                    onClick={handleButtonClick}
-                    whileHover={{ scale: 1.05 }}
-                    className="bg-[#EC6345] text-white font-semibold rounded-full flex items-center justify-center shadow-lg shadow-[#EC6345]/30 text-sm sm:text-base md:text-lg lg:text-xl start-button"
-                  >
-                    Start
-                  </motion.button>
-                </div>
-
-                {/* Middle row right */}
-                <div className="flex justify-center items-center border border-[#EC6345]/25 rounded-xl bg-white p-1 w-full aspect-square transform hover:scale-105 transition-transform">
-                  {groupedProducts[currentSlide]?.[4] && (
-                    <img
-                      src={
-                        groupedProducts[currentSlide][4].image ||
-                        "https://via.placeholder.com/150"
-                      }
-                      alt={groupedProducts[currentSlide][4].name || "Product 5"}
-                      className={`w-full h-full object-cover rounded-lg transition-opacity duration-500 ${
-                        loadedImages[groupedProducts[currentSlide][4].image]
-                          ? "opacity-100"
-                          : "opacity-0"
-                      }`}
-                    />
-                  )}
-                </div>
-
-                {/* Bottom row */}
-                {Array.from({ length: 3 }).map((_, i) => {
-                  const product =
-                    groupedProducts[currentSlide]?.[
-                      (5 + i) % groupedProducts[currentSlide]?.length
-                    ] || {};
-                  return (
-                    <div
-                      key={`bottom-${i}`}
-                      className="flex justify-center items-center border border-[#EC6345]/25 rounded-xl bg-white p-1 aspect-square transform hover:scale-105 transition-transform"
-                    >
-                      <img
-                        src={product.image || "https://via.placeholder.com/150"}
-                        alt={product.name || `Product ${i + 6}`}
-                        className={`w-full h-full object-cover rounded-lg transition-opacity duration-500 ${
-                          loadedImages[product.image]
-                            ? "opacity-100"
-                            : "opacity-0"
-                        }`}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          </motion.div>
-
-          {/* Important Hint Section */}
-          <div className="mb-52 w-full rounded-xl border border-[#e5ded3] bg-white p-5 shadow-lg md:mb-2 md:p-8">
-            <h2 className="text-lg font-semibold text-[#EC6345]">Important Hint</h2>
-            <ul className="list-disc ml-4 mt-2 text-[#605E5E] text-sm md:text-base">
-            <li>
-              Working hours:{" "}
-              {profile?.settings?.service_availability_start_time || "00:00"} -{" "}
-              {profile?.settings?.service_availability_end_time || "23:00:00"}
-            </li>
-            <li>
-              For inquiries about applicants, please consult Customer Support
-              Services
-            </li>
-            </ul>
-          </div>
-
-        {/* Current Game Loading */}
-        {isLoading_current && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[999999]">
-            <ResponsiveSpinner size="lg" />
-          </div>
-        )}
-
-        {/* Modal - Mobile Version (Dialog from bottom) */}
-        {isModalOpen && currentGame && window.innerWidth < 768 && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-[999999]">
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 300,
-                scale: 1,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                scale: 1,
-              }}
-              exit={{
-                opacity: 0,
-                y: 300,
-                scale: 1,
-              }}
-              className="relative w-full max-w-2xl overflow-y-auto rounded-t-3xl border border-[#e5ded3] bg-white p-4 text-[#333333] shadow-[0_30px_70px_-35px_rgba(39,39,39,0.55)] sm:p-8"
-              style={{
-                maxHeight: "90vh",
-              }}
-            >
-              {/* Loading Overlay - Absolutely positioned over modal */}
-              {isLoading && (
-                <div className="absolute inset-0 z-[1000000] flex items-center justify-center rounded-t-3xl bg-black/75">
-                  <ResponsiveSpinner size="lg" />
-                </div>
-              )}
-
-              {/* Close Button */}
-              <button
-                onClick={toggleModal}
-                className="absolute right-4 top-4 z-[1000001] rounded-full border border-[#EC6345]/35 bg-[#EC6345]/10 p-2 text-lg font-bold text-[#EC6345] transition hover:bg-[#EC6345]/20"
-              >
-                ✕
-              </button>
-
-              {/* Modal Title */}
-              <h2 className="mb-4 text-center text-2xl font-bold sm:mb-6">
-                Task Submission
-              </h2>
-
-              {/* Product Images and Details */}
-              <div className="mb-4 flex items-start rounded-2xl border border-[#e5ded3] bg-[#fbfaf6] p-3 sm:space-x-6 sm:p-4">
-                {/* Product Images */}
-                <div className="flex space-x-2 sm:space-x-4 overflow-x-auto w-full sm:w-auto">
-                  {currentGame?.products?.slice(0, 3).map((product) => (
-                    <div
-                      key={product?.id}
-                      className="flex-shrink-0 w-[90px] md:w-[120px] h-auto"
-                    >
-                      <img
-                        src={product?.image}
-                        alt={product?.name}
-                        className="w-full h-auto object-cover rounded-lg"
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Product Details */}
-                <div className="text-right flex-grow md:w-1/4 w-auto">
-                  {currentGame?.products?.slice(0, 3).map((product) => (
-                    <p
-                      key={product?.id}
-                      className="text-sm font-semibold text-[#4a4642] sm:text-lg"
-                    >
-                      {product?.name}
-                    </p>
-                  ))}
-                  <p className="mt-1 text-sm font-bold text-[#EC6345] sm:mt-2 sm:text-lg">
-                    USD {currentGame?.amount}
-                  </p>
-
-                  <>
-                    {/* Comments Section */}
-                    <textarea
-                      placeholder="Leave your comments here..."
-                      className="mt-3 w-full rounded-lg border border-[#e5ded3] bg-white p-2 text-sm text-[#333333] placeholder:text-[#8b8580] focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                      value={comments}
-                      onChange={(e) => setComments(e.target.value)}
-                    ></textarea>
-                  </>
-                </div>
-              </div>
-
-              {/* Amount and Commission Section */}
-              <div className="mb-4 flex justify-between border-y border-[#e5ded3] py-2 text-center sm:py-4">
-                <div>
-                  <p className="text-base font-semibold text-[#7b756f] sm:text-xl">
-                    Total amount
-                  </p>
-                  <p className="text-base font-bold text-[#EC6345] sm:text-xl">
-                    USD {currentGame?.amount}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-base font-semibold text-[#7b756f] sm:text-xl">
-                    Commission
-                  </p>
-                  <p className="text-base font-bold text-[#EC6345] sm:text-xl">
-                    USD {currentGame?.commission}
-                  </p>
-                  <p className="mt-1 text-sm text-[#7b756f] sm:text-base">
-                    Profit: {currentGame?.commission_percentage || 0}%
-                  </p>
-                </div>
-              </div>
-
-              {/* Creation Time and Rating Number */}
-              <div className="mb-2 flex justify-between text-sm text-[#6c6661] sm:mb-4 sm:text-lg">
-                <p>Creation time</p>
-                <p>{new Date(currentGame?.created_at).toLocaleString()}</p>
-              </div>
-              <div className="mb-4 flex justify-between text-sm text-[#6c6661] sm:mb-6 sm:text-lg">
-                <p>Rating No</p>
-                <p className="font-semibold text-[#EC6345]">{currentGame?.rating_no}</p>
-              </div>
-
-              {/* Submit Button */}
-              <button
-                onClick={async () => {
-                  try {
-                    const response = await dispatch(
-                      submitCurrentGame(selectedStar, comments),
-                    );
-                    console.log("response", response.message);
-                    if (response?.success) {
-                      toast.success("Submission successful!");
-                      setComments("");
-                      toggleModal();
-                    } else {
-                      ErrorHandler(response.message);
-                      toggleModal();
-                    }
-                  } catch (error) {
-                    ErrorHandler(error);
-                    toggleModal();
-                  }
-                }}
-                className="flex w-full items-center justify-center rounded-full border border-[#EC6345]/30 bg-[#EC6345] py-2 font-semibold text-white transition hover:bg-[#BA5225] sm:py-3"
-              >
-                {currentGame?.pending ? "Confirm Submission" : "Submit"}
-              </button>
-            </motion.div>
-          </div>
-        )}
-
-        {/* Modal - Desktop/Tablet Version (Centered) */}
-        {isModalOpen && currentGame && window.innerWidth >= 768 && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[999999]">
-            <motion.div
-              initial={{
-                opacity: 0,
-                y: 50,
-                scale: 0.95,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                scale: 1,
-              }}
-              exit={{
-                opacity: 0,
-                y: 50,
-                scale: 0.95,
-              }}
-              className="relative w-full max-w-2xl overflow-y-auto rounded-3xl border border-[#e5ded3] bg-white p-4 text-[#333333] shadow-[0_30px_70px_-35px_rgba(39,39,39,0.55)] sm:p-8"
-              style={{
-                maxHeight: "90vh",
-              }}
-            >
-              {/* Loading Overlay - Absolutely positioned over modal */}
-              {isLoading && (
-                <div className="absolute inset-0 z-[1000000] flex items-center justify-center rounded-3xl bg-black/75">
-                  <ResponsiveSpinner size="lg" />
-                </div>
-              )}
-
-              {/* Close Button */}
-              <button
-                onClick={toggleModal}
-                className="absolute right-4 top-4 z-[1000001] rounded-full border border-[#EC6345]/35 bg-[#EC6345]/10 p-2 text-lg font-bold text-[#EC6345] transition hover:bg-[#EC6345]/20"
-              >
-                ✕
-              </button>
-
-              {/* Modal Title */}
-              <h2 className="mb-4 text-center text-2xl font-bold sm:mb-6">
-                Task Submission
-              </h2>
-
-              {/* Product Images and Details */}
-              <div className="mb-4 flex items-start rounded-2xl border border-[#e5ded3] bg-[#fbfaf6] p-3 sm:space-x-6 sm:p-4">
-                {/* Product Images */}
-                <div className="flex space-x-2 sm:space-x-4 overflow-x-auto w-full sm:w-auto">
-                  {currentGame?.products?.slice(0, 3).map((product) => (
-                    <div
-                      key={product?.id}
-                      className="flex-shrink-0 w-[90px] md:w-[120px] h-auto"
-                    >
-                      <img
-                        src={product?.image}
-                        alt={product?.name}
-                        className="w-full h-auto object-cover rounded-lg"
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Product Details */}
-                <div className="text-right flex-grow md:w-1/4 w-auto">
-                  {currentGame?.products?.slice(0, 3).map((product) => (
-                    <p
-                      key={product?.id}
-                      className="text-sm font-semibold text-[#4a4642] sm:text-lg"
-                    >
-                      {product?.name}
-                    </p>
-                  ))}
-                  <p className="mt-1 text-sm font-bold text-[#EC6345] sm:mt-2 sm:text-lg">
-                    USD {currentGame?.amount}
-                  </p>
-
-                  <>
-                    {/* Comments Section */}
-                    <textarea
-                      placeholder="Leave your comments here..."
-                      className="mt-3 w-full rounded-lg border border-[#e5ded3] bg-white p-2 text-sm text-[#333333] placeholder:text-[#8b8580] focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                      value={comments}
-                      onChange={(e) => setComments(e.target.value)}
-                    ></textarea>
-                  </>
-                </div>
-              </div>
-
-              {/* Amount and Commission Section */}
-              <div className="mb-4 flex justify-between border-y border-[#e5ded3] py-2 text-center sm:py-4">
-                <div>
-                  <p className="text-base font-semibold text-[#7b756f] sm:text-xl">
-                    Total amount
-                  </p>
-                  <p className="text-base font-bold text-[#EC6345] sm:text-xl">
-                    USD {currentGame?.amount}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-base font-semibold text-[#7b756f] sm:text-xl">
-                    Commission
-                  </p>
-                  <p className="text-base font-bold text-[#EC6345] sm:text-xl">
-                    USD {currentGame?.commission}
-                  </p>
-                  <p className="mt-1 text-sm text-[#7b756f] sm:text-base">
-                    Profit: {currentGame?.commission_percentage || 0}%
-                  </p>
-                </div>
-              </div>
-
-              {/* Creation Time and Rating Number */}
-              <div className="mb-2 flex justify-between text-sm text-[#6c6661] sm:mb-4 sm:text-lg">
-                <p>Creation time</p>
-                <p>{new Date(currentGame?.created_at).toLocaleString()}</p>
-              </div>
-              <div className="mb-4 flex justify-between text-sm text-[#6c6661] sm:mb-6 sm:text-lg">
-                <p>Rating No</p>
-                <p className="font-semibold text-[#EC6345]">{currentGame?.rating_no}</p>
-              </div>
-
-              {/* Submit Button */}
-              <button
-                onClick={async () => {
-                  try {
-                    const response = await dispatch(
-                      submitCurrentGame(selectedStar, comments),
-                    );
-                    console.log("response", response.message);
-                    if (response?.success) {
-                      toast.success("Submission successful!");
-                      setComments("");
-                      toggleModal();
-                    } else {
-                      ErrorHandler(response.message);
-                      toggleModal();
-                    }
-                  } catch (error) {
-                    ErrorHandler(error);
-                    toggleModal();
-                  }
-                }}
-                className="flex w-full items-center justify-center rounded-full border border-[#EC6345]/30 bg-[#EC6345] py-2 font-semibold text-white transition hover:bg-[#BA5225] sm:py-3"
-              >
-                {currentGame?.pending ? "Confirm Submission" : "Submit"}
-              </button>
-            </motion.div>
-          </div>
-        )}
-          <BottomNavMobile className="md:hidden" />
-
-          {/* Custom CSS for Start button */}
-          <style>{`
-          .swal-accent-theme {
-            border: 1px solid rgba(236, 99, 69, 0.35) !important;
-            box-shadow: 0 28px 70px -32px rgba(236, 99, 69, 0.45) !important;
-          }
-
-          .start-button {
-            width: 80px;
-            height: 80px;
-            min-width: 80px;
-            min-height: 80px;
-            border: 1px solid rgba(44, 205, 121, 0.35);
-            background: radial-gradient(circle at 30% 20%, #ffb29f 0%, #EC6345 55%, #BA5225 100%);
-            box-shadow: 0 18px 45px -20px rgba(44, 205, 121, 0.8);
-          }
-
-          @media (min-width: 640px) {
-            .start-button {
-              width: 100px;
-              height: 100px;
-              min-width: 100px;
-              min-height: 100px;
-            }
-          }
-
-          @media (min-width: 768px) {
-            .start-button {
-              width: 120px;
-              height: 120px;
-              min-width: 120px;
-              min-height: 120px;
-            }
-          }
-
-          @media (min-width: 1024px) {
-            .start-button {
-              width: 150px;
-              height: 150px;
-              min-width: 150px;
-              min-height: 150px;
-            }
-          }
-        `}</style>
+            <MusicVisualizer />
+            <BottomNavMobile />
         </div>
-      </div>
     );
 };
 
 export default Starting;
-
-

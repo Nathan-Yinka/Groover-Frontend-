@@ -16,17 +16,18 @@ import {
   withdraw,
 } from "../../../constants/app.routes";
 import { motion } from "framer-motion";
-import { slideIn, zoomIn } from "../../../motion";
 import { useDispatch, useSelector } from "react-redux";
 import authService from "../../../app/service/auth.service";
 import { logout } from "../../../app/slice/auth.slice";
 import { IoMdNotificationsOutline } from "react-icons/io";
+import { IoMusicalNotesOutline } from "react-icons/io5";
 import logo from "../../../assets/logo.svg";
+import MusicVisualizer from "./MusicVisualizer";
 
 const navItemClass = ({ isActive }) =>
   isActive
-    ? "text-[#EC6345] font-semibold tracking-wide flex items-center gap-x-3 w-full px-4 py-3 rounded-lg bg-white border border-[#EC6345]/25 shadow-[0_14px_30px_-24px_rgba(39,39,39,0.65)]"
-    : "text-[#5f5b57] font-medium tracking-wide flex items-center gap-x-3 w-full px-4 py-3 rounded-lg hover:bg-white hover:text-[#EC6345] transition";
+    ? "text-[#EC6345] font-bold tracking-tight uppercase text-[12px] flex items-center gap-x-4 w-full px-5 py-3.5 rounded-md bg-white border border-[#EC6345]/30 shadow-sm transition-all"
+    : "text-[#525252] font-semibold tracking-tight uppercase text-[12px] flex items-center gap-x-4 w-full px-5 py-3.5 rounded-md hover:bg-white hover:text-[#EC6345] transition-all group";
 
 function SideBarWeb() {
   const dispatch = useDispatch();
@@ -44,94 +45,67 @@ function SideBarWeb() {
   };
 
   return (
-    <aside className="hidden h-screen w-[284px] flex-col border-r border-[#e5ded3] bg-[#F7F6F0] px-4 py-5 text-[#333333] md:flex">
+    <aside className="hidden h-screen w-[280px] flex-col border-r border-[#e5ded3] bg-[#F7F6F0] px-6 py-8 text-[#333333] md:flex font-sans">
+      {/* BRAND ALIGNED LOGO */}
       <motion.div
-        initial={zoomIn(1, "min").initial}
-        whileInView={zoomIn(1, "min").animate}
-        className="mb-6 rounded-xl border border-[#e5ded3] bg-white px-4 py-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="mb-10 p-6 rounded-md bg-white border border-[#e5ded3] shadow-sm relative overflow-hidden group cursor-pointer"
+        onClick={() => navigate(home)}
       >
-        <button type="button" onClick={() => navigate(home)} className="block">
-          <img src={logo} alt="Groover" className="h-auto w-[148px]" />
-        </button>
-        <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#8b8580]">
-          Curator dashboard
-        </p>
+        <div className="relative z-10 flex items-center justify-between">
+           <img src={logo} alt="Groover" className="h-6 w-auto" />
+           <MusicVisualizer />
+        </div>
       </motion.div>
 
-      <div className="rounded-xl border border-[#e5ded3] bg-[#fbfaf6] p-2 text-[15px] shadow-[0_20px_45px_-40px_rgba(39,39,39,0.55)]">
-        <motion.div initial={slideIn("left", 0).initial} whileInView={slideIn("left", 2).animate}>
-          <NavLink to={home} end className={navItemClass}>
-            <MdOutlineDashboard className="text-xl" />
-            <p>Home</p>
-          </NavLink>
-        </motion.div>
-
-        <motion.div initial={slideIn("left", 0).initial} whileInView={slideIn("left", 2).animate}>
-          <NavLink to={starting} className={navItemClass}>
-            <RiRestartLine className="text-xl" />
-            <p>Starting</p>
-          </NavLink>
-        </motion.div>
-
-        <motion.div initial={slideIn("left", 0).initial} whileInView={slideIn("left", 2).animate}>
-          <NavLink to={records} className={navItemClass}>
-            <BiBookOpen className="text-xl" />
-            <p>Records</p>
-          </NavLink>
-        </motion.div>
-
-        <motion.div initial={slideIn("left", 0).initial} whileInView={slideIn("left", 2).animate}>
-          <NavLink to={profile} className={navItemClass}>
-            <GiEgyptianProfile className="text-xl" />
-            <p>Profile</p>
-          </NavLink>
-        </motion.div>
-
-        <motion.div initial={slideIn("left", 0).initial} whileInView={slideIn("left", 2).animate}>
-          <NavLink to={notificationsRoute} className={navItemClass}>
-            <div className="relative flex items-center">
-              <IoMdNotificationsOutline className="text-xl" />
-              {unreadNotifications > 0 && (
-                <span className="absolute -right-2 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[#EC6345] px-1 text-[10px] font-semibold text-white">
-                  {unreadNotifications}
-                </span>
-              )}
-            </div>
-            <p>Notifications</p>
-          </NavLink>
-        </motion.div>
-
-        <motion.div initial={slideIn("left", 0).initial} whileInView={slideIn("left", 2).animate}>
-          <NavLink to={withdraw} className={navItemClass}>
-            <BiMoneyWithdraw className="text-xl" />
-            <p>Withdraw</p>
-          </NavLink>
-        </motion.div>
-
-        <motion.div initial={slideIn("left", 0).initial} whileInView={slideIn("left", 2).animate}>
-          <NavLink to={deposit} className={navItemClass}>
-            <RiLuggageDepositLine className="text-xl" />
-            <p>Deposit</p>
-          </NavLink>
-        </motion.div>
-
-        <motion.div initial={slideIn("left", 0).initial} whileInView={slideIn("left", 2).animate}>
-          <NavLink to={events} className={navItemClass}>
-            <BiCalendarEvent className="text-xl" />
-            <p>Events</p>
-          </NavLink>
-        </motion.div>
+      <div className="flex-1 space-y-1 overflow-y-auto pr-2 custom-scrollbar">
+        {[
+          { to: home, label: "Dashboard", icon: MdOutlineDashboard, end: true },
+          { to: starting, label: "Starting", icon: RiRestartLine },
+          { to: records, label: "Records", icon: BiBookOpen },
+          { to: profile, label: "Profile", icon: GiEgyptianProfile },
+          { 
+            to: notificationsRoute, 
+            label: "Notifications", 
+            icon: IoMdNotificationsOutline,
+            badge: unreadNotifications 
+          },
+          { to: withdraw, label: "Withdraw", icon: BiMoneyWithdraw },
+          { to: deposit, label: "Deposit", icon: RiLuggageDepositLine },
+          { to: events, label: "Events", icon: BiCalendarEvent },
+        ].map((item, index) => (
+          <motion.div 
+            key={item.label}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.05 }}
+          >
+            <NavLink to={item.to} end={item.end} className={navItemClass}>
+              <div className="relative">
+                <item.icon className="text-xl" />
+                {item.badge > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#EC6345] border-2 border-white flex items-center justify-center text-[8px] font-bold text-white">
+                    {item.badge}
+                  </span>
+                )}
+              </div>
+              <p className="flex-1">{item.label}</p>
+            </NavLink>
+          </motion.div>
+        ))}
       </div>
 
-      <motion.button
-        initial={slideIn("up", null).initial}
-        whileInView={slideIn("up", 2).animate}
-        className="mt-auto flex items-center gap-x-3 rounded-lg border border-[#f2c2b8] bg-white px-4 py-3 font-semibold text-[#BA5225] transition hover:border-[#EC6345]/45 hover:bg-[#fff5f2]"
-        onClick={handleLogout}
-      >
-        <CiLogout className="text-xl" />
-        <p>Logout</p>
-      </motion.button>
+      <div className="mt-8 pt-8 border-t border-[#e5ded3]">
+         <motion.button
+            whileHover={{ y: -2 }}
+            className="flex w-full items-center gap-x-4 rounded-md border border-[#f2c2b8] bg-white px-6 py-4 font-bold uppercase text-[11px] tracking-widest text-[#BA5225] transition-all hover:bg-[#fff5f2] shadow-sm"
+            onClick={handleLogout}
+         >
+            <CiLogout className="text-xl rotate-180" />
+            <p>Logout</p>
+         </motion.button>
+      </div>
     </aside>
   );
 }

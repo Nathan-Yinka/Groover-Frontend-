@@ -37,7 +37,7 @@ const Events = () => {
 
   return (
     <div className="min-h-screen bg-[#F7F6F0] text-[#333333]">
-      <div className="w-full space-y-5 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
+      <div className="mx-auto max-w-[1600px] space-y-5 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
         <div className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6">
           <BackButton className="mb-5" />
           <h1 className="text-center text-2xl font-bold tracking-tight md:text-4xl">
@@ -48,11 +48,7 @@ const Events = () => {
           </p>
         </div>
 
-        {isLoading && (
-          <div className="flex items-center justify-center rounded-[18px] border border-[#e5ded3] bg-white py-16">
-            <Loader />
-          </div>
-        )}
+        {isLoading && <Loader fullScreen={true} size="large" />}
 
         {!isLoading && error && (
           <div className="rounded-2xl border border-red-500/30 bg-red-900/10 py-10 text-center">

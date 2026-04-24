@@ -37,6 +37,7 @@ const Records = () => {
   const [showPagination, setShowPagination] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
+
   const recordsPerPage = 20;
 
   // Filter Records Based on Active Tab
@@ -109,9 +110,11 @@ const Records = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  if (isLoading) return <Loader fullScreen={true} size="large" />;
+
   return (
     <div className="min-h-screen bg-[#F7F6F0] text-[#333333]">
-      <div className="w-full space-y-5 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
+      <div className="mx-auto max-w-[1600px] space-y-5 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

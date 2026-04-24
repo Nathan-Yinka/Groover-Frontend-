@@ -88,7 +88,7 @@ const Profile = () => {
   };
 
   if (isLoading) {
-    return <Loader />;
+    return <Loader fullScreen={true} size="large" />;
   }
 
   const walletStats = [
@@ -140,100 +140,91 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-[#F7F6F0] text-[#333333]">
-      <div className="w-full space-y-5 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
+      <div className="mx-auto max-w-[1600px] space-y-5 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
         <motion.div
-          initial={slideIn("down", null).initial}
-          whileInView={slideIn("down", 1 * 2).animate}
-          className="relative overflow-hidden rounded-[22px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] md:p-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="v2-card p-6 md:p-10 relative overflow-hidden"
         >
-          <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-[#EC6345]/10 blur-3xl" />
-          <div className="relative flex items-start justify-between gap-4">
-            <div className="flex items-center">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#EC6345]/5 rounded-full -translate-y-32 translate-x-32 blur-3xl pointer-events-none" />
+          
+          <div className="relative flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
+            <div className="flex flex-col md:flex-row items-center gap-6">
               {profile?.profile_picture ? (
                 <img
                   src={profile.profile_picture}
                   alt="Profile"
-                  className="mr-3 h-16 w-16 rounded-full border-2 border-[#EC6345]/30 object-cover shadow-md md:mr-5 md:h-20 md:w-20 lg:h-24 lg:w-24"
+                  className="h-24 w-24 md:h-28 md:w-28 rounded-3xl object-cover ring-4 ring-[#EC6345]/10 shadow-xl"
                 />
               ) : (
-                <div className="mr-3 flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#EC6345]/30 bg-[#fff5f2] md:mr-5 md:h-20 md:w-20 lg:h-24 lg:w-24">
-                  <BiUserCircle className="text-2xl text-[#EC6345] md:text-3xl lg:text-4xl" />
+                <div className="h-24 w-24 md:h-28 md:w-28 flex items-center justify-center rounded-3xl bg-[#fff5f2] ring-4 ring-[#EC6345]/10 shadow-xl">
+                  <BiUserCircle className="text-5xl text-[#EC6345]" />
                 </div>
               )}
-              <div>
-                <p className="text-xs font-medium uppercase tracking-[0.14em] text-[#EC6345]/80">
-                  Profile
-                </p>
-                <p className="text-lg font-bold tracking-tight text-[#333333] md:text-2xl">
+              
+              <div className="text-center md:text-left">
+                <span className="inline-block px-3 py-1 rounded-full bg-[#EC6345]/10 text-[#EC6345] text-[10px] font-black uppercase tracking-wider mb-2">
+                  Music Curator
+                </span>
+                <p className="text-2xl md:text-3xl font-black text-[#2d2d2d] font-heading tracking-tight">
                   {displayName}
                 </p>
-                <p className="text-xs text-[#6c6661] md:text-sm">
-                  @{profile?.username || "unknown"}
+                <p className="text-sm font-medium text-slate-500 mt-1">
+                  @{profile?.username || "username"}
                 </p>
-                <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-[#EC6345]/25 bg-[#EC6345]/10 px-3 py-1">
-                  <span className="text-[11px] text-[#5f5b57] md:text-xs">
-                    Ref
-                  </span>
-                  <span className="text-xs font-semibold text-[#EC6345] md:text-sm">
-                    {profile?.referral_code || "N/A"}
-                  </span>
-                  <BiCopy
-                    onClick={copyReferralCode}
-                    className="cursor-pointer text-[#5f5b57] transition hover:scale-110 hover:text-[#EC6345]"
-                  />
+                
+                <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-3 text-xs">
+                  <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+                    <span className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Ref Code</span>
+                    <span className="font-bold text-slate-700">{profile?.referral_code || "N/A"}</span>
+                    <button onClick={copyReferralCode} className="hover:text-[#EC6345] transition-colors">
+                      <BiCopy className="text-sm" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="text-right">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#e5ded3] bg-[#fbfaf6] px-3 py-2">
+            <div className="flex flex-col items-center md:items-end gap-3">
+              <div className="v2-glass px-4 py-2 rounded-2xl flex items-center gap-3">
                 {profile?.wallet?.package?.icon ? (
-                  <img
-                    src={profile.wallet.package.icon}
-                    alt={profile.wallet.package.name || "Package Icon"}
-                    className="h-6 w-6 object-contain"
-                  />
+                  <img src={profile.wallet.package.icon} alt="Rank" className="h-8 w-8 object-contain" />
                 ) : (
-                  <GiCrown className="text-xl text-[#EC6345]" />
+                  <GiCrown className="text-2xl text-[#EC6345]" />
                 )}
-                <p className="text-xs font-semibold text-[#4a4642] md:text-sm">
-                  {profile?.wallet?.package?.name || "N/A"}
-                </p>
+                <div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Current Rank</p>
+                  <p className="text-sm font-bold text-slate-800">{profile?.wallet?.package?.name || "Free Artist"}</p>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-5 rounded-xl border border-[#e5ded3] bg-[#fbfaf6] p-3 md:mt-6 md:p-4">
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-medium text-[#5f5b57]">
-                Credit Score
-              </span>
-              <span className="text-sm font-bold text-[#EC6345]">
-                {profile?.wallet?.credit_score || 0}%
-              </span>
+          <div className="mt-10 p-5 rounded-2xl bg-slate-50 border border-slate-100">
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Trust Rating</span>
+              <span className="text-sm font-black text-[#EC6345] tracking-tight">{profile?.wallet?.credit_score || 0}%</span>
             </div>
-            <div className="h-2 w-full rounded-full bg-[#e5ded3] md:h-3">
+            <div className="h-2.5 w-full bg-slate-200 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${profile?.wallet?.credit_score || 0}%` }}
-                transition={{ duration: 1, ease: "easeOut" }}
-                className="h-full rounded-full bg-gradient-to-r from-[#EC6345]/75 to-[#EC6345] shadow-lg shadow-[#EC6345]/25"
+                transition={{ duration: 1.5, ease: "circOut" }}
+                className="h-full bg-[#EC6345] rounded-full shadow-lg shadow-[#EC6345]/30"
               />
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-2 md:mt-6 md:grid-cols-4 md:gap-3">
+          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
             {walletStats.map((item) => (
               <div
                 key={item.label}
-                className="rounded-xl border border-[#e5ded3] bg-[#fbfaf6] p-3 md:p-4"
+                className="p-4 rounded-2xl border border-slate-100 bg-white shadow-sm"
               >
-                <p className="text-[11px] text-[#6c6661] md:text-xs">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em] mb-1">
                   {item.label}
                 </p>
-                <p
-                  className={`mt-1 text-sm font-semibold md:text-base ${item.highlight ? "text-[#EC6345]" : "text-[#333333]"}`}
-                >
+                <p className={`text-lg font-black tracking-tight font-heading ${item.highlight ? "text-[#EC6345]" : "text-slate-800"}`}>
                   {item.value}
                 </p>
               </div>
@@ -241,47 +232,53 @@ const Profile = () => {
           </div>
         </motion.div>
 
+
         {optionGroups.map((group, groupIndex) => (
           <motion.div
             key={group.title}
-            initial={fadeIn("right", null).initial}
-            whileInView={fadeIn("right", (groupIndex + 1) * 2).animate}
-            className="overflow-hidden rounded-[18px] border border-[#e5ded3] bg-white shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)]"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 * groupIndex }}
+            className="v2-card overflow-hidden"
           >
-            <div className="border-b border-[#e5ded3] px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#7b756f]">
+            <div className="bg-slate-50 border-b border-slate-100 px-6 py-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">
                 {group.title}
               </p>
             </div>
-            {group.items.map((item, itemIndex) => (
-              <button
-                key={item.label}
-                type="button"
-                onClick={() => navigate(item.route)}
-                className={`flex w-full items-center justify-between p-4 text-left transition hover:bg-[#EC6345]/5 ${itemIndex !== group.items.length - 1 ? "border-b border-[#e5ded3]" : ""}`}
-              >
-                <div className="flex items-center space-x-3">
-                  <span className="grid h-9 w-9 place-items-center rounded-lg border border-[#EC6345]/20 bg-[#EC6345]/10">
-                    <item.icon className="text-[#EC6345]" />
-                  </span>
-                  <p className="text-sm font-semibold text-[#333333] md:text-base">
-                    {item.label}
-                  </p>
-                </div>
-                <BiChevronRight className="text-[#8b8580]" />
-              </button>
-            ))}
+            <div className="divide-y divide-slate-100">
+              {group.items.map((item) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() => navigate(item.route)}
+                  className="flex w-full items-center justify-between px-6 py-4 text-left transition-all hover:bg-slate-50 group active:scale-[0.99]"
+                >
+                  <div className="flex items-center space-x-4">
+                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-white border border-slate-200 text-slate-600 transition-all group-hover:border-[#EC6345]/30 group-hover:text-[#EC6345] group-hover:shadow-sm">
+                      <item.icon className="text-xl" />
+                    </span>
+                    <p className="text-sm font-bold text-slate-700 md:text-base">
+                      {item.label}
+                    </p>
+                  </div>
+                  <BiChevronRight className="text-slate-300 transition-transform group-hover:translate-x-1 group-hover:text-[#EC6345]" />
+                </button>
+              ))}
+            </div>
           </motion.div>
         ))}
 
         <motion.button
-          initial={fadeIn("right", null).initial}
-          whileInView={fadeIn("right", 9 * 2).animate}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           onClick={handleLogout}
-          className="mb-52 flex w-full items-center justify-center rounded-lg border border-[#f2c2b8] bg-white py-3 font-semibold text-[#BA5225] transition hover:bg-[#fff5f2] md:mb-2"
+          className="flex w-full items-center justify-center rounded-2xl border-2 border-red-100 bg-red-50/30 py-4 font-black text-red-500 uppercase tracking-widest text-xs transition-all hover:bg-red-50 hover:border-red-200 active:scale-95 space-x-2"
         >
-          <BiLogOutCircle className="mr-2" /> Logout
+          <BiLogOutCircle className="text-lg" /> 
+          <span>Log out of account</span>
         </motion.button>
+
       </div>
       <BottomNavMobile className="md:hidden" />
     </div>

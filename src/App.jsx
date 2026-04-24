@@ -2,7 +2,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import {
   homepage,
   home,
+  homeV2,
   withdraw,
+
   deposit,
   starting,
   profile,
@@ -28,6 +30,8 @@ import LoginLayout from "./pages/authentication/LoginLayout";
 import HomeLayout from "./pages/dashboard/HomeLayout";
 import Login from "./pages/authentication/Login";
 import Home from "./pages/dashboard/Home";
+import HomeV2 from "./pages/dashboard/HomeV2";
+
 import WithdrawLayout from "./pages/dashboard/WithdrawLayout";
 import Withdraw from "./pages/dashboard/Withdraw";
 import DepositLayout from "./pages/dashboard/DepositLayout";
@@ -48,13 +52,16 @@ import Certificate from "./pages/dashboard/Certificate";
 import SignUp from "./pages/authentication/SignUp";
 import ProtectedRoute from "./pages/ProtectedRoute"; // Import the ProtectedRoute
 import Loader from "./pages/Loader";
-import { Toaster } from "sonner";
 import TermsandCond from "./pages/dashboard/Termsandcond";
 import Landing from "./pages/landing-page/Landing";
+import GlobalTerminalHUD from "./components/GlobalTerminalHUD";
+import SocialProofHUD from "./components/SocialProofHUD";
 
 function App() {
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <GlobalTerminalHUD />
+      <SocialProofHUD />
       <Routes>
         {/* Loader Route */}
         <Route path={homepage} element={<Landing />} />
@@ -72,8 +79,10 @@ function App() {
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path={home} element={<HomeLayout />}>
-            <Route index element={<Home />} />
+            <Route index element={<HomeV2 />} />
+            <Route path={homeV2} element={<Home />} />
             <Route path={starting} element={<Starting />} />
+
             <Route path={profile} element={<Profile />} />
             <Route path={personal} element={<PersonalInfo />} />
             <Route path={level} element={<Level />} />
@@ -96,13 +105,6 @@ function App() {
           </Route>
         </Route>
       </Routes>
-      <Toaster
-        position={"top-right"}
-        richColors
-        duration={5000}
-        className="z-[9999999999999999999]"
-        closeButton
-      />
     </Router>
   );
 }

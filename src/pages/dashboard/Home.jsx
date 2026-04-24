@@ -55,26 +55,27 @@ const quickActions = [
 
 const tierThemes = [
   {
-    card: "from-[#272727] via-[#302b29] to-[#191919]",
-    border: "border-[#EC6345]/30",
-    icon: "text-[#ffb29f]",
+    card: "from-slate-900 via-slate-800 to-slate-900",
+    border: "border-primary/30",
+    icon: "text-[#FFB29F]",
   },
   {
-    card: "from-[#3a2b27] via-[#4b302a] to-[#191919]",
-    border: "border-[#EC6345]/25",
-    icon: "text-[#f0bc84]",
+    card: "from-[#2C1814] via-[#3D251E] to-[#2C1814]",
+    border: "border-primary/25",
+    icon: "text-[#F0BC84]",
   },
   {
-    card: "from-[#272727] via-[#383431] to-[#191919]",
-    border: "border-[#e5ded3]/30",
-    icon: "text-[#e5e7eb]",
+    card: "from-slate-800 via-slate-700 to-slate-800",
+    border: "border-white/10",
+    icon: "text-slate-100",
   },
   {
-    card: "from-[#4b302a] via-[#6d3a2e] to-[#191919]",
-    border: "border-[#EC6345]/35",
-    icon: "text-[#ffd1c6]",
+    card: "from-[#3D251E] via-[#523229] to-[#3D251E]",
+    border: "border-primary/40",
+    icon: "text-[#FFD1C6]",
   },
 ];
+
 
 const tierIcons = [IoStar, IoStar, IoStar, IoTrophy];
 
@@ -250,53 +251,56 @@ const Home = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#F7F6F0] text-[#333333]">
-      <div className="hidden h-[68px] border-b border-[#e5ded3] bg-[#F7F6F0] px-3 md:px-8 md:flex items-center gap-3 md:gap-6">
-        <div className="ml-auto flex items-center gap-3 md:gap-5">
+      <div className="hidden h-[80px] border-b border-[#e5ded3] bg-white px-8 md:flex items-center gap-6 sticky top-0 z-30 shadow-sm backdrop-blur-md bg-white/90">
+        <div className="ml-auto flex items-center gap-6">
           <button
             type="button"
             onClick={() => navigate("/home/notifications")}
-            className="relative rounded-full border border-[#e5ded3] bg-white p-2.5 text-[#333333] shadow-sm transition hover:border-[#EC6345]/45 hover:text-[#EC6345]"
+            className="relative rounded-full border border-[#e5ded3] bg-white p-3 text-[#333333] shadow-sm transition-all hover:border-[#EC6345]/50 hover:text-[#EC6345] hover:scale-105 active:scale-95"
           >
-            <IoMdNotificationsOutline className="text-xl" />
+            <IoMdNotificationsOutline className="text-2xl" />
             {unreadNotifications > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EC6345] px-1 text-[11px] font-semibold text-white">
+              <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EC6345] px-1 text-[10px] font-bold text-white ring-2 ring-white">
                 {unreadNotifications}
               </span>
             )}
           </button>
-          <div className="hidden md:block h-8 w-px bg-[#e5ded3]" />
+          <div className="h-10 w-px bg-[#e5ded3]" />
           <button
             type="button"
             onClick={() => navigate("/home/profile")}
-            className="flex items-center gap-2 rounded-full bg-transparent px-0.5 py-1"
+            className="flex items-center gap-3 rounded-full bg-white border border-[#e5ded3] pl-4 pr-1.5 py-1.5 shadow-sm transition-all hover:border-[#EC6345]/30 hover:shadow-md"
           >
             <div className="hidden text-right md:block">
-              <p className="text-sm font-medium leading-tight">{displayName}</p>
+              <p className="text-sm font-bold leading-tight text-[#2d2d2d]">{displayName}</p>
             </div>
             {profileImage ? (
               <img
                 src={profileImage}
                 alt="Profile"
-                className="h-10 w-10 rounded-full object-cover ring-1 ring-[#EC6345]/25"
+                className="h-10 w-10 rounded-full object-cover ring-2 ring-[#EC6345]/10"
               />
             ) : (
-              <BiUserCircle className="h-10 w-10 text-[#8b8580]" />
+              <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 ring-2 ring-[#EC6345]/10">
+                <BiUserCircle className="text-3xl text-slate-400" />
+              </div>
             )}
           </button>
         </div>
       </div>
 
+
       <div className="w-full space-y-5 px-3 py-4 md:space-y-6 md:px-8 md:py-6">
         <section
-          className="relative overflow-hidden rounded-[26px] border border-[#e5ded3] min-h-[320px] md:min-h-[360px]"
+          className="relative overflow-hidden rounded-[32px] border border-[#e5ded3] min-h-[340px] md:min-h-[400px] shadow-lg"
         >
           <AnimatePresence mode="wait">
             <motion.div
               key={`${heroSlides[currentHeroSlide]?.type}-${heroSlides[currentHeroSlide]?.src}`}
-              initial={{ opacity: 0.4, scale: 1.02 }}
+              initial={{ opacity: 0.4, scale: 1.05 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0.35, scale: 1.01 }}
-              transition={{ duration: 0.65, ease: "easeInOut" }}
+              exit={{ opacity: 0.35, scale: 1.02 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
               className="absolute inset-0"
             >
               {heroSlides[currentHeroSlide]?.type === "video" ? (
@@ -305,7 +309,7 @@ const Home = () => {
                   muted
                   loop
                   playsInline
-                  className="h-full w-full object-cover object-center scale-[1.06]"
+                  className="h-full w-full object-cover object-center scale-[1.08]"
                 >
                   <source src={heroSlides[currentHeroSlide]?.src} type="video/mp4" />
                 </video>
@@ -318,52 +322,52 @@ const Home = () => {
               )}
             </motion.div>
           </AnimatePresence>
-          <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/20 to-black/35" />
-          <div className="relative z-10 max-w-[700px] p-5 md:p-10">
-            <h1
-              className="min-h-[56px] text-xl font-bold leading-snug text-white md:min-h-[120px] md:text-5xl md:leading-tight"
-              style={{
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-              }}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+          <div className="relative z-10 max-w-[750px] p-8 md:p-14 h-full flex flex-col justify-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              {showIntroWelcome
-                ? `Welcome back, ${displayName}`
-                : (activeTypingText || "Start your submission and earn daily rewards.")}
-              {!showIntroWelcome && <span className="ml-0.5 inline-block animate-pulse">|</span>}
-            </h1>
-            <p className="mt-3 max-w-[560px] text-sm text-white/80 md:text-lg">
-              Ready to discover your next favorite artist and earn from each completed review.
-            </p>
-            <p className="mt-2 min-h-[52px] max-w-[560px] text-sm text-[#ffb29f] md:text-lg">
-              {showIntroWelcome ? "Your dashboard is ready." : "Track progress, submit faster, get paid daily."}
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate(starting)}
-              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#EC6345] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#BA5225] md:text-base"
-            >
-              <FiPlusSquare className="text-base" />
-              New Submission
-            </button>
+              <h1
+                className="min-h-[60px] text-2xl md:text-5xl lg:text-6xl font-black leading-tight text-white font-heading text-balance"
+              >
+                {showIntroWelcome
+                  ? `Welcome back, ${displayName}`
+                  : (activeTypingText || "Start your submission and earn daily rewards.")}
+                {!showIntroWelcome && <span className="ml-1 inline-block animate-pulse text-[#EC6345]">|</span>}
+              </h1>
+              <p className="mt-4 max-w-[560px] text-base md:text-xl text-white/90 font-medium leading-relaxed">
+                {showIntroWelcome 
+                  ? "Your dashboard is ready. Track your progress and earn daily."
+                  : "Ready to discover your next favorite artist and earn from each completed review."}
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate(starting)}
+                className="mt-8 v2-button-primary px-8 py-4 flex items-center gap-3 text-lg"
+              >
+                <FiPlusSquare className="text-xl" />
+                New Submission
+              </button>
+            </motion.div>
           </div>
         </section>
 
-        <section className="rounded-[18px] border border-[#e5ded3] bg-white px-3 py-5 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:px-8 md:py-7">
-          <div className="grid grid-cols-4 gap-3 md:flex md:items-center md:justify-center md:flex-wrap md:gap-10">
+
+        <section className="v2-card bg-white px-5 py-6 md:px-10 md:py-8">
+          <div className="grid grid-cols-4 gap-4 md:flex md:items-center md:justify-between md:flex-wrap">
             {quickActions.map((item) => (
               <button
                 key={item.label}
                 type="button"
                 onClick={() => navigate(item.route)}
-                className="group text-center transition"
+                className="group flex flex-col items-center gap-3 transition-all hover:scale-105"
               >
-                <span className="mx-auto mb-2 grid h-12 w-12 place-items-center rounded-full border border-[#e5ded3] bg-[#F7F6F0] transition group-hover:border-[#EC6345]/45 group-hover:bg-[#fff5f2] md:h-[74px] md:w-[74px]">
-                  <item.icon className="text-lg text-[#6c6661] group-hover:text-[#EC6345] md:text-3xl" />
+                <span className="grid h-12 w-12 place-items-center rounded-2xl border border-[#e5ded3] bg-[#F7F6F0] transition-all group-hover:border-[#EC6345]/50 group-hover:bg-[#fff5f2] group-hover:shadow-md md:h-[72px] md:w-[72px]">
+                  <item.icon className="text-xl text-[#5f5b57] group-hover:text-[#EC6345] md:text-3xl" />
                 </span>
-                <p className="text-[11px] font-medium text-[#5f5b57] md:text-xs">
+                <p className="text-[10px] md:text-[13px] font-bold text-[#333] transition-colors group-hover:text-[#EC6345]">
                   {item.label}
                 </p>
               </button>
@@ -371,14 +375,20 @@ const Home = () => {
           </div>
         </section>
 
-        <section className="space-y-5 pb-28 md:pb-8">
-          <div className="flex flex-col items-center justify-center gap-3 text-center">
-            <div className="max-w-2xl">
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight">VIP Tier Access</h2>
-              <p className="mt-1 text-xs text-[#605E5E] sm:text-sm lg:text-base">
-                Scale your outreach with premium musician tiers.
+
+        <section className="space-y-6 pb-28 md:pb-8">
+          <div className="flex flex-col items-center justify-center gap-2 text-center">
+            <div className="max-w-2xl px-4">
+              <span className="text-[10px] font-black text-[#EC6345] uppercase tracking-[0.25em] mb-2 block">Premium Tiers</span>
+              <h2 className="text-3xl md:text-5xl font-black text-slate-900 font-heading tracking-tight">
+                VIP Tier Access
+              </h2>
+              <p className="mt-3 text-slate-500 font-medium text-sm md:text-base text-balance">
+                Elevate your experience and unlock exclusive curators rights and higher commission rates.
               </p>
             </div>
+          </div>
+          <div className="flex justify-center">
             <button
               type="button"
               onClick={() => navigate("/home/level")}
@@ -402,42 +412,50 @@ const Home = () => {
 
                 return (
                   <motion.button
-                    whileHover={{ y: -3 }}
+                    whileHover={{ y: -6, scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     key={`${pack.name}-${index}`}
                     type="button"
                     onClick={() => navigate("/home/level")}
-                    className={`rounded-2xl md:rounded-[30px] border ${tierTheme.border} bg-gradient-to-br ${tierTheme.card} p-4 md:p-5 text-left min-h-[168px] md:min-h-[205px] shadow-[0_20px_50px_-35px_rgba(0,0,0,0.95)]`}
+                    className={`rounded-[32px] border ${tierTheme.border} bg-gradient-to-br ${tierTheme.card} p-5 md:p-7 text-left min-h-[180px] md:min-h-[240px] shadow-2xl relative overflow-hidden group`}
                   >
-                    <div className="mb-4 md:mb-6 flex items-center justify-between">
-                      <div className="rounded-full border border-white/25 bg-black/30 p-2">
-                        <TierIcon className={`${tierTheme.icon}`} />
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16 group-hover:bg-white/10 transition-colors" />
+                    
+                    <div className="mb-6 flex items-center justify-between relative z-10">
+                      <div className="rounded-2xl border border-white/15 bg-white/10 p-3 backdrop-blur-md">
+                        <TierIcon className={`text-2xl ${tierTheme.icon}`} />
                       </div>
-                      <span className="rounded-full bg-[#EC6345] px-2 py-1 text-[9px] sm:text-[10px] font-bold uppercase text-white">
-                        {index === 0 ? "Default" : `VIP ${index}`}
+                      <span className="rounded-full bg-primary/20 border border-primary/30 px-3 py-1 text-[10px] font-black uppercase text-primary tracking-wider backdrop-blur-md">
+                        {index === 0 ? "Basic" : `VIP ${index}`}
                       </span>
                     </div>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-semibold leading-tight">{pack.name}</p>
-                    <p className="mt-1 text-[11px] sm:text-xs lg:text-sm text-white/70">
-                      {formatCurrencyWithCode(pack.usd_value)}
-                    </p>
-                    {(hasCommission || hasDailyMissions) && (
-                      <div className="mt-4 md:mt-5 space-y-2 text-[11px] sm:text-xs lg:text-sm">
-                        {hasCommission && (
-                          <div className="flex items-center justify-between text-white/65">
-                            <span>Commission Rate</span>
-                            <span className="font-semibold text-[#ffb29f]">{commissionRate}</span>
-                          </div>
-                        )}
-                        {hasDailyMissions && (
-                          <div className="flex items-center justify-between text-white/65">
-                            <span>Daily Orders</span>
-                            <span className="font-semibold text-white">{dailyOrders}</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    
+                    <div className="relative z-10">
+                      <p className="text-xl md:text-2xl font-black leading-tight text-white font-heading">{pack.name}</p>
+                      <p className="mt-1 text-sm text-white/60 font-medium">
+                        {formatCurrencyWithCode(pack.usd_value)}
+                      </p>
+                      
+                      {(hasCommission || hasDailyMissions) && (
+                        <div className="mt-6 space-y-3 pt-6 border-t border-white/10">
+                          {hasCommission && (
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-white/50 font-medium uppercase tracking-wider">Commission</span>
+                              <span className="text-sm font-bold text-primary-light">{commissionRate}</span>
+                            </div>
+                          )}
+                          {hasDailyMissions && (
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-white/50 font-medium uppercase tracking-wider">Daily Rev</span>
+                              <span className="text-sm font-bold text-white">{dailyOrders}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </motion.button>
                 );
+
               })
             ) : (
               <p className="text-[#605E5E]">No packs available.</p>

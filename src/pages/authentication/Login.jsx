@@ -11,6 +11,7 @@ import AppInit from "../../app/state.helper";
 import Loader from "../dashboard/components/loader";
 import logo from "../../assets/LogoWithText.svg";
 import loginpageImage from "../../assets/left.png";
+import Load from "../dashboard/components/Load";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,7 +19,6 @@ const Login = () => {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -65,11 +65,7 @@ const Login = () => {
         const initSuccess = await AppInit({ dispatch, isAuthenticated: true });
 
         if (initSuccess) {
-          setShowPopup(true);
-          setTimeout(() => {
-            setShowPopup(false);
-            navigate("/home");
-          }, 2000);
+          navigate("/home");
         } else {
           toast.error(
             "Failed to initialize the application. Please try again.",
@@ -93,6 +89,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-[#F7F6F0] flex flex-col">
+      {loading && <Load fullScreen={true} />}
       {/* Header */}
       <header className="bg-[#2d2d2d] px-8 py-4">
         <div className="mx-auto max-w-[1150px]">
@@ -223,30 +220,7 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Success Popup */}
-      <AnimatePresence>
-        {showPopup && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-xl p-8 text-center max-w-sm mx-4"
-            >
-              <FaCheckCircle className="w-16 h-16 text-[#ff6b56] mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-[#2d2d2d] mb-2">
-                Login Successful!
-              </h2>
-              <p className="text-gray-600">You have successfully logged in.</p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
 
       {/* Categories Section */}
       <style>{`

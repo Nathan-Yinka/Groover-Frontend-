@@ -6,6 +6,8 @@ import authService from "../app/service/auth.service"; // Ensure authService is 
 import { home, login } from "../constants/app.routes";
 import { toast } from "sonner";
 
+import Load from "./dashboard/components/Load";
+
 const Loader = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -38,13 +40,7 @@ const Loader = () => {
     }, [dispatch, navigate]);
 
     return (
-        <div className="flex justify-center items-center h-screen bg-primary">
-            <div id="container" className="flex space-x-2">
-                <div id="ball-1" className="circle"></div>
-                <div id="ball-2" className="circle"></div>
-                <div id="ball-3" className="circle"></div>
-            </div>
-        </div>
+        <Load fullScreen={true} size="large" />
     );
 };
 

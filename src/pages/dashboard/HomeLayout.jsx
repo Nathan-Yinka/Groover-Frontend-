@@ -13,6 +13,8 @@ import { GiEgyptianProfile } from "react-icons/gi";
 import { BiUserCircle } from "react-icons/bi";
 import { AnimatePresence, motion } from "framer-motion";
 import { CiLogout } from "react-icons/ci";
+import { IoMusicalNotesOutline } from "react-icons/io5";
+import MusicVisualizer from "./components/MusicVisualizer";
 import authService from "../../app/service/auth.service";
 import { logout } from "../../app/slice/auth.slice";
 
@@ -169,26 +171,35 @@ const HomeLayout = () => {
                       navigate(home);
                       setIsMobileMenuOpen(false);
                     }}
+                    className="flex items-center gap-3"
                   >
-                    <img src={logo} alt="Groover" className="h-auto w-[124px]" />
+                    <div className="w-10 h-10 rounded-xl bg-[#EC6345] flex items-center justify-center text-white text-xl">
+                      <IoMusicalNotesOutline />
+                    </div>
+                    <img src={logo} alt="Groover" className="h-6 w-auto" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="rounded-lg border border-[#e5ded3] bg-white p-2 text-[#333333]"
+                    className="rounded-2xl border border-slate-100 bg-white p-2.5 text-slate-800 shadow-sm"
                   >
                     <HiOutlineX className="text-xl" />
                   </button>
                 </div>
 
-                <div className="flex h-[calc(100%-60px)] flex-col">
-                  <div className="space-y-2">
+                <div className="flex h-[calc(100%-80px)] flex-col">
+                  <div className="mb-8 p-4 rounded-2xl bg-white border border-slate-100 flex items-center justify-between shadow-sm">
+                     <span className="text-[10px] font-black uppercase tracking-widest text-[#EC6345] italic">Live Console</span>
+                     <MusicVisualizer />
+                  </div>
+
+                  <div className="space-y-1.5 flex-grow overflow-y-auto pr-1">
                     {[
-                      { to: "/home", label: "Home", icon: MdOutlineDashboard, end: true },
+                      { to: "/home", label: "Dashboard", icon: MdOutlineDashboard, end: true },
                       { to: "/home/starting", label: "Starting", icon: RiRestartLine },
                       { to: "/home/records", label: "Records", icon: BiBookOpen },
                       { to: "/home/profile", label: "Profile", icon: GiEgyptianProfile },
-                      { to: "/home/notifications", label: "Notifications", icon: IoMdNotificationsOutline },
+                      { to: "/home/notifications", label: "Notifications", icon: IoMdNotificationsOutline, badge: unreadNotifications },
                       { to: "/home/withdraw", label: "Withdraw", icon: BiMoneyWithdraw },
                       { to: "/home/deposit", label: "Deposit", icon: RiLuggageDepositLine },
                       { to: "/home/events", label: "Events", icon: BiCalendarEvent },
@@ -205,12 +216,19 @@ const HomeLayout = () => {
                           onClick={() => setIsMobileMenuOpen(false)}
                           className={({ isActive }) =>
                             isActive
-                              ? "flex items-center gap-3 rounded-lg border border-[#EC6345]/25 bg-white px-3 py-3 text-[#EC6345] font-semibold"
-                              : "flex items-center gap-3 rounded-lg px-3 py-3 text-[#5f5b57] hover:bg-white hover:text-[#EC6345]"
+                              ? "flex items-center gap-4 rounded-2xl border border-[#EC6345]/30 bg-white px-5 py-4 text-[#EC6345] font-black uppercase text-[11px] tracking-widest shadow-xl shadow-[#EC6345]/5"
+                              : "flex items-center gap-4 rounded-2xl px-5 py-4 text-slate-400 font-bold uppercase text-[11px] tracking-widest hover:bg-white hover:text-slate-800"
                           }
                         >
-                          <item.icon className="text-lg" />
-                          <span className="text-sm tracking-wide">{item.label}</span>
+                          <div className="relative">
+                            <item.icon className="text-xl" />
+                            {item.badge > 0 && (
+                                <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#EC6345] text-[8px] font-black text-white border-2 border-white">
+                                    {item.badge}
+                                </span>
+                            )}
+                          </div>
+                          <span className="flex-1">{item.label}</span>
                         </NavLink>
                       </motion.div>
                     ))}
@@ -219,13 +237,13 @@ const HomeLayout = () => {
                   <motion.button
                     type="button"
                     onClick={handleLogout}
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.32 }}
-                    className="mb-3 mt-auto flex w-full items-center gap-3 rounded-lg border border-[#f2c2b8] bg-white px-3 py-3 text-[#BA5225] hover:bg-[#fff5f2]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="mt-6 flex w-full items-center gap-4 rounded-2xl border border-orange-100 bg-white px-6 py-4 font-black uppercase text-[11px] tracking-widest text-[#BA5225]"
                   >
-                    <CiLogout className="text-lg" />
-                    <span className="text-sm tracking-wide">Logout</span>
+                    <CiLogout className="text-xl rotate-180" />
+                    <span>Logout</span>
                   </motion.button>
                 </div>
               </motion.div>

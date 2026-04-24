@@ -15,6 +15,8 @@ import authService from "../../app/service/auth.service";
 import ErrorHandler from "../../app/ErrorHandler";
 import AuthInputField from "./components/AuthInputField";
 import AuthCheckbox from "./components/AuthCheckbox";
+import Loader from "../dashboard/components/loader";
+import Load from "../dashboard/components/Load";
 
 const inputTheme = {
   labelClassName: "!text-[#2d2d2d] !font-semibold",
@@ -174,6 +176,7 @@ const SignUp = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F7F6F0]">
+      {loading && <Load fullScreen={true} />}
       <header className="bg-[#2d2d2d] px-8 py-4">
         <div className="mx-auto max-w-[1150px]">
           <button
@@ -462,7 +465,7 @@ const SignUp = () => {
                 className="mt-8 flex w-full items-center justify-center rounded-lg bg-[#ff6b56] px-5 py-3 font-bold text-white transition-colors hover:bg-[#ff5544] disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={loading || !isTransactionPinValid}
               >
-                {loading ? "Submitting..." : "Register Now"}
+                {loading ? <Loader /> : "Register Now"}
               </button>
             </form>
           </div>

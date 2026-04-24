@@ -8,71 +8,81 @@
 @layer base {
 
   @keyframes pulse {
-  50% { opacity: 0.5 }
-}
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
+    50% {
+      opacity: 0.5
+    }
+  }
+
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
 
   .circle {
-  display: inline-block;
-  background-color: #072C3B;
-  height: 15px;
-  width: 15px;
-  border-radius: 50%;
-}
+    display: inline-block;
+    background-color: #072C3B;
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+  }
 
-#container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 50px;
-}
+  #container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+  }
 
-#ball-1 {
-  animation-name: bounce;
-  animation-delay: 0.1s;
-  animation-duration: 1.2s;
-  animation-iteration-count: infinite;
-}
-#ball-2 {
-  animation-name: bounce;
-  animation-delay: 0.2s;
-  animation-duration: 1.2s;
-  animation-iteration-count: infinite;
-}
-#ball-3 {
-  animation-name: bounce;
-  animation-delay: 0.3s;
-  animation-duration: 1.2s;
-  animation-iteration-count: infinite;
-}
+  #ball-1 {
+    animation-name: bounce;
+    animation-delay: 0.1s;
+    animation-duration: 1.2s;
+    animation-iteration-count: infinite;
+  }
 
-@keyframes bounce {
-  0% {
-    transform: translateY(0);
+  #ball-2 {
+    animation-name: bounce;
+    animation-delay: 0.2s;
+    animation-duration: 1.2s;
+    animation-iteration-count: infinite;
   }
-  40% {
-    transform: translateY(-20px);
+
+  #ball-3 {
+    animation-name: bounce;
+    animation-delay: 0.3s;
+    animation-duration: 1.2s;
+    animation-iteration-count: infinite;
   }
-  60% {
-    transform: translateY(10px);
+
+  @keyframes bounce {
+    0% {
+      transform: translateY(0);
+    }
+
+    40% {
+      transform: translateY(-20px);
+    }
+
+    60% {
+      transform: translateY(10px);
+    }
+
+    80% {
+      transform: translateY(0);
+    }
   }
-  80% {
-    transform: translateY(0);
-  }
-}
 
   .flex-1 {
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch; /* Enables momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+    /* Enables momentum scrolling on iOS */
   }
 
   .nav-bar {
     position: sticky;
     top: 0;
     z-index: 10;
-    background-color: white; /* Ensure it stays visible */
+    background-color: white;
+    /* Ensure it stays visible */
   }
 
   html,
@@ -84,7 +94,8 @@
   }
 
   #root {
-    height: 100%; /* Match the layout height */
+    height: 100%;
+    /* Match the layout height */
     /* overflow: hidden; */
   }
 
@@ -92,33 +103,43 @@
     appearance: none;
     width: 20px;
     height: 20px;
-    border: 2px solid #d1d5db; /* Light gray border */
-    border-radius: 4px; /* Slightly rounded corners */
-    background-color: white; /* Default background */
+    border: 2px solid #d1d5db;
+    /* Light gray border */
+    border-radius: 4px;
+    /* Slightly rounded corners */
+    background-color: white;
+    /* Default background */
     cursor: pointer;
     transition: all 0.2s ease-in-out;
   }
 
   .custom-checkbox:checked {
-    background-color: #072C3B; /* Red background when checked */
-    border-color: #072C3B; /* Match border color */
+    background-color: #072C3B;
+    /* Red background when checked */
+    border-color: #072C3B;
+    /* Match border color */
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="white"><path d="M7.707 13.707a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L7 11.586l7.293-7.293a1 1 0 011.414 1.414l-8 8z"/></svg>');
-    background-size: 16px 16px; /* Adjust size of checkmark */
+    background-size: 16px 16px;
+    /* Adjust size of checkmark */
     background-repeat: no-repeat;
     background-position: center;
   }
 
   @keyframes shake {
+
     0%,
     100% {
       transform: translateX(0);
     }
+
     25% {
       transform: translateX(-2px);
     }
+
     50% {
       transform: translateX(2px);
     }
+
     75% {
       transform: translateX(-2px);
     }
@@ -140,6 +161,7 @@
   .bg-gradient {
     background: linear-gradient(#072C3B, #F4ECDE);
   }
+
   .bg-gradient-red {
     background: linear-gradient(to bottom right, #ef2f3a, #570308);
   }
@@ -226,7 +248,8 @@
 
 /* index.css */
 .bg-primary {
-  background-color: #1ed760; /* Use the exact color code you have */
+  background-color: #1ed760;
+  /* Use the exact color code you have */
 }
 
 .btn-primary {
@@ -234,7 +257,8 @@
 }
 
 .btn-primary:hover {
-  background-color: #1ed760/20; /* Darken on hover */
+  background-color: #1ed760/20;
+  /* Darken on hover */
 }
 
 .flex {
@@ -263,6 +287,7 @@
 
 /* Prevent mobile browser auto-zoom on input focus */
 @media (max-width: 1023px) {
+
   input,
   select,
   textarea {
@@ -363,9 +388,62 @@
 }
 
 
-@media (max-width: 768px) { /* Adjust the width threshold as needed */
+@media (max-width: 768px) {
+
+  /* Adjust the width threshold as needed */
   .custom-swal-mobile-size {
-      max-width: 90%; /* Make it almost full-screen for mobile */
-      font-size: 12px; /* Adjust text size for mobile */
+    max-width: 90%;
+    /* Make it almost full-screen for mobile */
+    font-size: 12px;
+    /* Adjust text size for mobile */
   }
+}
+
+/* V2 Refinement Classes */
+.v2-card {
+  @apply bg-white border border-[#e5ded3] rounded-[24px] transition-all duration-300;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.v2-card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+  @apply -translate-y-0.5 border-[#EC6345]/20;
+}
+
+.v2-glass {
+  @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-sm;
+}
+
+.v2-button-primary {
+  @apply bg-[#EC6345] text-white rounded-xl font-semibold transition-all duration-200;
+  box-shadow: 0 4px 12px rgba(236, 99, 69, 0.2);
+}
+
+.v2-button-primary:hover {
+  @apply bg-[#BA5225] scale-[1.02];
+  box-shadow: 0 6px 16px rgba(236, 99, 69, 0.3);
+}
+
+.v2-input {
+  @apply border-[1.5px] border-[#E5DED3] rounded-xl transition-all duration-200 outline-none;
+}
+
+.v2-input:focus {
+  @apply border-[#EC6345] ring-4 ring-[#EC6345]/10;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.v2-gradient-text {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-[#EC6345] to-[#FFB29F];
+}
+
+.v2-chip {
+  @apply px-3 py-1 rounded-full text-[10px] uppercase font-black tracking-widest inline-flex items-center gap-1.5;
+}
+
+.font-heading {
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
 }

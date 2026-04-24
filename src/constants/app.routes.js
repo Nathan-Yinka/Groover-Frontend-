@@ -3,7 +3,9 @@ export const login = "/login";
 export const signup = "signup";
 export const loader = "loader";
 export const home = "/home";
+export const homeV2 = "v2";
 export const contact1 = "/contact"
+
 export const profile = "profile";
 export const personal = "personal";
 export const withdraw = "withdraw";

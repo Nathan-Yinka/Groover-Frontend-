@@ -4,8 +4,8 @@ import { slideIn } from "../../motion";
 import BottomNavMobile from "./components/BottomNavMobile";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProfileFailure, fetchProfileStart, fetchProfileSuccess } from "../../app/slice/profile.slice";
+import { showAlert } from "../../app/slice/ui.slice";
 import authService from "../../app/service/auth.service";
-import { toast } from "sonner";
 import ErrorHandler from "../../app/ErrorHandler";
 import { formatCurrencyFullAmount } from "../../utils/currency";
 import { fetchWithdrawalHistory, makeWithdrawal } from "../../app/service/withdraw.service";
@@ -71,40 +71,47 @@ const Withdraw = () => {
         fetchProfileIfNeeded();
     }, [dispatch, profile]);
 
-    if (isLoading || isProfileLoading) return <Load fullScreen={true} size="large" />;
+    // Only show full-screen loader on initial mount if data is missing
+    const isInitialLoading = (isProfileLoading && !profile) || (isLoading && (!history || history.length === 0));
+    if (isInitialLoading) return <Load fullScreen={true}  />;
 
     // Handle Submit
     const handleSubmit = async () => {
-        // Frontend validation
         if (!amount || !password) {
-            toast.error("Both amount and password are required.");
+            dispatch(showAlert({
+                type: 'error',
+                title: 'Security Alert',
+                message: "Please fill in all withdrawal parameters."
+            }));
             return;
         }
 
-        if (isNaN(amount) || Number(amount) <= 0) {
-            toast.error("Please enter a valid amount.");
+        if (Number(amount) > Number(profile.wallet.balance)) {
+            dispatch(showAlert({
+                type: 'error',
+                title: 'Fiscal Warning',
+                message: "Amount exceeds available curation liquidity."
+            }));
             return;
         }
 
-        // Show loader on button
         setIsSubmitting(true);
-
         try {
-            const payload = { amount: Number(amount), password };
-            const response = await dispatch(makeWithdrawal(payload));
-
-            if (response.success) {
-                toast.success(response.message || "Withdrawal request successful.");
+            const result = await dispatch(makeWithdrawal({ amount, password }));
+            if (result.success) {
+                dispatch(showAlert({
+                    type: 'success',
+                    title: 'Mission Confirmed',
+                    message: "Extraction mission initiated successfully."
+                }));
                 setAmount("");
                 setPassword("");
+                setActiveTab("history");
+                await dispatch(fetchWithdrawalHistory()); // Refresh history
             } else {
-                // Extract error message
-                ErrorHandler(response.message);
+                ErrorHandler(result.message);
             }
         } catch (error) {
-            // Log and display unexpected errors
-            // console.error("Unexpected error:", error);
-            // toast.error("An unexpected error occurred. Please try again.");
             ErrorHandler(error);
         } finally {
             setIsSubmitting(false);
@@ -134,21 +141,33 @@ const Withdraw = () => {
         whileInView={fadeIn("right", 1 * 2).animate}
         className="min-h-screen bg-[#F7F6F0] text-[#333333]"
       >
-        <div className="mx-auto max-w-[1600px] space-y-5 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
-          <div className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6">
-            <BackButton className="mb-5" />
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Withdraw</h1>
-                <p className="text-xs text-[#605E5E] md:text-sm">
-                  Submit your withdrawal request and track history.
-                </p>
-              </div>
-              <div className="hidden rounded-xl border border-[#EC6345]/25 bg-[#EC6345]/10 p-2.5 md:grid md:place-items-center">
-                <IoWalletOutline className="text-xl text-[#EC6345]" />
+        <div className="mx-auto max-w-[1600px] space-y-6 px-4 py-8 pb-32 md:px-8 md:py-10">
+          
+          {/* HEADER STATION */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative rounded-[32px] border border-[#e5ded3] bg-white p-6 md:p-8 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(236,99,69,0.04),transparent_50%)]" />
+            <BackButton className="mb-6" />
+            
+            <div className="relative z-10 flex items-center justify-between gap-6">
+              <div className="flex items-center gap-6">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EC6345]/10 border border-[#EC6345]/20">
+                  <IoWalletOutline className="text-2xl text-[#EC6345]" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-black tracking-tight text-[#333333] uppercase italic italic-heavy leading-none">
+                    Withdraw
+                  </h1>
+                  <p className="mt-2 text-sm font-medium text-[#605E5E]">
+                    Securely manage your capital transfers.
+                  </p>
+                </div>
               </div>
             </div>
-            </div>
+          </motion.div>
 
             {isProfileLoading && (
               <div className="flex items-center justify-center py-10">
@@ -170,22 +189,26 @@ const Withdraw = () => {
 
             {!isProfileLoading && profile && (
               <>
-                <div className="grid grid-cols-2 gap-2 rounded-[18px] border border-[#e5ded3] bg-white p-2 md:inline-grid md:grid-cols-2 md:gap-3">
+                <div className="flex gap-2 rounded-2xl bg-white/50 p-1.5 border border-[#e5ded3] w-fit">
                   <button
                     type="button"
                     onClick={() => handleTabChange("withdraw")}
-                    className={`rounded-xl px-3 py-2 text-xs font-semibold transition md:px-4 md:py-2.5 md:text-sm ${activeTab === "withdraw"
-                      ? "border border-[#EC6345]/35 bg-[#EC6345] text-white"
-                      : "border border-[#e5ded3] bg-white text-[#5f5b57] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
+                    className={`rounded-xl px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+                      activeTab === "withdraw"
+                        ? "bg-[#EC6345] text-white shadow-lg shadow-[#EC6345]/20"
+                        : "text-[#605E5E] hover:text-[#EC6345]"
+                    }`}
                   >
                     Withdraw Now
                   </button>
                   <button
                     type="button"
                     onClick={() => handleTabChange("history")}
-                    className={`rounded-xl px-3 py-2 text-xs font-semibold transition md:px-4 md:py-2.5 md:text-sm ${activeTab === "history"
-                      ? "border border-[#EC6345]/35 bg-[#EC6345] text-white"
-                      : "border border-[#e5ded3] bg-white text-[#5f5b57] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
+                    className={`rounded-xl px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+                      activeTab === "history"
+                        ? "bg-[#EC6345] text-white shadow-lg shadow-[#EC6345]/20"
+                        : "text-[#605E5E] hover:text-[#EC6345]"
+                    }`}
                   >
                     Withdraw History
                   </button>
@@ -194,54 +217,57 @@ const Withdraw = () => {
                 {activeTab === "withdraw" && (
                   <motion.div
                     key="withdraw"
-                    initial={slideIn("right", null).initial}
-                    animate={slideIn("right", 1 * 2).animate}
-                    className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="v2-card p-6 md:p-10 space-y-8"
                   >
-                    <div className="mb-5 rounded-2xl border border-[#EC6345]/25 bg-[#EC6345]/10 p-4 md:p-5">
-                      <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#605E5E]">
+                    <div className="relative rounded-[32px] border border-[#EC6345]/20 bg-[#EC6345]/5 p-8 overflow-hidden group">
+                      <div className="absolute top-0 right-0 h-32 w-32 -translate-y-16 translate-x-16 rounded-full bg-[#EC6345]/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/60 mb-2">
                         Available Balance
                       </p>
-                      <p className="mt-2 text-2xl font-bold text-[#EC6345] md:text-4xl">
+                      <p className="text-4xl md:text-5xl font-black text-[#EC6345] tracking-tighter">
                         {formatCurrencyFullAmount(profile?.wallet?.balance || 0)}
                       </p>
                     </div>
 
-                    <div className="mb-5">
-                      <label className="block text-sm font-semibold text-[#4a4642]">
-                        Withdrawal Amount
-                      </label>
-                      <input
-                        type="number"
-                        id="amount"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        placeholder="Enter amount"
-                        className="mt-2 w-full rounded-lg border border-[#e5ded3] bg-white px-3 py-2.5 text-sm text-[#333333] placeholder:text-[#8b8580] focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                      />
-                    </div>
+                    <div className="space-y-6 max-w-xl">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/60 ml-1">
+                          Withdrawal Amount
+                        </label>
+                        <input
+                          type="number"
+                          value={amount}
+                          onChange={(e) => setAmount(e.target.value)}
+                          placeholder="0.00"
+                          className="w-full rounded-2xl border border-[#e5ded3] bg-[#fbfaf6] px-6 py-4 text-sm font-bold text-[#333333] placeholder:text-[#605E5E]/30 focus:outline-none focus:border-[#EC6345]/40 transition-all"
+                        />
+                      </div>
 
-                    <div className="mb-6">
-                      <label className="block text-sm font-semibold text-[#4a4642]">
-                        Withdrawal Password
-                      </label>
-                      <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter password"
-                        className="mt-2 w-full rounded-lg border border-[#e5ded3] bg-white px-3 py-2.5 text-sm text-[#333333] placeholder:text-[#8b8580] focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                      />
-                    </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/60 ml-1">
+                          Withdrawal Password
+                        </label>
+                        <input
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="w-full rounded-2xl border border-[#e5ded3] bg-[#fbfaf6] px-6 py-4 text-sm font-bold text-[#333333] placeholder:text-[#605E5E]/30 focus:outline-none focus:border-[#EC6345]/40 transition-all"
+                        />
+                      </div>
 
-                    <button
-                      onClick={handleSubmit}
-                      disabled={isSubmitting}
-                      className="flex w-full items-center justify-center rounded-lg border border-[#EC6345]/35 bg-[#EC6345] py-3 font-semibold text-white transition hover:bg-[#BA5225] disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      {isSubmitting ? <Loader /> : "Submit Withdrawal"}
-                    </button>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                        className="flex w-full items-center justify-center rounded-[24px] bg-[#333333] py-5 text-[11px] font-black uppercase tracking-[0.2em] text-white shadow-xl shadow-black/10 transition-all hover:bg-black disabled:opacity-40"
+                      >
+                        {isSubmitting ? <Loader /> : "Submit Withdrawal"}
+                      </motion.button>
+                    </div>
                   </motion.div>
                 )}
 
@@ -254,65 +280,53 @@ const Withdraw = () => {
                     className="space-y-3"
                   >
                     {isLoading ? (
-                      <div className="flex justify-center py-8">
+                      <div className="flex justify-center py-20">
                         <Loader />
                       </div>
                     ) : Array.isArray(history) ? (
                       history.length > 0 ? (
-                        history.map((item) => {
-                          const label = normalizedStatus(item.status);
-                          return (
-                            <div
-                              key={item.id}
-                              className="rounded-2xl border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)]"
-                            >
-                              <div className="flex items-start justify-between gap-4">
-                                <div className="min-w-0">
-                                  <p className="text-sm font-semibold text-[#333333] md:text-base">
-                                    Withdrawal
-                                  </p>
-                                  <p className="truncate text-xs text-[#6c6661] md:text-sm">
-                                    {item.transaction_id}
-                                  </p>
-                                  <p className="mt-2 text-lg font-bold text-[#EC6345] md:text-2xl">
-                                    {formatCurrencyFullAmount(item.amount || 0)}
-                                  </p>
+                        <div className="space-y-4">
+                          {history.map((item, index) => {
+                            const label = normalizedStatus(item.status);
+                            return (
+                              <motion.div
+                                key={item.id}
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: index * 0.05 }}
+                                className="v2-card p-6 md:p-8"
+                              >
+                                <div className="flex items-start justify-between gap-6">
+                                  <div className="space-y-4 flex-1">
+                                    <div className="flex items-center gap-3">
+                                      <div className={`h-2 w-2 rounded-full ${label === 'Pending' ? 'bg-amber-400 animate-pulse' : label === 'Completed' ? 'bg-emerald-400' : 'bg-red-400'}`} />
+                                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/40">
+                                        ID: {item.transaction_id || "TRX-N/A"}
+                                      </p>
+                                    </div>
+                                    <p className="text-3xl font-black text-[#333333] tracking-tighter">
+                                      {formatCurrencyFullAmount(item.amount || 0)}
+                                    </p>
+                                    <div className="flex items-center gap-2 text-[10px] font-bold text-[#605E5E]/50">
+                                      <IoTimeOutline />
+                                      <span>
+                                        {new Date(item.created_at).toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" })} at {new Date(item.created_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className={`rounded-full border px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] ${statusClasses[label]}`}>
+                                    {label}
+                                  </div>
                                 </div>
-                                <span
-                                  className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${statusClasses[label]}`}
-                                >
-                                  {label}
-                                </span>
-                              </div>
-                              <div className="mt-3 flex items-center gap-2 text-[11px] text-[#7b756f] md:text-xs">
-                                <IoTimeOutline className="text-[#6c6661]" />
-                                <span>
-                                  {new Date(item.created_at).toLocaleDateString(
-                                    "en-US",
-                                    {
-                                      day: "2-digit",
-                                      month: "short",
-                                      year: "numeric",
-                                    },
-                                  )}{" "}
-                                  at{" "}
-                                  {new Date(item.created_at).toLocaleTimeString(
-                                    "en-US",
-                                    {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                      hour12: true,
-                                    },
-                                  )}
-                                </span>
-                              </div>
-                            </div>
-                          );
-                        })
+                              </motion.div>
+                            );
+                          })}
+                        </div>
                       ) : (
-                        <div className="rounded-[18px] border border-[#e5ded3] bg-white py-10 text-center">
-                          <IoCheckmarkCircle className="mx-auto mb-3 text-3xl text-[#EC6345]/70" />
-                          <p className="text-sm text-[#605E5E]">No withdrawal history available.</p>
+                        <div className="rounded-[40px] border border-dashed border-[#e5ded3] bg-white/50 py-32 text-center">
+                          <IoWalletOutline className="mx-auto mb-6 text-4xl text-[#EC6345]/20" />
+                          <h3 className="text-2xl font-black text-[#333333] uppercase italic">History Clear</h3>
+                          <p className="mt-2 text-sm font-medium text-[#605E5E]">No withdrawal logs localized in this sector.</p>
                         </div>
                       )
                     ) : (

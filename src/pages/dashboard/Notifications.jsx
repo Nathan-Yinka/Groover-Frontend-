@@ -54,7 +54,7 @@ const Notification = () => {
     return () => clearInterval(interval);
   }, [dispatch]);
 
-  if (isLoading) return <Load fullScreen={true} size="large" />;
+  if (isLoading && notifications.length === 0) return <Load fullScreen={true}  />;
 
   // Mark all notifications as read
   const handleMarkAllRead = () => {
@@ -113,206 +113,173 @@ const Notification = () => {
   }, [activeFilter]);
 
   return (
-    <div className="min-h-screen bg-[#F7F6F0] text-[#333333]">
-      <div className="mx-auto max-w-[1600px] space-y-4 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
-        {/* Header Section */}
+    <div className="min-h-screen bg-[#F7F6F0] text-[#333333] selection:bg-[#EC6345]/30">
+      <div className="mx-auto max-w-[1600px] space-y-6 px-4 py-8 pb-32 md:px-8 md:py-10">
+        
+        {/* HEADER STATION */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-[18px] border border-[#e5ded3] bg-white p-3 shadow-[0_20px_45px_-30px_rgba(0,0,0,0.9)] md:p-6"
+          className="relative rounded-[32px] border border-[#e5ded3] bg-white p-6 md:p-8 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] overflow-hidden"
         >
-          {/* Back Button */}
-          <BackButton className="mb-3 md:mb-5" />
-
-          {/* Page Title */}
-          <div className="mb-1 flex flex-col justify-between gap-2 sm:flex-row sm:items-center md:gap-4">
-            <div className="flex items-center space-x-3">
-              <div className="rounded-lg border border-[#EC6345]/25 bg-[#EC6345]/10 p-2 md:rounded-xl md:p-3">
-                <IoNotifications className="text-lg text-[#EC6345] md:text-2xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(236,99,69,0.04),transparent_50%)]" />
+          <div className="relative z-10">
+            <BackButton className="mb-6" />
+          </div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-6">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EC6345]/10 border border-[#EC6345]/20">
+                <IoNotifications className="text-2xl text-[#EC6345]" />
               </div>
               <div>
-                <h1 className="text-xl font-bold tracking-tight text-[#333333] md:text-3xl">
+                <h1 className="text-3xl font-black tracking-tight text-[#333333] uppercase italic italic-heavy leading-none">
                   Notifications
                 </h1>
-                <p className="text-[11px] text-[#605E5E] md:text-sm">
-                  {filteredNotifications.length} notification
-                  {filteredNotifications.length !== 1 ? "s" : ""}
+                <p className="mt-2 text-sm font-medium text-[#605E5E]">
+                  {filteredNotifications.length} notification{filteredNotifications.length !== 1 ? "s" : ""} securely stored.
                 </p>
               </div>
             </div>
 
-            <motion.button
-              onClick={handleMarkAllRead}
-              disabled={
-                isLoading || notifications.every((notif) => notif.is_read)
-              }
-              className="flex items-center space-x-1.5 self-start rounded-lg border border-[#EC6345]/35 bg-[#EC6345] px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-[#BA5225] disabled:cursor-not-allowed disabled:border-[#e5ded3] disabled:bg-[#fbfaf6] disabled:text-[#8b8580] sm:self-auto md:px-3 md:py-2 md:text-sm"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <IoCheckmarkCircle className="text-sm md:text-base" />
-              <span>Mark all read</span>
-            </motion.button>
+            <div className="flex items-center gap-4">
+              <div className="hidden border-l border-[#e5ded3] pl-8 md:block">
+                <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#605E5E]/60">Unread</p>
+                <p className="text-lg font-black text-[#EC6345]">{unreadCount}</p>
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleMarkAllRead}
+                disabled={isLoading || notifications.every((notif) => notif.is_read)}
+                className="flex items-center gap-2 rounded-xl bg-[#333333] px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-white disabled:opacity-20 transition-all hover:bg-black"
+              >
+                <IoCheckmarkCircle className="text-sm" />
+                <span>Mark all read</span>
+              </motion.button>
+            </div>
           </div>
 
-          <div className="mt-3 hidden grid-cols-4 gap-2 md:grid">
-            <div className="rounded-xl border border-[#e5ded3] bg-[#fbfaf6] px-3 py-2.5">
-              <p className="text-xs text-[#7b756f]">Total</p>
-              <p className="text-base font-semibold text-[#333333]">
-                {notifications.length}
-              </p>
-            </div>
-            <div className="rounded-xl border border-[#EC6345]/25 bg-[#EC6345]/10 px-3 py-2.5">
-              <p className="text-xs text-[#605E5E]">Unread</p>
-              <p className="text-base font-semibold text-[#EC6345]">
-                {unreadCount}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setActiveFilter("All")}
-              className={`rounded-xl border px-3 py-2.5 text-left transition ${activeFilter === "All"
-                ? "border-[#EC6345]/35 bg-[#EC6345] text-white"
-                : "border-[#e5ded3] bg-[#fbfaf6] text-[#5f5b57] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
-            >
-              <p className="text-xs">Filter</p>
-              <p className="text-base font-semibold">All</p>
-            </button>
-            <div className="grid grid-cols-2 gap-2">
-              {["Unread", "Read"].map((type) => (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => setActiveFilter(type)}
-                  className={`rounded-xl border px-2 py-2 text-xs font-semibold transition ${activeFilter === type
-                    ? "border-[#EC6345]/35 bg-[#EC6345] text-white"
-                    : "border-[#e5ded3] bg-[#fbfaf6] text-[#5f5b57] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
-                >
-                  {type}
-                </button>
-              ))}
-            </div>
+          <div className="relative z-10 mt-8 flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+            {["All", "Unread", "Read"].map((type) => (
+              <button
+                key={type}
+                onClick={() => setActiveFilter(type)}
+                className={`whitespace-nowrap px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+                  activeFilter === type
+                    ? "bg-[#EC6345] text-white shadow-lg shadow-[#EC6345]/20"
+                    : "bg-[#fbfaf6] text-[#605E5E] border border-[#e5ded3] hover:border-[#EC6345]/30 hover:text-[#EC6345]"
+                }`}
+              >
+                {type}
+              </button>
+            ))}
           </div>
         </motion.div>
 
         {/* Notifications List */}
         {isLoading ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {[...Array(4)].map((_, idx) => (
               <div
                 key={`skeleton-${idx}`}
-                className="animate-pulse rounded-2xl border border-[#e5ded3] bg-[#fbfaf6] p-4 md:p-5"
+                className="animate-pulse rounded-[32px] border border-[#e5ded3] bg-white p-6 md:p-8"
               >
-                <div className="h-3 w-11/12 rounded bg-[#e5ded3]" />
-                <div className="mt-2 h-3 w-8/12 rounded bg-[#e5ded3]" />
-                <div className="mt-3 h-2 w-4/12 rounded bg-[#e5ded3]" />
+                <div className="h-4 w-1/4 rounded-full bg-[#e5ded3] mb-4" />
+                <div className="h-4 w-full rounded-full bg-[#e5ded3] mb-2" />
+                <div className="h-4 w-3/4 rounded-full bg-[#e5ded3]" />
               </div>
             ))}
           </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="space-y-3"
-          >
+          <div className="space-y-4">
             {paginatedNotifications.map((notif, index) => (
               <motion.div
                 key={notif.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.06 }}
-                className={`overflow-hidden rounded-2xl border bg-white shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#EC6345]/30 hover:shadow-[0_24px_55px_-35px_rgba(236,99,69,0.28)] ${
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.05 }}
+                className={`group relative overflow-hidden rounded-[32px] border transition-all duration-300 p-6 shadow-sm ${
                   !notif.is_read
-                    ? "border-[#EC6345]/30 ring-1 ring-[#EC6345]/20"
-                    : "border-[#e5ded3]"
-                }`}
+                    ? "bg-white border-[#EC6345]/30 shadow-[#EC6345]/10 shadow-xl"
+                    : "bg-white/60 border-[#e5ded3] backdrop-blur-sm grayscale opacity-70 hover:grayscale-0 hover:opacity-100"
+                } hover:shadow-lg`}
               >
-                <div className="p-4 md:p-5">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      {/* Message */}
-                      <p className="whitespace-pre-line text-sm leading-relaxed text-[#333333] md:text-base">
-                        {notif.message}
-                      </p>
+                {!notif.is_read && (
+                  <div className="absolute right-0 top-0 h-24 w-24 translate-x-12 -translate-y-12 rounded-full bg-[#EC6345]/5 blur-2xl" />
+                )}
 
-                      {/* Timestamp */}
-                      <p className="mt-2 flex items-center text-[11px] text-[#7b756f] md:text-xs">
-                        <span className="mr-2 h-1 w-1 rounded-full bg-[#EC6345]"></span>
-                        {formatDistanceToNow(new Date(notif.created_at), {
-                          addSuffix: true,
-                        })}
+                <div className="relative z-10 flex items-start justify-between gap-6">
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`h-2 w-2 rounded-full ${!notif.is_read ? "bg-[#EC6345] animate-pulse" : "bg-slate-300"}`} />
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/50">
+                        {formatDistanceToNow(new Date(notif.created_at), { addSuffix: true })}
                       </p>
                     </div>
-
-                    {/* Mark as Read Button */}
-                    {!notif.is_read && (
-                      <motion.button
-                        onClick={() => handleMarkAsRead(notif.id)}
-                        className="ml-4 flex flex-shrink-0 items-center space-x-1 rounded-lg border border-[#EC6345]/30 bg-[#EC6345] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#BA5225]"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <IoCheckmarkCircle className="text-sm" />
-                        <span>Read</span>
-                      </motion.button>
-                    )}
+                    
+                    <p className="text-sm font-bold text-[#333333] md:text-base leading-relaxed selection:bg-[#EC6345]/20">
+                      {notif.message}
+                    </p>
                   </div>
+
+                  {!notif.is_read && (
+                    <motion.button
+                      whileHover={{ scale: 1.1, rotate: 2 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => handleMarkAsRead(notif.id)}
+                      className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EC6345] text-white shadow-lg shadow-[#EC6345]/30 transition-all hover:bg-[#BA5225]"
+                    >
+                      <IoCheckmarkCircle className="text-xl" />
+                    </motion.button>
+                  )}
                 </div>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         )}
 
-        {/* Empty State */}
+        {/* EMPTY SIGNAL */}
         {!isLoading && filteredNotifications.length === 0 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="rounded-[18px] border border-[#e5ded3] bg-white py-12 text-center"
+            className="rounded-[40px] border border-dashed border-[#e5ded3] bg-white/50 py-32 text-center"
           >
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-[#EC6345]/25 bg-[#EC6345]/10">
-              <IoNotifications className="text-3xl text-[#EC6345]" />
+            <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[#EC6345]/5 border border-[#EC6345]/10">
+              <IoNotifications className="text-4xl text-[#EC6345]/20" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-[#333333]">
-              No {activeFilter.toLowerCase()} notifications
-            </h3>
-            <p className="text-sm text-[#605E5E]">You are all caught up.</p>
+            <h3 className="text-2xl font-black text-[#333333] uppercase italic">No notifications</h3>
+            <p className="mt-2 text-sm font-medium text-[#605E5E]">You are all caught up.</p>
           </motion.div>
         )}
 
-        {/* Pagination */}
+        {/* PAGINATION STATION */}
         <AnimatePresence>
           {totalPages > 1 && showPagination && (
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 50 }}
-              transition={{ duration: 0.3 }}
-              className="fixed bottom-16 left-3 right-3 z-50 flex items-center justify-between rounded-2xl border border-[#e5ded3] bg-[#fbfaf6]/95 p-3 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] backdrop-blur md:bottom-4 md:left-[286px] md:right-8 lg:left-[374px]"
+              className="fixed bottom-24 left-4 right-4 z-50 flex items-center justify-between rounded-3xl border border-[#e5ded3] bg-white/80 p-4 shadow-2xl backdrop-blur-2xl md:bottom-10 md:left-auto md:right-10 md:w-[400px]"
             >
-              <motion.button
+              <button
                 onClick={handlePreviousPage}
                 disabled={currentPage === 1}
-                className="rounded-lg border border-[#e5ded3] bg-white px-3 py-1.5 text-sm font-medium text-[#4a4642] transition hover:border-[#EC6345]/30 hover:text-[#EC6345] disabled:cursor-not-allowed disabled:opacity-50"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="rounded-xl border border-[#e5ded3] bg-white px-5 py-2 text-xs font-black uppercase tracking-widest text-[#333333] disabled:opacity-20"
               >
                 Previous
-              </motion.button>
-
-              <span className="text-sm font-medium text-[#5f5b57]">
+              </button>
+              <span className="text-xs font-black uppercase tracking-widest text-[#333333]/40">
                 Page {currentPage} of {totalPages}
               </span>
-
-              <motion.button
+              <button
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
-                className="rounded-lg border border-[#e5ded3] bg-white px-3 py-1.5 text-sm font-medium text-[#4a4642] transition hover:border-[#EC6345]/30 hover:text-[#EC6345] disabled:cursor-not-allowed disabled:opacity-50"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="rounded-xl border border-[#e5ded3] bg-white px-5 py-2 text-xs font-black uppercase tracking-widest text-[#333333] disabled:opacity-20"
               >
                 Next
-              </motion.button>
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -323,5 +290,3 @@ const Notification = () => {
 };
 
 export default Notification;
-
-

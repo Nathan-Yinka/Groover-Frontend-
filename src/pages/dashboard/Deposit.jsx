@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
-import { fadeIn, slideIn } from "../../motion";
-import { toast } from "sonner";
+import { fadeIn } from "../../motion";
+import { showAlert } from "../../app/slice/ui.slice";
 import { fetchDeposits, submitDeposit } from "../../app/service/deposit.service";
 import { BiCopy } from "react-icons/bi";
-import { IoCheckmarkCircle, IoTimeOutline, IoWalletOutline } from "react-icons/io5";
+import { IoCheckmarkCircle, IoTimeOutline, IoWalletOutline, IoImageOutline } from "react-icons/io5";
 import Loader from "./components/loader";
 import Load from "./components/Load";
 import ErrorHandler from "../../app/ErrorHandler";
-// import { formatCurrencyWithCode, formatCurrencyFullAmount } from "../../utils/currency";
 import authService from "../../app/service/auth.service";
 import { fetchProfileStart, fetchProfileSuccess, fetchProfileFailure } from "../../app/slice/profile.slice";
 import BackButton from "./components/BackButton";
@@ -17,33 +16,26 @@ import BottomNavMobile from "./components/BottomNavMobile";
 
 const Deposit = () => {
     const dispatch = useDispatch();
-    const deposits = useSelector((state) => state.deposits?.deposits || []); // Fallback to empty array
+    const deposits = useSelector((state) => state.deposits?.deposits || []);
     const profile = useSelector((state) => state.profile.user);
     const isSubmitting = useSelector((state) => state.deposits.isSubmitting);
     const isProfileLoading = useSelector((state) => state.profile.isLoading);
 
     const [activeTab, setActiveTab] = useState("deposit");
     const [amount, setAmount] = useState("");
+    const [isDepositPage, setIsDepositPage] = useState(false);
+    const [receipt, setReceipt] = useState(null);
 
-    const [isDepositPage, setIsDepositPage] = useState(false); // State to toggle the new deposit page
-    const [receipt, setReceipt] = useState(null); // State for uploaded file
-
-
-    // Handle Tab Changes
     const handleTabChange = (tab) => setActiveTab(tab);
-
-    // Handle Preset Amount
     const handlePresetAmount = (value) => setAmount(value.toString());
 
-    // Handle Receipt Upload
     const handleReceiptUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setReceipt(file); // File for submission
+            setReceipt(file);
         }
     };
 
-    // Fetch Deposits if State is Empty
     useEffect(() => {
         const fetchDepositsIfEmpty = async () => {
             if (!deposits || deposits.length === 0) {
@@ -54,11 +46,9 @@ const Deposit = () => {
                 }
             }
         };
-
         fetchDepositsIfEmpty();
     }, [dispatch, deposits]);
 
-    // Fetch Profile if not yet fetched
     useEffect(() => {
         const fetchProfileIfNeeded = async () => {
             if (!profile) {
@@ -69,25 +59,24 @@ const Deposit = () => {
                         dispatch(fetchProfileSuccess(response.data));
                     } else {
                         dispatch(fetchProfileFailure(response.message || "Failed to load profile."));
-                        toast.error(response.message || "Failed to load profile.");
                     }
                 } catch (error) {
-                    console.error("Error fetching profile:", error);
                     dispatch(fetchProfileFailure("An error occurred while fetching your profile."));
-                    toast.error("An error occurred while fetching your profile.");
                 }
             }
         };
-
         fetchProfileIfNeeded();
     }, [dispatch, profile]);
 
-    if (isProfileLoading) return <Load fullScreen={true} size="large" />;
+    if (isProfileLoading && !profile) return <Load fullScreen={true} />;
 
-    // Submit Deposit
     const handleConfirmDeposit = async () => {
         if (!amount || !receipt) {
-            toast.error("Amount and receipt are required!");
+            dispatch(showAlert({
+                type: 'error',
+                title: 'Data Required',
+                message: "Amount and receipt are required!"
+            }));
             return;
         }
 
@@ -95,375 +84,334 @@ const Deposit = () => {
             const formData = new FormData();
             formData.append("amount", amount);
             formData.append("screenshot", receipt);
-
             const result = await dispatch(submitDeposit(formData));
-
             if (result.success) {
-                toast.success("Deposit submitted successfully!");
+                dispatch(showAlert({
+                    type: 'success',
+                    title: 'Mission Success',
+                    message: "Deposit submitted successfully!"
+                }));
                 setIsDepositPage(false);
                 setAmount("");
                 setReceipt(null);
-            }
-            //     // Handle backend error messages
-            //     const backendErrors = result.message; // Adjust to access `message` object
-            //     if (typeof backendErrors === "object") {
-            //         // Display all errors in a toast
-            //         Object.entries(backendErrors).forEach(([field, errors]) => {
-            //             errors.forEach((error) => toast.error(`${field}: ${error}`));
-            //         });
-            else {
+            } else {
                 ErrorHandler(result.message);
             }
-
         } catch (error) {
-            // const errorMessage =
-            //     error.response?.data?.message || "An unexpected error occurred.";
-            // if (typeof errorMessage === "object") {
-            //     // Parse backend error messages
-            //     Object.entries(errorMessage).forEach(([field, errors]) => {
-            //         errors.forEach((error) => toast.error(`${field}: ${error}`));
-            //     });
-            ErrorHandler(error)
-            // } else {
-            //     toast.error(errorMessage);
-            // }
-            // console.error("Deposit submission error:", error.response || error);
+            ErrorHandler(error);
         }
     };
 
     const copyToClipboard = (text) => {
+        if (!text) return;
         navigator.clipboard.writeText(text);
-        toast.success("Address copied to clipboard!", {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-        });
+        dispatch(showAlert({
+            type: 'success',
+            title: 'Dossier Link',
+            message: "Address copied to clipboard!"
+        }));
     };
 
     const normalizedStatus = (status) => {
       const lowered = String(status || "").toLowerCase();
-      if (lowered.includes("confirm") || lowered.includes("complete") || lowered.includes("success")) {
-        return "Confirmed";
-      }
-      if (lowered.includes("reject") || lowered.includes("fail")) {
-        return "Rejected";
-      }
+      if (lowered.includes("confirm") || lowered.includes("complete") || lowered.includes("success")) return "Confirmed";
+      if (lowered.includes("reject") || lowered.includes("fail")) return "Rejected";
       return "Pending";
     };
 
     const statusClasses = {
       Confirmed: "border-[#EC6345]/30 bg-[#EC6345]/10 text-[#EC6345]",
-      Pending: "border-[#d6a44f]/35 bg-[#fff8e8] text-[#9b6b13]",
-      Rejected: "border-[#d46a5d]/35 bg-[#fff1ee] text-[#BA5225]",
+      Pending: "border-amber-500/30 bg-amber-50 text-amber-600",
+      Rejected: "border-red-500/30 bg-red-50 text-red-600",
     };
+
     const canConfirmDeposit = Boolean(amount && Number(amount) > 0 && receipt);
 
     return (
-      <motion.div
-        initial={fadeIn("right", null).initial}
-        whileInView={fadeIn("right", 1 * 2).animate}
-        className="min-h-screen bg-[#F7F6F0] text-[#333333]"
-      >
-        <div className="mx-auto max-w-[1600px] space-y-5 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
-          <div className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6">
-            <BackButton className="mb-5" />
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Deposit</h1>
-                <p className="text-xs text-[#605E5E] md:text-sm">
-                  Add funds securely and track your deposit status.
-                </p>
-              </div>
-              <div className="hidden rounded-xl border border-[#EC6345]/25 bg-[#EC6345]/10 p-2.5 md:grid md:place-items-center">
-                <IoWalletOutline className="text-xl text-[#EC6345]" />
+      <div className="min-h-screen bg-[#F7F6F0] text-[#333333] selection:bg-[#EC6345]/30">
+        <div className="mx-auto max-w-[1600px] space-y-6 px-4 py-8 pb-32 md:px-8 md:py-10">
+          
+          {/* HEADER STATION */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative rounded-[32px] border border-[#e5ded3] bg-white p-6 md:p-8 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(236,99,69,0.04),transparent_50%)]" />
+            
+            <div className="relative z-10">
+              <BackButton className="mb-6" />
+              <div className="flex items-center justify-between gap-6">
+                <div className="flex items-center gap-6">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EC6345]/10 border border-[#EC6345]/20">
+                    <IoWalletOutline className="text-2xl text-[#EC6345]" />
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-black tracking-tight text-[#333333] uppercase italic italic-heavy leading-none">
+                      Deposit
+                    </h1>
+                    <p className="mt-2 text-sm font-medium text-[#605E5E]">
+                      Securely infuse capital into your curation wallet.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {isProfileLoading && (
-            <div className="flex items-center justify-center py-10">
-              <Load />
-            </div>
-          )}
-
-          {!isProfileLoading && !profile && (
-            <div className="rounded-2xl border border-red-500/30 bg-red-900/10 p-6 text-center">
-              <p className="mb-4 text-red-300">Failed to load profile data</p>
-              <button
+          {!profile ? (
+            <div className="rounded-[32px] border border-red-500/20 bg-white p-12 text-center">
+              <p className="text-red-500 font-bold mb-4 italic">Operational Desync: Failed to load identity data.</p>
+              <button 
                 onClick={() => window.location.reload()}
-                className="rounded-lg border border-[#EC6345]/35 bg-[#EC6345] px-4 py-2 font-semibold text-white transition hover:bg-[#BA5225]"
+                className="bg-[#333333] text-white px-8 py-3 rounded-xl font-black uppercase tracking-widest"
               >
-                Retry
+                Retry Sync
               </button>
             </div>
-          )}
-
-          {!isProfileLoading && profile && (
-            <div className="space-y-5">
-              <div className="rounded-2xl border border-[#EC6345]/25 bg-[#EC6345]/10 p-4 md:p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#605E5E]">
+          ) : (
+            <div className="space-y-6">
+              {/* BALANCE MODULE */}
+              <div className="relative rounded-[32px] border border-[#EC6345]/20 bg-[#EC6345]/5 p-8 overflow-hidden group">
+                <div className="absolute top-0 right-0 h-32 w-32 -translate-y-16 translate-x-16 rounded-full bg-[#EC6345]/10 blur-3xl transition-transform duration-700 group-hover:scale-150" />
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/60 mb-2">
                   Total Balance
                 </p>
-                <p className="mt-2 text-2xl font-bold text-[#EC6345] md:text-4xl">
-                  {profile?.wallet?.balance || "0.00"} USD
+                <p className="text-4xl md:text-5xl font-black text-[#EC6345] tracking-tighter">
+                  {profile?.wallet?.balance || "0.00"} <span className="text-xl opacity-40">USD</span>
                 </p>
               </div>
 
               {isDepositPage ? (
                 <motion.div
-                  key="deposit-confirmation"
-                  initial={slideIn("right", null).initial}
-                  whileInView={slideIn("right", 1 * 2).animate}
-                  className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6"
+                  key="confirm"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="v2-card p-6 md:p-10"
                 >
-                  <div className="space-y-3 rounded-xl border border-[#e5ded3] bg-[#fbfaf6] p-4">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#605E5E]">
-                        ETH Address
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* ETH TERMINAL */}
+                    <div className="space-y-4 p-6 rounded-[28px] border border-[#e5ded3] bg-[#fbfaf6] relative overflow-hidden">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/60">ETH (ERC20)</p>
+                        <button
+                          onClick={() => copyToClipboard(profile?.settings?.erc_address)}
+                          className="h-8 w-8 flex items-center justify-center rounded-lg bg-white border border-[#e5ded3] text-[#333333] hover:text-[#EC6345]"
+                        >
+                          <BiCopy />
+                        </button>
+                      </div>
+                      <p className="break-all font-mono text-sm font-bold text-[#333333]">
+                        {profile?.settings?.erc_address || "Address Unavailable"}
                       </p>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard(profile?.settings?.erc_address)}
-                        className="rounded-md border border-[#EC6345]/25 bg-[#EC6345]/10 p-1.5 text-[#EC6345] transition hover:bg-[#EC6345]/20"
-                      >
-                        <BiCopy className="cursor-pointer" />
-                      </button>
                     </div>
-                    <p className="break-all text-sm text-[#EC6345]">
-                      {profile?.settings?.erc_address || "0x2835a3a46a193946b395d877a29dc3bc51bd49"}
-                    </p>
 
-                    <div className="mt-2 flex items-start justify-between gap-2">
-                      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#605E5E]">
-                        TRC20 Address
+                    {/* TRC20 TERMINAL */}
+                    <div className="space-y-4 p-6 rounded-[28px] border border-[#e5ded3] bg-[#fbfaf6] relative overflow-hidden">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/60">USDT (TRC20)</p>
+                        <button
+                          onClick={() => copyToClipboard(profile?.settings?.trc_address)}
+                          className="h-8 w-8 flex items-center justify-center rounded-lg bg-white border border-[#e5ded3] text-[#333333] hover:text-[#EC6345]"
+                        >
+                          <BiCopy />
+                        </button>
+                      </div>
+                      <p className="break-all font-mono text-sm font-bold text-[#333333]">
+                        {profile?.settings?.trc_address || "Address Unavailable"}
                       </p>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard(profile?.settings?.trc_address)}
-                        className="rounded-md border border-[#EC6345]/25 bg-[#EC6345]/10 p-1.5 text-[#EC6345] transition hover:bg-[#EC6345]/20"
-                      >
-                        <BiCopy className="cursor-pointer" />
-                      </button>
                     </div>
-                    <p className="break-all text-sm text-[#EC6345]">
-                      {profile?.settings?.trc_address || "TTXWm4XjoRXem2Ce1KeevUcBrzK2Whpv61"}
-                    </p>
                   </div>
 
-                  <div className="mt-4 rounded-xl border border-[#e5ded3] bg-[#fbfaf6] px-4 py-3 text-center">
-                    <p className="text-xs uppercase tracking-[0.08em] text-[#605E5E]">Deposit Amount</p>
-                    <p className="mt-1 text-lg font-semibold text-[#333333]">
-                      {amount || "N/A"} USD
-                    </p>
-                  </div>
+                  <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-10">
+                    <div className="space-y-6">
+                      <div className="p-6 rounded-[28px] border border-[#e5ded3] bg-white text-center">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/60 mb-2">Deposit Amount</p>
+                        <p className="text-3xl font-black text-[#333333] tracking-tighter">
+                          {amount || "0.00"} <span className="text-[#EC6345]">USD</span>
+                        </p>
+                      </div>
 
-                  <div className="mt-5 mb-6">
-                    <label className="mb-2 block text-sm font-semibold text-[#4a4642]">
-                      Deposit Receipt
-                    </label>
-                    {receipt && (
-                      <div className="mb-3 overflow-hidden rounded-xl border border-[#e5ded3] bg-white">
-                        <img
-                          src={
-                            typeof receipt === "string"
-                              ? receipt
-                              : URL.createObjectURL(receipt)
-                          }
-                          alt="Receipt Preview"
-                          className="h-56 w-full object-cover md:h-72"
-                        />
-                        <div className="flex items-center justify-between gap-2 border-t border-[#e5ded3] px-3 py-2">
-                          <p className="truncate text-xs text-[#605E5E]">
-                            {typeof receipt === "string" ? "Uploaded receipt" : receipt.name}
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => setReceipt(null)}
-                            className="rounded-md border border-[#e5ded3] bg-white px-2 py-1 text-[11px] font-semibold text-[#5f5b57] transition hover:border-[#EC6345]/30 hover:text-[#EC6345]"
-                          >
-                            Remove
-                          </button>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/60 ml-2">Deposit Receipt</label>
+                        <div className="relative group">
+                          {receipt ? (
+                            <div className="overflow-hidden rounded-[32px] border border-[#e5ded3] bg-white p-2">
+                              <img
+                                src={typeof receipt === "string" ? receipt : URL.createObjectURL(receipt)}
+                                alt="Receipt"
+                                className="h-64 w-full object-cover rounded-[24px]"
+                              />
+                              <button
+                                onClick={() => setReceipt(null)}
+                                className="w-full mt-2 py-3 text-[10px] font-black uppercase tracking-widest text-[#EC6345] hover:bg-[#EC6345]/5 transition-all rounded-xl"
+                              >
+                                Remove Selection
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="relative h-64 w-full flex flex-col items-center justify-center rounded-[32px] border-2 border-dashed border-[#e5ded3] bg-[#fbfaf6] hover:border-[#EC6345]/40 transition-all">
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleReceiptUpload}
+                                className="absolute inset-0 opacity-0 cursor-pointer"
+                              />
+                              <IoImageOutline className="text-4xl text-[#605E5E]/20 mb-4" />
+                              <p className="text-xs font-black uppercase tracking-widest text-[#605E5E]/40">Upload Mission Receipt</p>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    )}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleReceiptUpload}
-                      className="block w-full rounded-lg border border-[#e5ded3] bg-white p-2.5 text-sm text-[#333333] file:mr-3 file:rounded-md file:border-0 file:bg-[#EC6345] file:px-3 file:py-1.5 file:font-semibold file:text-white"
-                    />
-                  </div>
+                    </div>
 
-                  <button
-                    onClick={handleConfirmDeposit}
-                    disabled={isSubmitting || !canConfirmDeposit}
-                    className={`flex w-full items-center justify-center rounded-lg border py-3 font-semibold transition ${
-                      isSubmitting || !canConfirmDeposit
-                        ? "cursor-not-allowed border-[#e5ded3] bg-[#fbfaf6] text-[#8b8580]"
-                        : "border-[#EC6345]/35 bg-[#EC6345] text-white hover:bg-[#BA5225]"
-                    }`}
-                  >
-                    {isSubmitting ? <Loader /> : "Confirm Deposit"}
-                  </button>
+                    <div className="flex flex-col justify-end">
+                      <div className="p-6 rounded-[32px] border border-amber-500/10 bg-amber-50/30 mb-6">
+                        <p className="text-xs font-medium text-[#605E5E] leading-relaxed italic">
+                          Please ensure you upload a clear screenshot of your transaction confirmation. Cross-verify the payout address before submission.
+                        </p>
+                      </div>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleConfirmDeposit}
+                        disabled={isSubmitting || !canConfirmDeposit}
+                        className="flex w-full items-center justify-center rounded-[24px] bg-[#333333] py-5 text-[11px] font-black uppercase tracking-[0.2em] text-white shadow-xl shadow-black/10 transition-all hover:bg-black disabled:opacity-40"
+                      >
+                        {isSubmitting ? <Loader /> : "Confirm Deposit"}
+                      </motion.button>
+                      <button 
+                        onClick={() => setIsDepositPage(false)}
+                        className="mt-4 text-[10px] font-black uppercase tracking-widest text-[#605E5E]/50 hover:text-[#EC6345]"
+                      >
+                        Back to Selection
+                      </button>
+                    </div>
+                  </div>
                 </motion.div>
               ) : (
-                <div className="space-y-5">
-                  <div className="grid grid-cols-2 gap-2 rounded-[18px] border border-[#e5ded3] bg-white p-2 md:inline-grid md:grid-cols-2 md:gap-3">
+                <div className="space-y-6">
+                  {/* TAB SWITCHER */}
+                  <div className="flex gap-2 rounded-2xl bg-white/50 p-1.5 border border-[#e5ded3] w-fit">
                     <button
-                      type="button"
-                      onClick={() => handleTabChange("deposit")}
-                      className={`rounded-xl px-3 py-2 text-xs font-semibold transition md:px-4 md:py-2.5 md:text-sm ${activeTab === "deposit"
-                        ? "border border-[#EC6345]/35 bg-[#EC6345] text-white"
-                        : "border border-[#e5ded3] bg-white text-[#5f5b57] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
+                        onClick={() => handleTabChange("deposit")}
+                        className={`rounded-xl px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+                          activeTab === "deposit"
+                            ? "bg-[#EC6345] text-white shadow-lg shadow-[#EC6345]/20"
+                            : "text-[#605E5E] hover:text-[#EC6345]"
+                        }`}
                     >
                       Deposit Now
                     </button>
                     <button
-                      type="button"
-                      onClick={() => handleTabChange("history")}
-                      className={`rounded-xl px-3 py-2 text-xs font-semibold transition md:px-4 md:py-2.5 md:text-sm ${activeTab === "history"
-                        ? "border border-[#EC6345]/35 bg-[#EC6345] text-white"
-                        : "border border-[#e5ded3] bg-white text-[#5f5b57] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
+                        onClick={() => handleTabChange("history")}
+                        className={`rounded-xl px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+                          activeTab === "history"
+                            ? "bg-[#EC6345] text-white shadow-lg shadow-[#EC6345]/20"
+                            : "text-[#605E5E] hover:text-[#EC6345]"
+                        }`}
                     >
                       Deposit History
                     </button>
                   </div>
 
-                  {activeTab === "deposit" && (
+                  {activeTab === "deposit" ? (
                     <motion.div
-                      key="deposit"
-                      initial={slideIn("right", null).initial}
-                      whileInView={slideIn("right", 1 * 2).animate}
-                      className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6"
+                      key="amount"
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="v2-card p-6 md:p-10 space-y-8"
                     >
-                      <div className="mb-6 grid grid-cols-3 gap-3 md:hidden">
-                        {[10, 50, 100].map((value) => (
-                          <button
-                            key={value}
-                            onClick={() => handlePresetAmount(value)}
-                            className={`rounded-xl border p-3 text-left transition ${Number(amount) === value
-                              ? "border-[#EC6345]/35 bg-[#EC6345] text-white"
-                              : "border-[#e5ded3] bg-white text-[#333333] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
-                          >
-                            <p className="text-[11px] uppercase tracking-[0.08em]">USD</p>
-                            <p className="text-base font-semibold">{value}.00</p>
-                          </button>
-                        ))}
-                      </div>
-                      <div className="mb-6 hidden grid-cols-4 gap-3 md:grid">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                         {[10, 25, 50, 100, 200, 500, 1000, 2000].map((value) => (
                           <button
                             key={value}
                             onClick={() => handlePresetAmount(value)}
-                            className={`rounded-xl border p-3 text-left transition ${Number(amount) === value
-                              ? "border-[#EC6345]/35 bg-[#EC6345] text-white"
-                              : "border-[#e5ded3] bg-white text-[#333333] hover:border-[#EC6345]/30 hover:text-[#EC6345]"}`}
+                            className={`relative overflow-hidden rounded-2xl border p-4 text-left transition-all duration-300 group ${
+                              Number(amount) === value
+                                ? "border-[#EC6345] bg-[#EC6345] text-white shadow-lg shadow-[#EC6345]/30"
+                                : "border-[#e5ded3] bg-[#fbfaf6] text-[#333333] hover:border-[#EC6345]/40"
+                            }`}
                           >
-                            <p className="text-[11px] uppercase tracking-[0.08em]">USD</p>
-                            <p className="text-base font-semibold">{value}.00</p>
+                            <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-1 opacity-60">USD</p>
+                            <p className="text-xl font-black tracking-tighter">{value}</p>
                           </button>
                         ))}
                       </div>
 
-                      <div className="mb-6">
-                        <label
-                          htmlFor="amount"
-                          className="block text-sm font-semibold text-[#4a4642]"
+                      <div className="space-y-6 max-w-xl">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/60 ml-1">
+                            Custom Deposit Amount
+                          </label>
+                          <input
+                            type="number"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            placeholder="0.00"
+                            className="w-full rounded-2xl border border-[#e5ded3] bg-[#fbfaf6] px-6 py-4 text-sm font-bold text-[#333333] placeholder:text-[#605E5E]/30 focus:outline-none focus:border-[#EC6345]/40 transition-all font-mono"
+                          />
+                        </div>
+
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => setIsDepositPage(true)}
+                          disabled={!amount || amount <= 0}
+                          className="flex w-full items-center justify-center rounded-[24px] bg-[#333333] py-5 text-[11px] font-black uppercase tracking-[0.2em] text-white shadow-xl shadow-black/10 transition-all hover:bg-black disabled:opacity-40"
                         >
-                          Deposit Amount
-                        </label>
-                        <input
-                          type="number"
-                          id="amount"
-                          value={amount}
-                          min="0"
-                          step="0.01"
-                          onChange={(e) => setAmount(e.target.value)}
-                          placeholder="Enter amount"
-                          className="mt-2 w-full rounded-lg border border-[#e5ded3] bg-white px-3 py-2.5 text-sm text-[#333333] placeholder:text-[#8b8580] focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                          required
-                        />
+                          Next Stage
+                        </motion.button>
                       </div>
-
-                      <button
-                        onClick={() => setIsDepositPage(true)}
-                        disabled={!amount || amount <= 0}
-                        className={`w-full rounded-lg border py-3 font-semibold transition ${
-                          !amount || amount <= 0
-                            ? "cursor-not-allowed border-[#e5ded3] bg-[#fbfaf6] text-[#8b8580]"
-                            : "border-[#EC6345]/35 bg-[#EC6345] text-white hover:bg-[#BA5225]"
-                        }`}
-                      >
-                        Next
-                      </button>
                     </motion.div>
-                  )}
-
-                  {activeTab === "history" && (
+                  ) : (
                     <motion.div
                       key="history"
-                      initial={slideIn("left", null).initial}
-                      whileInView={slideIn("left", 1 * 2).animate}
-                      className="space-y-3"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="space-y-4"
                     >
                       {deposits.length > 0 ? (
-                        deposits.map((transaction) => {
+                        deposits.map((transaction, index) => {
                           const label = normalizedStatus(transaction.status);
                           return (
-                            <div
+                            <motion.div
                               key={transaction.id}
-                              className="rounded-2xl border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)]"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              className="v2-card p-6 md:p-8"
                             >
-                              <div className="flex items-start justify-between gap-4">
-                                <div className="min-w-0">
-                                  <p className="text-sm font-semibold text-[#333333] md:text-base">
-                                    Deposit
+                              <div className="flex items-start justify-between gap-6">
+                                <div className="space-y-4 flex-1">
+                                  <div className="flex items-center gap-3">
+                                    <div className={`h-2 w-2 rounded-full ${label === 'Pending' ? 'bg-amber-400 animate-pulse' : label === 'Confirmed' ? 'bg-emerald-400' : 'bg-red-400'}`} />
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/40">
+                                      ID: {transaction.transaction_id || "TRX-SYNCING"}
+                                    </p>
+                                  </div>
+                                  <p className="text-3xl font-black text-[#333333] tracking-tighter">
+                                    {transaction.amount} <span className="text-[#EC6345] text-xl">USD</span>
                                   </p>
-                                  <p className="truncate text-xs text-[#6c6661] md:text-sm">
-                                    {transaction.transaction_id || transaction.date}
-                                  </p>
-                                  <p className="mt-2 text-lg font-bold text-[#EC6345] md:text-2xl">
-                                    {transaction.amount} USD
-                                  </p>
+                                  <div className="flex items-center gap-2 text-[10px] font-bold text-[#605E5E]/50">
+                                    <IoTimeOutline />
+                                    <span>
+                                      {new Date(transaction.created_at).toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" })} at {new Date(transaction.created_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
+                                    </span>
+                                  </div>
                                 </div>
-                                <span
-                                  className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${statusClasses[label]}`}
-                                >
+                                <div className={`rounded-full border px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] ${statusClasses[label]}`}>
                                   {label}
-                                </span>
+                                </div>
                               </div>
-                              <div className="mt-3 flex items-center gap-2 text-[11px] text-[#7b756f] md:text-xs">
-                                <IoTimeOutline className="text-[#6c6661]" />
-                                <span>
-                                  {new Date(
-                                    transaction.created_at,
-                                  ).toLocaleDateString("en-US", {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                  })}{" "}
-                                  at{" "}
-                                  {new Date(
-                                    transaction.created_at,
-                                  ).toLocaleTimeString("en-US", {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    hour12: true,
-                                  })}
-                                </span>
-                              </div>
-                            </div>
+                            </motion.div>
                           );
                         })
                       ) : (
-                        <div className="rounded-[18px] border border-[#e5ded3] bg-white py-10 text-center">
-                          <IoCheckmarkCircle className="mx-auto mb-3 text-3xl text-[#EC6345]/70" />
-                          <p className="text-sm text-[#605E5E]">
-                            No deposit history available.
-                          </p>
+                        <div className="rounded-[40px] border border-dashed border-[#e5ded3] bg-white/50 py-32 text-center">
+                          <IoWalletOutline className="mx-auto mb-6 text-4xl text-[#EC6345]/20" />
+                          <h3 className="text-2xl font-black text-[#333333] uppercase italic">History Clear</h3>
+                          <p className="mt-2 text-sm font-medium text-[#605E5E]">No deposit logs located in this sector.</p>
                         </div>
                       )}
                     </motion.div>
@@ -471,13 +419,11 @@ const Deposit = () => {
                 </div>
               )}
             </div>
-            )}
+          )}
           <BottomNavMobile className="md:hidden" />
         </div>
-      </motion.div>
+      </div>
     );
 };
 
 export default Deposit;
-
-

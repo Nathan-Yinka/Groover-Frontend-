@@ -1,13 +1,16 @@
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { GoArrowLeft } from "react-icons/go";
 
 const BackButton = ({ label = "Back", className = "", onClick }) => {
+  const navigate = useNavigate();
+
   const handleBack = () => {
     if (onClick) {
       onClick();
       return;
     }
-    window.history.back();
+    navigate(-1);
   };
 
   return (

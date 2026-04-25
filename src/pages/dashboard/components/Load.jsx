@@ -5,9 +5,9 @@ import logo from "../../../assets/logo.svg";
 
 const Loader = ({ fullScreen = false, size = "default" }) => {
   const sizeClasses = {
-    small: { height: "h-8", width: "w-1", gap: "gap-0.5", bars: 7 },
-    default: { height: "h-24", width: "w-2", gap: "gap-1.5", bars: 15 },
-    large: { height: "h-40", width: "w-3", gap: "gap-2", bars: 20 },
+    small: { height: "h-8", width: "w-[2px]", gap: "gap-0.5", bars: 10 },
+    default: { height: "h-20 md:h-28", width: "w-1.5 md:w-2.5", gap: "gap-1 md:gap-1.5", bars: 15 },
+    large: { height: "h-32 md:h-48", width: "w-2 md:w-4", gap: "gap-1.5 md:gap-2.5", bars: 20 },
   };
 
   const containerClasses = fullScreen
@@ -25,7 +25,7 @@ const Loader = ({ fullScreen = false, size = "default" }) => {
           transition={{ duration: 0.5 }}
           className="flex flex-col items-center"
         >
-          <img src={logo} alt="Groover" className={`${size === "large" ? "h-16" : "h-10"} w-auto opacity-80`} />
+          <img src={logo} alt="Groover" className={`${size === "large" ? "h-12 md:h-16" : "h-8 md:h-10"} w-auto mb-4 opacity-80`} />
         </motion.div>
 
         <div className={`flex items-end ${currentSize.gap} ${currentSize.height} relative`}>

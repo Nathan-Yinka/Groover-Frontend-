@@ -6,18 +6,22 @@ import {
   fetchGameRecords,
   submitCurrentGame,
 } from "../../app/service/products.service";
-import { toast } from "sonner";
+import { showAlert } from "../../app/slice/ui.slice";
 import ErrorHandler from "../../app/ErrorHandler";
 import Loader from "./components/Load";
 import { formatCurrencyWithCode } from "../../utils/currency";
-import { IoDocumentText, IoCheckmarkCircle } from "react-icons/io5";
+import { 
+  IoDocumentText, 
+  IoCheckmarkCircle, 
+  IoReloadOutline 
+} from "react-icons/io5";
 import BottomNavMobile from "./components/BottomNavMobile";
 import BackButton from "./components/BackButton";
 
 const statusColors = {
-  Completed: "border border-[#EC6345]/30 bg-[#EC6345]/10 text-[#EC6345]",
-  Pending: "border border-[#d6a44f]/35 bg-[#fff8e8] text-[#9b6b13]",
-  Freeze: "border border-[#d9d0c4] bg-[#fbfaf6] text-[#7b756f]",
+  Completed: "border-[#EC6345]/30 bg-[#EC6345]/10 text-[#EC6345] shadow-[0_0_15px_-5px_rgba(236,99,69,0.3)]",
+  Pending: "border-[#d6a44f]/30 bg-[#d6a44f]/10 text-[#d6a44f] shadow-[0_0_15px_-5px_rgba(214,164,79,0.3)]",
+  Freeze: "border-[#7b756f]/30 bg-[#7b756f]/10 text-[#7b756f]",
 };
 
 // Function to derive status
@@ -38,6 +42,7 @@ const Records = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
 
 
+  const [submittingId, setSubmittingId] = useState(null);
   const recordsPerPage = 20;
 
   // Filter Records Based on Active Tab
@@ -59,17 +64,24 @@ const Records = () => {
   }, [dispatch]);
 
   // Handle Submit Button for Pending Products
-  const handleSubmit = async () => {
+  const handleReCommit = async (record) => {
+    setSubmittingId(record.id);
     try {
-      const response = await dispatch(submitCurrentGame(4, ""));
-      if (response.success) {
-        toast.success("Submission successful!");
-        dispatch(fetchGameRecords()); // Refresh the game records
+      const result = await dispatch(submitCurrentGame(record.id));
+      if (result.success) {
+        dispatch(showAlert({
+          type: 'success',
+          title: 'Operation Confirmed',
+          message: "Curation re-synchronized successfully."
+        }));
+        dispatch(fetchGameRecords()); // Refresh records after success
       } else {
-        ErrorHandler(response.message);
+        ErrorHandler(result.message);
       }
     } catch (error) {
       ErrorHandler(error);
+    } finally {
+      setSubmittingId(null);
     }
   };
 
@@ -110,217 +122,208 @@ const Records = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  if (isLoading) return <Loader fullScreen={true} size="large" />;
+  if (isLoading && records.length === 0) return <Loader fullScreen={true}  />;
 
   return (
-    <div className="min-h-screen bg-[#F7F6F0] text-[#333333]">
-      <div className="mx-auto max-w-[1600px] space-y-5 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
-        {/* Header Section */}
+    <div className="min-h-screen bg-[#F7F6F0] text-[#333333] selection:bg-[#EC6345]/30">
+      <div className="mx-auto max-w-[1600px] space-y-6 px-4 py-8 pb-32 md:px-8 md:py-10">
+        
+        {/* HEADER STATION */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6"
+          className="relative rounded-[32px] border border-[#e5ded3] bg-white p-6 md:p-8 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] overflow-hidden"
         >
-          {/* Back Button */}
-          <BackButton className="mb-4 md:mb-5" />
-
-          {/* Page Title */}
-          <div className="mb-4 flex items-center space-x-3 md:mb-0">
-            <div className="rounded-xl border border-[#EC6345]/25 bg-[#EC6345]/10 p-2.5 md:p-3">
-              <IoDocumentText className="text-xl text-[#EC6345] md:text-2xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(236,99,69,0.04),transparent_50%)]" />
+          <div className="relative z-10">
+            <BackButton className="mb-6" />
+          </div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-6">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EC6345]/10 border border-[#EC6345]/20">
+                <IoDocumentText className="text-2xl text-[#EC6345]" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-black tracking-tight text-[#333333] uppercase italic italic-heavy leading-none">
+                  Curation <span className="text-[#EC6345]">Records</span>
+                </h1>
+                <p className="mt-2 text-sm font-medium text-[#605E5E]">
+                  Diagnostic history of your curation missions.
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-[#333333] md:text-3xl">
-                Game Records
-              </h1>
-              <p className="text-xs text-[#605E5E] md:text-sm">
-                {filteredRecords.length} record
-                {filteredRecords.length !== 1 ? "s" : ""} found
-              </p>
+
+            {/* QUICK STATS HUB */}
+            <div className="grid grid-cols-3 gap-2 md:gap-4 border-t md:border-t-0 md:border-l border-[#e5ded3] pt-4 md:pt-0 md:pl-8">
+              <div className="text-center md:text-left">
+                <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#605E5E]/60">Total</p>
+                <p className="text-lg font-black text-[#333333]">{records.length}</p>
+              </div>
+              <div className="text-center md:text-left">
+                <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#d6a44f]">Pending</p>
+                <p className="text-lg font-black text-[#d6a44f]">{records.filter(r => r.pending).length}</p>
+              </div>
+              <div className="text-center md:text-left">
+                <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#EC6345]">Profit</p>
+                <p className="text-lg font-black text-[#EC6345]">
+                  ${records.reduce((acc, r) => acc + (parseFloat(r.commission) || 0), 0).toFixed(2)}
+                </p>
+              </div>
             </div>
           </div>
         </motion.div>
 
-        {/* Tabs */}
+        {/* TACTICAL TABS */}
         <motion.div
-          initial={fadeIn("right", null).initial}
-          animate={fadeIn("right", 1 * 2).animate}
-          className="rounded-[18px] border border-[#e5ded3] bg-white p-2 shadow-[0_20px_45px_-40px_rgba(39,39,39,0.55)] md:p-3"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-[24px] border border-[#e5ded3] bg-white/60 p-2 shadow-[0_20px_45px_-40px_rgba(39,39,39,0.4)] backdrop-blur-xl"
         >
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+          <div className="flex flex-wrap gap-2 sm:grid sm:grid-cols-4">
             {["All", "Completed", "Pending", "Freeze"].map((tab) => (
-              <motion.button
+              <button
                 key={tab}
                 onClick={() => {
                   setActiveTab(tab);
-                  setCurrentPage(1); // Reset to page 1 when switching tabs
+                  setCurrentPage(1);
                 }}
-                className={`rounded-xl px-4 py-2 text-xs font-semibold tracking-wide transition-all duration-200 md:text-sm ${
+                className={`flex-1 rounded-xl px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all duration-300 ${
                   activeTab === tab
-                    ? "border border-[#EC6345]/35 bg-[#EC6345] text-white shadow-[0_10px_30px_-14px_rgba(236,99,69,0.45)]"
-                    : "border border-[#e5ded3] bg-white text-[#5f5b57] hover:border-[#EC6345]/35 hover:text-[#EC6345]"
+                    ? "bg-[#333333] text-white shadow-lg"
+                    : "text-[#605E5E] hover:bg-black/5"
                 }`}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
               >
                 {tab}
-              </motion.button>
+              </button>
             ))}
           </div>
         </motion.div>
 
-        {/* Records List */}
-        {isLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader />
-          </div>
-        ) : paginatedRecords.length > 0 ? (
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="space-y-3 md:space-y-4"
-          >
-            {paginatedRecords.map((record, index) => {
-              const status = getStatus(record); // Derive status
+        {/* LEDGER ENTRIES */}
+        <div className="space-y-4">
+          {paginatedRecords.length > 0 ? (
+            paginatedRecords.map((record, index) => {
+              const status = getStatus(record);
               return (
                 <motion.div
                   key={record.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.06 }}
-                  className="overflow-hidden rounded-2xl border border-[#e5ded3] bg-white shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] transition-all duration-300 hover:border-[#EC6345]/30 hover:shadow-[0_25px_55px_-35px_rgba(236,99,69,0.35)]"
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="group relative overflow-hidden rounded-[32px] border border-[#e5ded3] bg-white p-6 shadow-[0_15px_35px_-25px_rgba(39,39,39,0.3)] transition-all duration-300 hover:shadow-[0_25px_55px_-35px_rgba(236,99,69,0.25)] hover:border-[#EC6345]/20"
                 >
-                  <div className="p-3 md:p-5">
-                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:space-x-5 md:gap-0">
-                      {/* Product Images */}
-                      <div className="flex shrink-0 flex-wrap gap-2.5 md:gap-3">
-                        {record.products.map((product) => (
-                          <div
-                            key={product.id}
-                            className="h-24 w-[74px] md:h-28 md:w-24"
-                          >
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              className="h-[70px] w-[74px] rounded-lg border border-[#e5ded3] object-cover md:h-24 md:w-24"
-                            />
-                            <p className="mt-1 line-clamp-1 w-full text-center text-[10px] text-[#605E5E] md:text-xs">
-                              {product.name}
+                  <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
+                    {/* ASSET VISUALS */}
+                    <div className="flex shrink-0 gap-3">
+                      {record.products.slice(0, 3).map((product) => (
+                        <div key={product.id} className="relative h-24 w-24 overflow-hidden rounded-2xl border border-[#e5ded3] bg-[#fbfaf6]">
+                          <img src={product.image} alt="" className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* MISSION DATA */}
+                    <div className="flex-1 space-y-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-3">
+                            <p className="text-[11px] font-black uppercase tracking-widest text-[#a56657] font-mono bg-[#a56657]/5 px-2 py-0.5 rounded-lg border border-[#a56657]/10">
+                              ID: {record.id.toString().slice(-8).toUpperCase()}
+                            </p>
+                            <p className="text-[10px] font-bold text-[#605E5E]/40">
+                              {new Date(record.updated_at).toLocaleDateString()}
                             </p>
                           </div>
-                        ))}
+                          <h3 className="text-lg font-black text-[#333333] lg:text-2xl tracking-tight uppercase italic italic-heavy">
+                            {record.products[0]?.name || "Legacy Track"}
+                          </h3>
+                        </div>
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          <div className={`rounded-full border px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.15em] ${statusColors[status]}`}>
+                            {status}
+                          </div>
+                          {status === "Pending" && (
+                            <motion.button
+                              whileHover={{ scale: 1.05, x: 5 }}
+                              whileTap={{ scale: 0.95 }}
+                              disabled={submittingId !== null}
+                              onClick={() => handleSubmit(record.id)}
+                              className="flex items-center gap-2 rounded-xl bg-[#EC6345] px-5 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-white shadow-[0_10px_20px_-5px_rgba(236,99,69,0.4)] disabled:opacity-50"
+                            >
+                              {submittingId === record.id ? (
+                                <motion.div
+                                  animate={{ rotate: 360 }}
+                                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                >
+                                  <IoReloadOutline className="text-sm" />
+                                </motion.div>
+                              ) : (
+                                <IoCheckmarkCircle className="text-sm" />
+                              )}
+                              <span>{submittingId === record.id ? "Syncing" : "Commit"}</span>
+                            </motion.button>
+                          )}
+                        </div>
                       </div>
 
-                      {/* Product Info */}
-                      <div className="flex-grow min-w-0">
-                        <div className="mb-3 flex items-start justify-between gap-2">
-                          <div className="flex-1 min-w-0 pr-4">
-                            <p className="mb-1 text-[11px] text-[#6c6661] md:text-xs">
-                              {new Date(record.updated_at).toLocaleString()}
-                            </p>
-                            <p className="break-words text-sm font-semibold text-[#333333] md:text-base">
-                              {record.products[0]?.name}
-                            </p>
-                          </div>
-
-                          {/* Status Badge and Submit Button */}
-                          <div className="flex items-center space-x-2 flex-shrink-0">
-                            <div
-                              className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${statusColors[status]}`}
-                            >
-                              {status}
-                            </div>
-                            {/* Submit Button for Pending Status - Keeping it small */}
-                            {status === "Pending" && (
-                              <motion.button
-                                onClick={() => handleSubmit(record.id)}
-                                className="flex items-center space-x-1 rounded-full border border-[#EC6345]/30 bg-[#EC6345] px-2.5 py-1 text-[11px] font-semibold text-white transition hover:bg-[#BA5225]"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                              >
-                                <IoCheckmarkCircle className="text-xs" />
-                                <span>Submit</span>
-                              </motion.button>
-                            )}
-                          </div>
+                      <div className="grid grid-cols-2 gap-8 pt-5 border-t border-dashed border-[#e5ded3]">
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/40 mb-1">Amount</p>
+                          <p className="text-xl font-black text-[#333333] tracking-tighter">{formatCurrencyWithCode(record.amount)}</p>
                         </div>
-
-                        {/* Amounts */}
-                        <div className="flex items-end justify-between border-t border-[#e5ded3] pt-3">
-                          <div>
-                            <p className="text-[11px] text-[#6c6661] md:text-xs">
-                              Total Amount
-                            </p>
-                            <p className="text-sm font-semibold text-[#333333] md:text-base">
-                              {formatCurrencyWithCode(record.amount)}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-[11px] text-[#6c6661] md:text-xs">
-                              Commission
-                            </p>
-                            <p className="text-sm font-semibold text-[#EC6345] md:text-base">
-                              USD {record.commission}
-                            </p>
-                          </div>
+                        <div className="text-right">
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/40 mb-1">Commission</p>
+                          <p className="text-xl font-black text-[#EC6345] tracking-tighter">USD {record.commission}</p>
                         </div>
                       </div>
                     </div>
                   </div>
                 </motion.div>
               );
-            })}
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="rounded-[18px] border border-[#e5ded3] bg-white py-12 text-center"
-          >
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-[#EC6345]/25 bg-[#EC6345]/10">
-              <IoDocumentText className="text-3xl text-[#EC6345]" />
-            </div>
-            <h3 className="text-lg font-semibold text-[#333333] mb-2">
-              No {activeTab} records
-            </h3>
-            <p className="text-sm text-[#605E5E]">No records found for this filter</p>
-          </motion.div>
-        )}
+            })
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="rounded-[40px] border border-dashed border-[#e5ded3] bg-white/50 py-32 text-center"
+            >
+              <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[#EC6345]/5 border border-[#EC6345]/10">
+                <IoDocumentText className="text-4xl text-[#EC6345]/20" />
+              </div>
+              <h3 className="text-xl font-black text-[#333333] uppercase italic">No Records</h3>
+              <p className="mt-2 text-sm font-medium text-[#605E5E]">No {activeTab.toLowerCase()} records found.</p>
+            </motion.div>
+          )}
+        </div>
 
-        {/* Pagination */}
+        {/* PAGINATION STATION */}
         <AnimatePresence>
           {filteredRecords.length > recordsPerPage && showPagination && (
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 50 }}
-              transition={{ duration: 0.3 }}
-              className="fixed bottom-16 left-3 right-3 z-50 flex items-center justify-between rounded-2xl border border-[#e5ded3] bg-[#fbfaf6]/95 p-3 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] backdrop-blur md:bottom-4 md:left-[286px] md:right-8 lg:left-[374px]"
+              className="fixed bottom-24 left-4 right-4 z-50 flex items-center justify-between rounded-3xl border border-[#e5ded3] bg-white/80 p-4 shadow-2xl backdrop-blur-2xl md:bottom-10 md:left-auto md:right-10 md:w-[400px]"
             >
-              <motion.button
+              <button
                 onClick={() => handlePageChange("prev")}
                 disabled={currentPage === 1}
-                className="rounded-lg border border-[#e5ded3] bg-white px-3 py-1.5 text-sm font-medium text-[#4a4642] transition hover:border-[#EC6345]/30 hover:text-[#EC6345] disabled:cursor-not-allowed disabled:opacity-50"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="rounded-xl border border-[#e5ded3] bg-white px-5 py-2 text-xs font-black uppercase tracking-widest text-[#333333] disabled:opacity-20"
               >
-                Previous
-              </motion.button>
-
-              <span className="text-sm font-medium text-[#5f5b57]">
+                Prev
+              </button>
+              <span className="text-xs font-black uppercase tracking-widest text-[#333333]/40">
                 Page {currentPage} of {totalPages}
               </span>
-
-              <motion.button
+              <button
                 onClick={() => handlePageChange("next")}
                 disabled={currentPage === totalPages}
-                className="rounded-lg border border-[#e5ded3] bg-white px-3 py-1.5 text-sm font-medium text-[#4a4642] transition hover:border-[#EC6345]/30 hover:text-[#EC6345] disabled:cursor-not-allowed disabled:opacity-50"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="rounded-xl border border-[#e5ded3] bg-white px-5 py-2 text-xs font-black uppercase tracking-widest text-[#333333] disabled:opacity-20"
               >
                 Next
-              </motion.button>
+              </button>
             </motion.div>
           )}
         </AnimatePresence>

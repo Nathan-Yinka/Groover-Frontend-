@@ -1,29 +1,45 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
-import { motion } from "framer-motion";
-import { fadeIn, slideIn } from "../../motion";
+import { showAlert } from "../../app/slice/ui.slice";
+import { motion, AnimatePresence } from "framer-motion";
 import { updateProfile, changePassword, changeTransactionPassword } from "../../app/service/profile.service";
 import {
     fetchProfileStart,
     fetchProfileSuccess,
     fetchProfileFailure,
-    updateProfileSuccess,
     setImagePreview,
 } from "../../app/slice/profile.slice";
 import authService from "../../app/service/auth.service";
 import Loader from "./components/Load";
 import ButtonLoader from "./components/loader";
 import ErrorHandler from "../../app/ErrorHandler";
-import { FaUser, FaEnvelope, FaPhone, FaIdCard, FaLock, FaShieldAlt } from "react-icons/fa";
-import { MdOutlinePhotoCamera } from "react-icons/md";
+import { 
+  IoPersonOutline, 
+  IoMailOutline, 
+  IoCallOutline, 
+  IoShieldCheckmarkOutline, 
+  IoLockClosedOutline, 
+  IoIdCardOutline,
+  IoCameraOutline,
+  IoChevronForwardOutline,
+  IoCloseOutline
+} from "react-icons/io5";
 import BackButton from "./components/BackButton";
+import BottomNavMobile from "./components/BottomNavMobile";
 
 const PersonalInfo = () => {
     const dispatch = useDispatch();
-    const { user: formData = {}, isLoading, profilePicture, imagePreview } = useSelector(
-        (state) => state.profile
-    );
+    const profile = useSelector((state) => state.profile.user);
+    const { isLoading, profilePicture, imagePreview } = useSelector((state) => state.profile);
+
+    // Form state local for editing
+    const [formData, setFormData] = useState({});
+
+    useEffect(() => {
+        if (profile) {
+            setFormData(profile);
+        }
+    }, [profile]);
 
     // Password fields
     const [passwordData, setPasswordData] = useState({
@@ -44,243 +60,185 @@ const PersonalInfo = () => {
     const [isTransactionPasswordSaving, setIsTransactionPasswordSaving] = useState(false);
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
-    // Toggle Modals
-    const toggleLoginPasswordModal = () => {
-        setIsLoginPasswordModalOpen(!isLoginPasswordModalOpen);
-        // Clear state when opening modal
-        if (!isLoginPasswordModalOpen) {
-            setPasswordData({
-                current_password: "",
-                new_password: "",
-                confirm_new_password: "",
-            });
-        }
-    };
-
-    // Toggle Transaction Password Modal
-    const toggleTransactionPasswordModal = () => {
-        setIsTransactionPasswordModalOpen(!isTransactionPasswordModalOpen);
-        // Clear state when opening modal
-        if (!isTransactionPasswordModalOpen) {
-            setTransactionPasswordData({
-                current_password: "",
-                new_password: "",
-                confirm_new_password: "",
-            });
-        }
-    };
-
-    // Handle click outside modal to close
-    const handleModalBackdropClick = (e, modalType) => {
-        if (e.target === e.currentTarget) {
-            if (modalType === 'login') {
-                toggleLoginPasswordModal();
-            } else if (modalType === 'transaction') {
-                toggleTransactionPasswordModal();
-            }
-        }
-    };
-
     // Fetch Profile Data
     useEffect(() => {
-        const fetchProfile = async () => {
-            dispatch(fetchProfileStart());
-            try {
-                const response = await authService.fetchProfile();
-                if (response.success) {
-                    dispatch(fetchProfileSuccess(response.data));
-                } else {
-                    dispatch(fetchProfileFailure(response.message || "Failed to load profile."));
-                    ErrorHandler(response.message)
+        const fetchProfileIfNeeded = async () => {
+            if (!profile) {
+                dispatch(fetchProfileStart());
+                try {
+                    const response = await authService.fetchProfile();
+                    if (response.success) {
+                        dispatch(fetchProfileSuccess(response.data));
+                    } else {
+                        dispatch(fetchProfileFailure(response.message || "Failed to load profile."));
+                    }
+                } catch (error) {
+                    dispatch(fetchProfileFailure("An error occurred while fetching your profile."));
                 }
-            } catch (error) {
-                console.error("Error fetching profile:", error);
-                dispatch(fetchProfileFailure("An error occurred while fetching your profile."));
-                toast.error("An error occurred while fetching your profile.");
             }
         };
+        fetchProfileIfNeeded();
+    }, [dispatch, profile]);
 
-        if (!formData) {
-            fetchProfile();
-        }
-    }, [dispatch, formData]);
+    const hasChanges = useMemo(() => {
+        if (!profile || !formData) return false;
+        return Object.keys(formData).some(key => {
+            if (key === "profile_picture") {
+                return formData[key] instanceof File;
+            }
+            return formData[key] !== profile[key];
+        });
+    }, [formData, profile]);
 
-    // Handle Profile Changes
+    if (isLoading && !profile) return <Loader fullScreen={true} />;
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        dispatch(updateProfileSuccess({ ...formData, [name]: value })); // Update Redux state
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Handle Image Upload
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                dispatch(setImagePreview(reader.result)); // Set preview in Redux
-                dispatch(updateProfileSuccess({ ...formData, profile_picture: file })); // Update Redux state
+                dispatch(setImagePreview(reader.result));
+                setFormData((prev) => ({ ...prev, profile_picture: file }));
             };
             reader.readAsDataURL(file);
         }
     };
 
-    // Update Profile
     const handleUpdateProfile = async () => {
-        // Validate required fields
-        if (!formData.username || !formData.email || !formData.phone_number) {
-            toast.error("Username, email, and phone number are required.");
-            return;
-        }
-
-        // Prepare payload with only changed fields
-        const updatedData = {};
-        Object.keys(formData).forEach((key) => {
-            if (key === "profile_picture") {
-                if (typeof profilePicture !== "string" || !profilePicture.startsWith("http")) {
-                    updatedData.profile_picture = profilePicture; // Include if it's a file
-                }
-            } else if (formData[key] !== updatedData[key]) {
-                updatedData[key] = formData[key]; // Include other changed fields
-            }
-        });
-
-        // If no changes detected, show a toast and exit
-        if (Object.keys(updatedData).length === 0) {
-            toast.error("No changes detected.");
-            return;
-        }
-
         setIsUpdatingProfile(true);
-
         try {
-            const result = await dispatch(updateProfile(updatedData));
-            if (result.success) {
-                console.log("dwfwefwe", result)
-                toast.success(result.message);
-                dispatch(updateProfileSuccess(result.data)); // Update Redux state with new profile
-            } else {
-                // Check for error object or array
-                const errorMessage = result.message;
-                ErrorHandler(errorMessage)
+            // Prepare payload with only changed fields
+            const changedData = {};
+            Object.keys(formData).forEach((key) => {
+                const value = formData[key];
+                const originalValue = profile[key];
+
+                // Special handling for profile_picture: only send if it's a new File
+                if (key === "profile_picture") {
+                    if (value instanceof File) {
+                        changedData.profile_picture = value;
+                    }
+                } 
+                // Only add other fields if they changed
+                else if (value !== originalValue) {
+                    changedData[key] = value;
+                }
+            });
+
+            if (Object.keys(changedData).length === 0) {
+                dispatch(showAlert({
+                    type: 'info',
+                    title: 'Dossier Message',
+                    message: "No modifications detected in the dossier."
+                }));
+                setIsUpdatingProfile(false);
+                return;
             }
-        } catch (error) {
-            console.error("Error updating profile:", error);
-            // Handle unexpected error format
-            ErrorHandler(error);
-        } finally {
-            setIsUpdatingProfile(false);
-        }
-    };
 
-    // Show Loader when the page is loading
-    if (isLoading || !formData) {
-        return <Loader />;
-    }
-
-    // Handle Password Changes
-    const handlePasswordChange = (e) => {
-        const { name, value } = e.target;
-        setPasswordData((prevState) => ({
-            ...prevState,
-            [name]: value,
-        }));
-    };
-
-    const handleChangePassword = async () => {
-        // Validate required fields
-        if (!passwordData.current_password || !passwordData.new_password || !passwordData.confirm_new_password) {
-            toast.error("All password fields are required.");
-            return;
-        }
-
-        // Ensure new passwords match
-        if (passwordData.new_password !== passwordData.confirm_new_password) {
-            toast.error("New passwords do not match.");
-            return;
-        }
-
-        // Ensure current and new passwords are not the same
-        if (passwordData.current_password === passwordData.new_password) {
-            toast.error("New password cannot be the same as the current password.");
-            return;
-        }
-
-        // Prepare data for API
-        const payload = {
-            current_password: passwordData.current_password,
-            new_password: passwordData.new_password,
-        };
-
-        // Show loader on button
-        setIsSavingPassword(true);
-
-        try {
-            // Dispatch change password action
-            const result = await dispatch(changePassword(payload));
+            const result = await dispatch(updateProfile(changedData));
             if (result.success) {
-                toast.success(result.message || "Password updated successfully.");
-                toggleLoginPasswordModal(); // Close modal
-                setPasswordData({
-                    current_password: "",
-                    new_password: "",
-                    confirm_new_password: "",
-                }); // Reset fields
+                dispatch(showAlert({
+                    type: 'success',
+                    title: 'Dossier Updated',
+                    message: "Dossier synchronized successfully."
+                }));
+                dispatch(setImagePreview(null)); // Clear preview after successful upload
+                // The useEffect will handle updating formData when profile changes in Redux
             } else {
                 ErrorHandler(result.message);
             }
         } catch (error) {
             ErrorHandler(error);
         } finally {
-            // Hide loader after update
+            setIsUpdatingProfile(false);
+        }
+    };
+
+    const handlePasswordChange = (e) => {
+        const { name, value } = e.target;
+        setPasswordData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleChangePassword = async () => {
+        if (!passwordData.current_password || !passwordData.new_password || !passwordData.confirm_new_password) {
+            dispatch(showAlert({
+                type: 'error',
+                title: 'Security Sync',
+                message: "All password fields are required."
+            }));
+            return;
+        }
+        if (passwordData.new_password !== passwordData.confirm_new_password) {
+            dispatch(showAlert({
+                type: 'error',
+                title: 'Security Sync',
+                message: "New passwords do not match."
+            }));
+            return;
+        }
+        setIsSavingPassword(true);
+        try {
+            const result = await dispatch(changePassword({
+                current_password: passwordData.current_password,
+                new_password: passwordData.new_password,
+            }));
+            if (result.success) {
+                dispatch(showAlert({
+                    type: 'success',
+                    title: 'Security Alert',
+                    message: "Password updated successfully"
+                }));
+                setIsLoginPasswordModalOpen(false);
+                setPasswordData({ current_password: "", new_password: "", confirm_new_password: "" });
+            } else {
+                ErrorHandler(result.message);
+            }
+        } catch (error) {
+            ErrorHandler(error);
+        } finally {
             setIsSavingPassword(false);
         }
     };
 
-    // Handle Transaction Password Input Changes
     const handleTransactionPasswordChange = (e) => {
         const { name, value } = e.target;
-        setTransactionPasswordData((prevState) => ({
-            ...prevState,
-            [name]: value,
-        }));
+        setTransactionPasswordData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Handle Transaction Password Save
     const handleTransactionPasswordSave = async () => {
         const { current_password, new_password, confirm_new_password } = transactionPasswordData;
-
-        // Frontend validation
         if (!current_password || !new_password || !confirm_new_password) {
-            toast.error("All fields are required.");
+            dispatch(showAlert({
+                type: 'error',
+                title: 'Security Sync',
+                message: "All fields are required."
+            }));
             return;
         }
         if (new_password !== confirm_new_password) {
-            toast.error("New password and confirm password must match.");
+            dispatch(showAlert({
+                type: 'error',
+                title: 'Security Sync',
+                message: "New password and confirm password must match."
+            }));
             return;
         }
-        if (current_password === new_password) {
-            toast.error("New transaction password cannot be the same as the current password.");
-            return;
-        }
-        if (new_password.length !== 4 || isNaN(new_password)) {
-            toast.error("Transaction password must be exactly 4 numeric characters.");
-            return;
-        }
-
-        // Show loader
         setIsTransactionPasswordSaving(true);
-
         try {
-            const payload = { current_password, new_password }; // Backend only needs current and new password
-            const result = await dispatch(changeTransactionPassword(payload));
+            const result = await dispatch(changeTransactionPassword({ current_password, new_password }));
             if (result.success) {
-                toast.success(result.message || "Transaction password updated successfully.");
-                toggleTransactionPasswordModal(); // Close modal
-                setTransactionPasswordData({
-                    current_password: "",
-                    new_password: "",
-                    confirm_new_password: "",
-                }); // Reset fields
+                dispatch(showAlert({
+                    type: 'success',
+                    title: 'Security Alert',
+                    message: "Transaction password updated successfully"
+                }));
+                setIsTransactionPasswordModalOpen(false);
+                setTransactionPasswordData({ current_password: "", new_password: "", confirm_new_password: "" });
             } else {
                 ErrorHandler(result.message);
             }
@@ -292,391 +250,290 @@ const PersonalInfo = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#F7F6F0] px-3 py-4 text-[#333333] md:px-8 md:py-6">
-            {/* Back Button */}
-            <BackButton className="mb-6" />
-
-            {/* Page Title */}
-            <motion.div
-                initial={fadeIn("up", null).initial}
-                whileInView={fadeIn("up", 1 * 2).animate}
-                className="text-center mb-8"
-            >
-                <h1 className="mb-2 text-2xl font-bold tracking-tight text-[#333333] md:text-3xl">Personal Information</h1>
-                <p className="text-sm text-[#605E5E] md:text-base">Manage your account details and security settings</p>
-            </motion.div>
-
-            {/* Profile Picture Section */}
-            <motion.div
-                initial={slideIn("up", null).initial}
-                whileInView={slideIn("up", 1 * 2).animate}
-                className="mb-6 rounded-[18px] border border-[#e5ded3] bg-white p-5 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] md:p-6"
-            >
-                <div className="flex flex-col items-center space-y-4">
-                    <div className="relative">
-                        <div className="h-24 w-24 overflow-hidden rounded-full border-2 border-[#EC6345]/30 shadow-lg">
-                            {(imagePreview || profilePicture) ? (
-                                <img
-                                    src={imagePreview || profilePicture}
-                                    alt="Profile Preview"
-                                    className="w-full h-full object-cover"
-                                />
-                            ) : (
-                                <div className="flex h-full w-full items-center justify-center bg-[#fff5f2]">
-                                    <FaUser className="text-3xl text-[#EC6345]" />
-                                </div>
-                            )}
-                        </div>
-                        <label className="absolute bottom-0 right-0 cursor-pointer rounded-full border border-[#EC6345]/30 bg-[#EC6345] p-2 text-white shadow-lg shadow-[#EC6345]/20 transition hover:bg-[#BA5225]">
-                            <MdOutlinePhotoCamera className="text-lg" />
-                            <input
-                                type="file"
-                                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                                onChange={handleImageUpload}
-                                className="hidden"
-                            />
-                        </label>
-                    </div>
-                    <p className="text-center text-xs text-[#605E5E] md:text-sm">Click the camera icon to update your profile picture</p>
-                </div>
-            </motion.div>
-
-            {/* Personal Information Form */}
-            <motion.div
-                initial={slideIn("up", null).initial}
-                whileInView={slideIn("up", 2 * 2).animate}
-                className="mb-6 rounded-[18px] border border-[#e5ded3] bg-white p-5 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] md:p-6"
-            >
-                <h2 className="mb-6 flex items-center text-xl font-bold text-[#333333]">
-                    <FaIdCard className="mr-3 text-[#EC6345]" />
-                    Basic Information
-                </h2>
+        <div className="min-h-screen bg-[#F7F6F0] text-[#333333] selection:bg-[#EC6345]/30">
+            <div className="mx-auto max-w-[1600px] space-y-6 px-4 py-8 pb-32 md:px-8 md:py-10">
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                        <label className="flex items-center text-sm font-semibold text-[#4a4642]">
-                            <FaUser className="mr-2 text-sm text-[#EC6345]" />
-                            Username
-                        </label>
-                        <input
-                            type="text"
-                            name="username"
-                            value={formData.username || ""}
-                            onChange={handleChange}
-                            className="w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                            placeholder="Enter your username"
-                        />
+                {/* HEADER STATION */}
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="relative rounded-[32px] border border-[#e5ded3] bg-white p-6 md:p-8 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(236,99,69,0.04),transparent_50%)]" />
+                  
+                  <div className="relative z-10">
+                    <BackButton className="mb-6" />
+                    <div className="flex items-center justify-between gap-6">
+                      <div className="flex items-center gap-6">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EC6345]/10 border border-[#EC6345]/20">
+                          <IoIdCardOutline className="text-2xl text-[#EC6345]" />
+                        </div>
+                        <div>
+                          <h1 className="text-3xl font-black tracking-tight text-[#333333] uppercase italic italic-heavy leading-none">
+                            Personal Information
+                          </h1>
+                          <p className="mt-2 text-sm font-medium text-[#605E5E]">
+                            Maintain your curator dossier and security credentials.
+                          </p>
+                        </div>
+                      </div>
                     </div>
+                  </div>
+                </motion.div>
 
-                    <div className="space-y-2">
-                        <label className="flex items-center text-sm font-semibold text-[#4a4642]">
-                            <FaEnvelope className="mr-2 text-sm text-[#EC6345]" />
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email || ""}
-                            onChange={handleChange}
-                            className="w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                            placeholder="Enter your email"
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="flex items-center text-sm font-semibold text-[#4a4642]">
-                            <FaPhone className="mr-2 text-sm text-[#EC6345]" />
-                            Phone Number
-                        </label>
-                        <input
-                            type="text"
-                            name="phone_number"
-                            value={formData.phone_number || ""}
-                            onChange={handleChange}
-                            className="w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                            placeholder="Enter your phone number"
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-[#4a4642]">First Name</label>
-                        <input
-                            type="text"
-                            name="first_name"
-                            value={formData.first_name || ""}
-                            onChange={handleChange}
-                            className="w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                            placeholder="Enter your first name"
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-[#4a4642]">Last Name</label>
-                        <input
-                            type="text"
-                            name="last_name"
-                            value={formData.last_name || ""}
-                            onChange={handleChange}
-                            className="w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                            placeholder="Enter your last name"
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-[#4a4642]">Gender</label>
-                        <div className="flex space-x-6 mt-2">
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="gender"
-                                    value="M"
-                                    checked={formData.gender === "M"}
-                                    onChange={handleChange}
-                                    className="h-4 w-4 border-[#d9d0c4] text-[#EC6345] focus:ring-[#EC6345]"
-                                />
-                                <span className="text-sm text-[#4a4642]">Male</span>
-                            </label>
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="gender"
-                                    value="F"
-                                    checked={formData.gender === "F"}
-                                    onChange={handleChange}
-                                    className="h-4 w-4 border-[#d9d0c4] text-[#EC6345] focus:ring-[#EC6345]"
-                                />
-                                <span className="text-sm text-[#4a4642]">Female</span>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    {/* IDENTITY MODULE */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="lg:col-span-4 v2-card p-8 flex flex-col items-center justify-center text-center space-y-6"
+                    >
+                        <div className="relative group">
+                            <div className="absolute inset-0 bg-[#EC6345]/10 blur-3xl group-hover:bg-[#EC6345]/20 transition-all duration-700" />
+                            <div className="relative h-32 w-32 md:h-40 md:w-40 rounded-[48px] border-4 border-white shadow-2xl overflow-hidden bg-[#fbfaf6]">
+                                {(imagePreview || profilePicture) ? (
+                                    <img src={imagePreview || profilePicture} alt="Avatar" className="h-full w-full object-cover" />
+                                ) : (
+                                    <div className="flex h-full w-full items-center justify-center">
+                                        <IoPersonOutline className="text-5xl text-[#EC6345]/20" />
+                                    </div>
+                                )}
+                            </div>
+                            <label className="absolute -bottom-2 -right-2 h-12 w-12 flex items-center justify-center rounded-2xl bg-[#333333] border-4 border-white text-white shadow-xl cursor-pointer hover:bg-black transition-all hover:scale-110 active:scale-90">
+                                <IoCameraOutline className="text-xl" />
+                                <input type="file" onChange={handleImageUpload} className="hidden" accept="image/*" />
                             </label>
                         </div>
-                    </div>
+                    </motion.div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-[#4a4642]">Referral Code</label>
-                        <input
-                            type="text"
-                            name="referral_code"
-                            value={formData.referral_code || ""}
-                            readOnly
-                            className="w-full cursor-not-allowed rounded-lg border border-[#e5ded3] bg-[#fbfaf6] p-3 text-sm text-[#5f5b57]"
-                        />
-                    </div>
+                    {/* BASIC INFORMATION PANE */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.1 }}
+                        className="lg:col-span-8 v2-card p-8 md:p-10"
+                    >
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="h-1 w-8 bg-[#EC6345] rounded-full" />
+                            <h2 className="text-xl font-black text-[#333333] uppercase italic">Basic Information</h2>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {[
+                                { label: "Username", name: "username", icon: IoPersonOutline, placeholder: "Curator ID" },
+                                { label: "Email Address", name: "email", icon: IoMailOutline, placeholder: "curator@mission.com" },
+                                { label: "Phone Number", name: "phone_number", icon: IoCallOutline, placeholder: "+1 000 000 000" },
+                                { label: "First Name", name: "first_name", icon: IoIdCardOutline, placeholder: "Given Name" },
+                                { label: "Last Name", name: "last_name", icon: IoIdCardOutline, placeholder: "Surname" }
+                            ].map((field) => (
+                                <div key={field.name} className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/60 ml-2">{field.label}</label>
+                                    <div className="relative group">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#605E5E]/30 group-focus-within:text-[#EC6345] transition-colors">
+                                            <field.icon className="text-lg" />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            name={field.name}
+                                            value={formData[field.name] || ""}
+                                            onChange={handleChange}
+                                            placeholder={field.placeholder}
+                                            className="w-full rounded-2xl border border-[#e5ded3] bg-[#fbfaf6] pl-12 pr-6 py-4 text-sm font-bold text-[#333333] placeholder:text-[#605E5E]/30 focus:outline-none focus:border-[#EC6345]/40 transition-all"
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/60 ml-2">Gender Identification</label>
+                                <div className="flex gap-4 p-1.5 bg-[#fbfaf6] border border-[#e5ded3] rounded-2xl">
+                                    {["M", "F"].map((g) => (
+                                        <button
+                                            key={g}
+                                            onClick={() => setFormData(prev => ({ ...prev, gender: g }))}
+                                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                                formData.gender === g 
+                                                ? "bg-[#333333] text-white shadow-lg" 
+                                                : "text-[#605E5E] hover:bg-black/5"
+                                            }`}
+                                        >
+                                            {g === "M" ? "Male" : "Female"}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-10 pt-10 border-t border-[#e5ded3] flex flex-col md:flex-row gap-4">
+                            <motion.button
+                                whileHover={hasChanges ? { scale: 1.02 } : {}}
+                                whileTap={hasChanges ? { scale: 0.98 } : {}}
+                                onClick={handleUpdateProfile}
+                                disabled={isUpdatingProfile || !hasChanges}
+                                className={`flex items-center justify-center flex-1 rounded-[24px] py-5 text-[11px] font-black uppercase tracking-[0.2em] shadow-xl transition-all ${
+                                    hasChanges 
+                                    ? "bg-[#333333] text-white shadow-black/10 hover:bg-black" 
+                                    : "bg-[#e5ded3] text-[#605E5E]/40 cursor-not-allowed shadow-none"
+                                }`}
+                            >
+                                {isUpdatingProfile ? <ButtonLoader /> : "Update Profile"}
+                            </motion.button>
+                        </div>
+                    </motion.div>
                 </div>
-            </motion.div>
 
-            {/* Action Buttons */}
-            <motion.div
-                initial={slideIn("up", null).initial}
-                whileInView={slideIn("up", 3 * 2).animate}
-                className="mb-20 grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4"
-            >
-                <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={handleUpdateProfile}
-                    disabled={isUpdatingProfile}
-                    className="flex items-center justify-center space-x-2 rounded-xl border border-[#EC6345]/35 bg-[#EC6345] px-6 py-3.5 font-semibold text-white transition duration-200 hover:bg-[#BA5225] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                    {isUpdatingProfile ? (
-                        <ButtonLoader />
-                    ) : (
-                        <>
-                            <FaUser className="text-lg" />
-                            <span>Update Profile</span>
-                        </>
-                    )}
-                </motion.button>
-
-                <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={toggleLoginPasswordModal}
-                    className="flex items-center justify-center space-x-2 rounded-xl border border-[#e5ded3] bg-white px-6 py-3.5 font-semibold text-[#333333] shadow-[0_14px_30px_-26px_rgba(39,39,39,0.45)] transition duration-200 hover:border-[#EC6345]/35 hover:text-[#EC6345]"
-                >
-                    <FaLock className="text-lg" />
-                    <span>Change Login Password</span>
-                </motion.button>
-
-                <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={toggleTransactionPasswordModal}
-                    className="flex items-center justify-center space-x-2 rounded-xl border border-[#e5ded3] bg-white px-6 py-3.5 font-semibold text-[#333333] shadow-[0_14px_30px_-26px_rgba(39,39,39,0.45)] transition duration-200 hover:border-[#EC6345]/35 hover:text-[#EC6345]"
-                >
-                    <FaShieldAlt className="text-lg" />
-                    <span>Change Transaction Password</span>
-                </motion.button>
-            </motion.div>
-
-            {/* Login Password Modal */}
-            {isLoginPasswordModalOpen && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4"
-                    onClick={(e) => handleModalBackdropClick(e, 'login')}
-                >
-                    <motion.div
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.9, opacity: 0 }}
-                        className="relative w-full max-w-md rounded-2xl border border-[#e5ded3] bg-white p-6 text-[#333333] shadow-[0_30px_70px_-35px_rgba(39,39,39,0.55)]"
-                    >
-                        <button
-                            onClick={toggleLoginPasswordModal}
-                            className="absolute right-4 top-4 rounded-full border border-[#EC6345]/30 bg-[#EC6345]/10 px-2 text-xl font-bold text-[#EC6345] transition hover:bg-[#EC6345]/20"
+                {/* SECURITY SECTOR */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
+                    {[
+                        { 
+                            title: "Login Security", 
+                            desc: "Change your login password", 
+                            icon: IoLockClosedOutline, 
+                            action: () => setIsLoginPasswordModalOpen(true) 
+                        },
+                        { 
+                            title: "Transaction Security", 
+                            desc: "Change your transaction PIN", 
+                            icon: IoShieldCheckmarkOutline, 
+                            action: () => setIsTransactionPasswordModalOpen(true) 
+                        }
+                    ].map((sec, idx) => (
+                        <motion.button
+                            key={sec.title}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 + (idx * 0.1) }}
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                            onClick={sec.action}
+                            className="v2-card p-6 flex items-center justify-between group hover:border-[#EC6345]/30 transition-all"
                         >
-                            ✕
-                        </button>
-                        <div className="text-center mb-6">
-                            <FaLock className="mx-auto mb-3 text-4xl text-[#EC6345]" />
-                            <h2 className="text-2xl font-bold text-[#333333]">Change Login Password</h2>
-                            <p className="mt-2 text-sm text-[#605E5E]">Enter your current and new password</p>
-                        </div>
-                        <form className="space-y-4">
-                            <div>
-                                <label className="text-sm font-semibold text-[#4a4642]">Current Password</label>
-                                <input
-                                    type="password"
-                                    name="current_password"
-                                    value={passwordData.current_password}
-                                    onChange={handlePasswordChange}
-                                    className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                                    placeholder="Enter current password"
-                                />
+                            <div className="flex items-center gap-5">
+                                <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-[#EC6345]/10 text-[#EC6345] group-hover:bg-[#EC6345] group-hover:text-white transition-all">
+                                    <sec.icon className="text-xl" />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-[11px] font-black uppercase tracking-[0.15em] text-[#333333]">{sec.title}</p>
+                                    <p className="text-[10px] font-medium text-[#605E5E] tracking-tight">{sec.desc}</p>
+                                </div>
                             </div>
-                            <div>
-                                <label className="text-sm font-semibold text-[#4a4642]">New Password</label>
-                                <input
-                                    type="password"
-                                    name="new_password"
-                                    value={passwordData.new_password}
-                                    onChange={handlePasswordChange}
-                                    className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                                    placeholder="Enter new password"
-                                />
-                            </div>
-                            <div>
-                                <label className="text-sm font-semibold text-[#4a4642]">Confirm New Password</label>
-                                <input
-                                    type="password"
-                                    name="confirm_new_password"
-                                    value={passwordData.confirm_new_password}
-                                    onChange={handlePasswordChange}
-                                    className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                                    placeholder="Confirm new password"
-                                />
-                            </div>
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                type="button"
-                                onClick={handleChangePassword}
-                                className="mt-4 flex w-full items-center justify-center space-x-2 rounded-lg border border-[#EC6345]/35 bg-[#EC6345] py-3 font-semibold text-white transition duration-200 hover:bg-[#BA5225] disabled:cursor-not-allowed disabled:opacity-50"
-                                disabled={isSavingPassword}
-                            >
-                                {isSavingPassword ? (
-                                    <ButtonLoader />
-                                ) : (
-                                    <>
-                                        <FaLock className="text-lg" />
-                                        <span>Save Changes</span>
-                                    </>
-                                )}
-                            </motion.button>
-                        </form>
-                    </motion.div>
-                </motion.div>
-            )}
+                            <IoChevronForwardOutline className="text-[#605E5E]/30 group-hover:translate-x-1 group-hover:text-[#EC6345] transition-all" />
+                        </motion.button>
+                    ))}
+                </div>
+            </div>
 
-            {/* Transaction Password Modal */}
-            {isTransactionPasswordModalOpen && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4"
-                    onClick={(e) => handleModalBackdropClick(e, 'transaction')}
-                >
+            {/* MODALS TERMINALS */}
+            <AnimatePresence>
+                {(isLoginPasswordModalOpen || isTransactionPasswordModalOpen) && (
                     <motion.div
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.9, opacity: 0 }}
-                        className="relative w-full max-w-md rounded-2xl border border-[#e5ded3] bg-white p-6 text-[#333333] shadow-[0_30px_70px_-35px_rgba(39,39,39,0.55)]"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
                     >
-                        <button
-                            onClick={toggleTransactionPasswordModal}
-                            className="absolute right-4 top-4 rounded-full border border-[#EC6345]/30 bg-[#EC6345]/10 px-2 text-xl font-bold text-[#EC6345] transition hover:bg-[#EC6345]/20"
-                        >
-                            ✕
-                        </button>
-                        <div className="text-center mb-6">
-                            <FaShieldAlt className="mx-auto mb-3 text-4xl text-[#EC6345]" />
-                            <h2 className="text-2xl font-bold text-[#333333]">Change Transaction Password</h2>
-                            <p className="mt-2 text-sm text-[#605E5E]">Enter your 4-digit transaction password</p>
-                        </div>
-                        <form className="space-y-4">
-                            <div>
-                                <label className="text-sm font-semibold text-[#4a4642]">Current Password</label>
-                                <input
-                                    type="password"
-                                    name="current_password"
-                                    value={transactionPasswordData.current_password}
-                                    onChange={handleTransactionPasswordChange}
-                                    className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                                    placeholder="Enter current password"
-                                    maxLength="4"
-                                />
-                            </div>
-                            <div>
-                                <label className="text-sm font-semibold text-[#4a4642]">New Password</label>
-                                <input
-                                    type="password"
-                                    name="new_password"
-                                    value={transactionPasswordData.new_password}
-                                    onChange={handleTransactionPasswordChange}
-                                    className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                                    placeholder="Enter new 4-digit password"
-                                    maxLength="4"
-                                />
-                            </div>
-                            <div>
-                                <label className="text-sm font-semibold text-[#4a4642]">Confirm New Password</label>
-                                <input
-                                    type="password"
-                                    name="confirm_new_password"
-                                    value={transactionPasswordData.confirm_new_password}
-                                    onChange={handleTransactionPasswordChange}
-                                    className="mt-1 w-full rounded-lg border border-[#e5ded3] bg-white p-3 text-sm text-[#333333] placeholder:text-[#8b8580] transition-all focus:outline-none focus:ring-2 focus:ring-[#EC6345]/30"
-                                    placeholder="Confirm new password"
-                                    maxLength="4"
-                                />
-                            </div>
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                type="button"
-                                onClick={handleTransactionPasswordSave}
-                                className="mt-4 flex w-full items-center justify-center space-x-2 rounded-lg border border-[#EC6345]/35 bg-[#EC6345] py-3 font-semibold text-white transition duration-200 hover:bg-[#BA5225] disabled:cursor-not-allowed disabled:opacity-50"
-                                disabled={isTransactionPasswordSaving}
+                        {isLoginPasswordModalOpen && (
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                className="w-full max-w-md v2-card p-8 md:p-10 relative"
                             >
-                                {isTransactionPasswordSaving ? (
-                                    <ButtonLoader />
-                                ) : (
-                                    <>
-                                        <FaShieldAlt className="text-lg" />
-                                        <span>Save Changes</span>
-                                    </>
-                                )}
-                            </motion.button>
-                        </form>
+                                <button onClick={() => setIsLoginPasswordModalOpen(false)} className="absolute right-6 top-6 h-10 w-10 flex items-center justify-center rounded-full bg-[#fbfaf6] text-[#605E5E] hover:text-[#EC6345] transition-colors">
+                                    <IoCloseOutline className="text-2xl" />
+                                </button>
+                                
+                                <div className="text-center mb-8">
+                                    <div className="h-16 w-16 bg-[#EC6345]/10 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                                        <IoLockClosedOutline className="text-3xl text-[#EC6345]" />
+                                    </div>
+                                    <h2 className="text-2xl font-black text-[#333333] uppercase italic">Change Password</h2>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#605E5E]/40 mt-1">Update your account password</p>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {[
+                                        { label: "Current Password", name: "current_password" },
+                                        { label: "New Password", name: "new_password" },
+                                        { label: "Confirm New Password", name: "confirm_new_password" }
+                                    ].map(f => (
+                                        <div key={f.name} className="space-y-1.5">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-[#605E5E]/60 ml-1">{f.label}</label>
+                                            <input
+                                                type="password"
+                                                name={f.name}
+                                                value={passwordData[f.name]}
+                                                onChange={handlePasswordChange}
+                                                className="w-full rounded-2xl border border-[#e5ded3] bg-[#fbfaf6] px-5 py-3.5 text-sm font-bold text-[#333333] focus:outline-none focus:border-[#EC6345]/40"
+                                            />
+                                        </div>
+                                    ))}
+                                    <motion.button
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={handleChangePassword}
+                                        disabled={isSavingPassword}
+                                        className="flex items-center justify-center w-full mt-4 rounded-2xl bg-[#333333] py-4 text-[10px] font-black uppercase tracking-widest text-white shadow-xl hover:bg-black disabled:opacity-40"
+                                    >
+                                        {isSavingPassword ? <ButtonLoader /> : "Update Password"}
+                                    </motion.button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {isTransactionPasswordModalOpen && (
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                className="w-full max-w-md v2-card p-8 md:p-10 relative"
+                            >
+                                <button onClick={() => setIsTransactionPasswordModalOpen(false)} className="absolute right-6 top-6 h-10 w-10 flex items-center justify-center rounded-full bg-[#fbfaf6] text-[#605E5E] hover:text-[#EC6345] transition-colors">
+                                    <IoCloseOutline className="text-2xl" />
+                                </button>
+                                
+                                <div className="text-center mb-8">
+                                    <div className="h-16 w-16 bg-[#EC6345]/10 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                                        <IoShieldCheckmarkOutline className="text-3xl text-[#EC6345]" />
+                                    </div>
+                                    <h2 className="text-2xl font-black text-[#333333] uppercase italic">Change PIN</h2>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#605E5E]/40 mt-1">Update your 4-digit security PIN</p>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {[
+                                        { label: "Current Access Code", name: "current_password" },
+                                        { label: "New Access Code", name: "new_password" },
+                                        { label: "Confirm Access Code", name: "confirm_new_password" }
+                                    ].map(f => (
+                                        <div key={f.name} className="space-y-1.5">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-[#605E5E]/60 ml-1">{f.label}</label>
+                                            <input
+                                                type="password"
+                                                name={f.name}
+                                                maxLength="4"
+                                                value={transactionPasswordData[f.name]}
+                                                onChange={handleTransactionPasswordChange}
+                                                className="w-full text-center tracking-[1em] rounded-2xl border border-[#e5ded3] bg-[#fbfaf6] px-5 py-3.5 text-lg font-black text-[#333333] focus:outline-none focus:border-[#EC6345]/40"
+                                            />
+                                        </div>
+                                    ))}
+                                    <p className="text-[9px] font-medium text-[#605E5E] text-center italic opacity-60">Must be exactly 4 numeric identification digits.</p>
+                                    <motion.button
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={handleTransactionPasswordSave}
+                                        disabled={isTransactionPasswordSaving}
+                                        className="flex items-center justify-center w-full mt-2 rounded-2xl bg-[#333333] py-4 text-[10px] font-black uppercase tracking-widest text-white shadow-xl hover:bg-black disabled:opacity-40"
+                                    >
+                                        {isTransactionPasswordSaving ? <ButtonLoader /> : "Update PIN"}
+                                    </motion.button>
+                                </div>
+                            </motion.div>
+                        )}
                     </motion.div>
-                </motion.div>
-            )}
+                )}
+            </AnimatePresence>
+
+            <BottomNavMobile className="md:hidden" />
         </div>
     );
 };
 
 export default PersonalInfo;
-
-

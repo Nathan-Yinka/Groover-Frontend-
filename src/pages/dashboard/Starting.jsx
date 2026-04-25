@@ -27,7 +27,6 @@ import { HiOutlineLightningBolt, HiOutlineRefresh } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import PropTypes from "prop-types";
@@ -39,7 +38,7 @@ import authService from "../../app/service/auth.service";
 import { fetchProfileFailure, fetchProfileStart, fetchProfileSuccess } from "../../app/slice/profile.slice";
 import { showAlert, hideAlert } from "../../app/slice/ui.slice";
 import { formatCurrencyWithCode } from "../../utils/currency";
-import { profile as profileRoute, level as levelRoute } from "../../constants/app.routes";
+import { home, profile as profileRoute, level as levelRoute, notifications as notificationsRoute } from "../../constants/app.routes";
 import Loader from "./components/Load";
 import MusicVisualizer from "./components/MusicVisualizer";
 import BottomNavMobile from "./components/BottomNavMobile";
@@ -226,16 +225,12 @@ const Starting = () => {
         }
 
         setIsLoadingTerminal(true);
-        showGlobalAlert('sync', 'System Sync', 'Retrieving available task...');
+        // Integrated inline spinner replaces intrusive global alert
         
         try {
             // FIX: Use fetchCurrentGame() as per V1 logic
             const response = await dispatch(fetchCurrentGame());
             if (response?.success) {
-                dispatch(hideAlert());
-                if (response?.data?.special_product) {
-                    showGlobalAlert('success', 'Special Album', 'A premium special track has entered the queue.');
-                }
                 // AUTO-OPEN MODAL after procurement
                 setIsModalOpen(true);
             } else {
@@ -256,13 +251,14 @@ const Starting = () => {
         }
         
         setIsLoadingTerminal(true);
-        showGlobalAlert('sync', 'Submission', 'Committing curation data...');
+        // Integrated inline spinner replaces intrusive global alert
 
         try {
             const response = await dispatch(submitCurrentGame(selectedStar, comments));
             if (response?.success) {
                 setComments("");
                 setSelectedStar(0);
+                setIsModalOpen(false);
                 setIsModalOpen(false);
                 showGlobalAlert('success', 'Success', response?.data?.message || response?.message || 'Curation successfully submitted.');
                 await fetchProfileData();
@@ -276,7 +272,7 @@ const Starting = () => {
         }
     };
 
-    if (isLoading && isInitialLoad) return <Loader fullScreen={true} size="large" />;
+    if (isLoading && isInitialLoad) return <Loader fullScreen={true}  />;
 
     return (
         <div className="min-h-screen grow bg-[#f6f1ea] text-[#221d1a] selection:bg-[#EC6345]/30 overflow-x-hidden font-sans">
@@ -297,7 +293,7 @@ const Starting = () => {
                     <div className="flex items-center gap-2 md:gap-4">
                         <button 
                             type="button"
-                            onClick={() => navigate(notificationsRoute)}
+                            onClick={() => navigate(`${home}/${notificationsRoute}`)}
                             className="relative flex h-9 w-9 md:h-11 md:w-11 items-center justify-center rounded-full border border-[#eadfd4] bg-[#fffaf6] text-[#2f2724] transition hover:-translate-y-0.5"
                         >
                             <IoNotificationsOutline className="text-lg md:text-xl" />
@@ -305,7 +301,7 @@ const Starting = () => {
 
                         <button 
                             type="button"
-                            onClick={() => navigate(profileRoute)}
+                            onClick={() => navigate(`${home}/${profileRoute}`)}
                             className="flex items-center gap-2 md:gap-3 rounded-full border border-[#eadfd4] bg-[#fffaf6] p-1 md:p-1.5 md:pr-5 transition hover:-translate-y-0.5"
                         >
                             {profile?.profile_picture ? (
@@ -461,12 +457,19 @@ const Starting = () => {
                                     >
                                         <div className="absolute inset-0 bg-gradient-to-tr from-[#EC6345]/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                         
-                                        <IoMusicalNotesOutline className="mb-1 text-2xl text-[#EC6345] group-hover:scale-110 transition-transform duration-700" />
-                                        <div className="text-center">
+                                        <div className="flex flex-col items-center justify-center">
                                             <span className="block text-[6px] font-black uppercase tracking-[0.6em] text-white/30 mb-0.5 leading-none">Access</span>
-                                            <span className="block text-xl font-black uppercase tracking-tighter sm:text-2xl leading-none">
-                                                {isLoading_current ? "..." : "START"}
-                                            </span>
+                                            <div className="flex items-center justify-center h-8">
+                                                {isLoadingTerminal ? (
+                                                    <div className="scale-[0.25] origin-center -mb-8">
+                                                        <ResponsiveSpinner size="sm" />
+                                                    </div>
+                                                ) : (
+                                                    <span className="block text-xl font-black uppercase tracking-tighter sm:text-2xl leading-none">
+                                                        START
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </button>
                                 </motion.div>

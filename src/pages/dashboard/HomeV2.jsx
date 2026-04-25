@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,22 +7,19 @@ import {
   IoTrophy,
   IoHelpCircle,
   IoWalletOutline,
-  IoRocketOutline,
   IoChevronForwardOutline,
   IoNotificationsOutline,
   IoShieldCheckmarkOutline,
   IoPulseOutline,
   IoMusicalNotesOutline,
   IoLayersOutline,
-  IoSparklesOutline,
-  IoCloseOutline
 } from "react-icons/io5";
-import { BiBook, BiUserCircle, BiTrendingUp } from "react-icons/bi";
+import { BiBook, BiUserCircle } from "react-icons/bi";
 import { BsCalendar2Event } from "react-icons/bs";
 import { CiCreditCard1 } from "react-icons/ci";
 import { FaCcMastercard } from "react-icons/fa";
-import { GiCrown, GiMusicSpell } from "react-icons/gi";
-import { FiMic, FiPlusSquare } from "react-icons/fi";
+// import { GiCrown, GiMusicSpell } from "react-icons/gi";
+import { FiPlusSquare } from "react-icons/fi";
 import { fetchActivePacks } from "../../app/service/packs.service";
 import { fetchProducts } from "../../app/service/products.service";
 import Loader from "./components/Load";
@@ -48,11 +45,11 @@ import authService from "../../app/service/auth.service";
 import { fetchNotifications } from "../../app/service/notifications.service";
 import { formatCurrencyWithCode } from "../../utils/currency";
 import BottomNavMobile from "./components/BottomNavMobile";
-import MusicVisualizer from "./components/MusicVisualizer";
+// import MusicVisualizer from "./components/MusicVisualizer";
 
 // Assets
 import v2HeroImage from "../../assets/v2_hero_image.png";
-import v2AlbumArt from "../../assets/v2_album_art.png";
+// import v2AlbumArt from "../../assets/v2_album_art.png";
 import eyeCatcher from "../../assets/eye_catcher.png";
 import tierBronze from "../../assets/tier_bg_bronze.png";
 import tierSilver from "../../assets/tier_bg_silver.png";
@@ -60,7 +57,7 @@ import tierGold from "../../assets/tier_bg_gold.png";
 import tierDiamond from "../../assets/tier_bg_diamond.png";
 import v2HeroVar1 from "../../assets/v2_hero_variation1.png";
 import v2HeroVar2 from "../../assets/v2_hero_variation2.png";
-import startingCardBg from "../../assets/starting_card_bg.png";
+// import startingCardBg from "../../assets/starting_card_bg.png";
 import v2HeroStudioCurator from "../../assets/v2_hero_studio_curator.png";
 import financeCardBg from "../../assets/v2_finance_bg.png";
 import supportCardBg from "../../assets/v2_support_bg.png";

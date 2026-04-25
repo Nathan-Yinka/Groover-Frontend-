@@ -90,7 +90,7 @@ const HomeLayout = () => {
       <SideBarWeb />
 
       <div className="flex flex-col w-full h-full">
-        <div
+        {/* <div
           className={`nav-bar fixed left-0 right-0 top-0 z-40 flex h-[68px] items-center border-b border-[#e5ded3] bg-[#F7F6F0]/95 px-3 shadow-sm backdrop-blur transition-transform duration-200 will-change-transform md:hidden ${
             isMobileTopBarHidden ? "-translate-y-full" : "translate-y-0"
           }`}
@@ -249,12 +249,12 @@ const HomeLayout = () => {
               </motion.div>
             </motion.div>
           )}
-        </AnimatePresence>
+        </AnimatePresence> */}
 
         <div
           id="dashboard-scroll-container"
           ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto pt-[68px] md:pt-0"
+          className="flex-1 overflow-y-auto"
         >
           <Outlet />
         </div>

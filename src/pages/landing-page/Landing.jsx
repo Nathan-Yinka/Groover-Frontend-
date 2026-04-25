@@ -301,22 +301,26 @@ You can refine your preferred music genres on your profile. Being as precise as 
   const activeTestimonial = curatorTestimonials[testimonialIndex];
 
   return (
-    <div className="bg-[#F7F6F0]">
+    <div className="bg-[#F7F6F0] overflow-x-clip">
       {/* HEADER */}
       <header
-        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
           isScrolled ? "bg-white shadow-lg" : "bg-white"
         }`}
       >
-        <div className="max-w-[1250px] mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center">
-            <img src={logo} alt="Groover" className="w-[150px] h-auto" />
+        <div className="mx-auto flex max-w-[1250px] min-w-0 items-center justify-between gap-3 px-3 py-3 sm:px-4 sm:py-4">
+          <div className="flex min-w-0 flex-1 items-center">
+            <img
+              src={logo}
+              alt="Groover"
+              className="h-auto w-[118px] max-w-full sm:w-[150px]"
+            />
           </div>
 
-          <div className="flex">
+          <div className="flex shrink-0">
             <a
               href="/login"
-              className="p-3 bg-[#EC6345] text-white text-xs font-semibold rounded-md hover:bg-[#BA5225] hover:shadow-lg transition"
+              className="rounded-md bg-[#EC6345] px-3 py-2 text-[11px] font-semibold text-white transition hover:bg-[#BA5225] hover:shadow-lg sm:px-4 sm:py-3 sm:text-xs"
             >
               Apply as a Curator/pro
             </a>
@@ -329,9 +333,9 @@ You can refine your preferred music genres on your profile. Being as precise as 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative overflow-hidden min-h-[600px] flex items-center mt-12 bg-[#F7F6F0] md:px-auto px-3 md:px-5"
+        className="relative mt-12 flex min-h-[600px] items-center overflow-hidden bg-[#F7F6F0] px-3 sm:px-4 md:px-5"
       >
-        <div className="relative w-full md:max-w-[1250px] mx-auto md:px-6 lg:px-0 py-10 flex flex-col lg:flex-row items-center gap-12 lg:gap-10">
+        <div className="relative mx-auto flex w-full flex-col items-center gap-10 py-10 md:max-w-[1250px] md:px-6 lg:flex-row lg:gap-10 lg:px-0">
           {/* ── LEFT: Text ── */}
           <div className="flex-shrink-0 w-full lg:w-[45%] text-left z-10">
             <motion.h1
@@ -396,9 +400,9 @@ You can refine your preferred music genres on your profile. Being as precise as 
             variants={fadeIn("up", 2)}
             initial="initial"
             animate="animate"
-            className="md:px-0 px-2 flex w-[calc(100%+2.5rem)] flex-1 justify-center z-10 min-w-0 md:mx-0 md:w-full md:pl-20"
+            className="z-10 flex w-full min-w-0 flex-1 justify-center px-1 sm:px-2 md:w-full md:px-0 md:pl-20"
           >
-            <div className="relative w-full aspect-[4/3]">
+            <div className="relative aspect-[4/3] w-full max-w-[34rem] md:max-w-none">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={heroImageIndex}

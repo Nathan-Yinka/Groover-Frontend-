@@ -74,8 +74,8 @@ const Deposit = () => {
         if (!amount || !receipt) {
             dispatch(showAlert({
                 type: 'error',
-                title: 'Data Required',
-                message: "Amount and receipt are required!"
+                title: 'Required',
+                message: "Amount and receipt are required."
             }));
             return;
         }
@@ -107,8 +107,8 @@ const Deposit = () => {
         navigator.clipboard.writeText(text);
         dispatch(showAlert({
             type: 'success',
-            title: 'Dossier Link',
-            message: "Address copied to clipboard!"
+            title: 'Copied',
+            message: "Address copied to clipboard."
         }));
     };
 
@@ -386,9 +386,6 @@ const Deposit = () => {
                                 <div className="space-y-4 flex-1">
                                   <div className="flex items-center gap-3">
                                     <div className={`h-2 w-2 rounded-full ${label === 'Pending' ? 'bg-amber-400 animate-pulse' : label === 'Confirmed' ? 'bg-emerald-400' : 'bg-red-400'}`} />
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/40">
-                                      ID: {transaction.transaction_id || "TRX-SYNCING"}
-                                    </p>
                                   </div>
                                   <p className="text-3xl font-black text-[#333333] tracking-tighter">
                                     {transaction.amount} <span className="text-[#EC6345] text-xl">USD</span>

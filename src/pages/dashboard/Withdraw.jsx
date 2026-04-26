@@ -58,12 +58,12 @@ const Withdraw = () => {
                         dispatch(fetchProfileSuccess(response.data));
                     } else {
                         dispatch(fetchProfileFailure(response.message || "Failed to load profile."));
-                        toast.error(response.message || "Failed to load profile.");
+                        dispatch(showAlert({ type: 'error', title: 'Sync Error', message: response.message || "Failed to load profile." }));
                     }
                 } catch (error) {
                     console.error("Error fetching profile:", error);
                     dispatch(fetchProfileFailure("An error occurred while fetching your profile."));
-                    toast.error("An error occurred while fetching your profile.");
+                    dispatch(showAlert({ type: 'error', title: 'Connection Error', message: "An error occurred while fetching your profile." }));
                 }
             }
         };
@@ -80,8 +80,8 @@ const Withdraw = () => {
         if (!amount || !password) {
             dispatch(showAlert({
                 type: 'error',
-                title: 'Security Alert',
-                message: "Please fill in all withdrawal parameters."
+                title: 'Missing Fields',
+                message: "Please fill in all withdrawal fields."
             }));
             return;
         }
@@ -89,8 +89,8 @@ const Withdraw = () => {
         if (Number(amount) > Number(profile.wallet.balance)) {
             dispatch(showAlert({
                 type: 'error',
-                title: 'Fiscal Warning',
-                message: "Amount exceeds available curation liquidity."
+                title: 'Insufficient Balance',
+                message: "Amount exceeds your available balance."
             }));
             return;
         }
@@ -101,8 +101,8 @@ const Withdraw = () => {
             if (result.success) {
                 dispatch(showAlert({
                     type: 'success',
-                    title: 'Mission Confirmed',
-                    message: "Extraction mission initiated successfully."
+                    title: 'Success',
+                    message: "Withdrawal initiated successfully."
                 }));
                 setAmount("");
                 setPassword("");
@@ -300,9 +300,6 @@ const Withdraw = () => {
                                   <div className="space-y-4 flex-1">
                                     <div className="flex items-center gap-3">
                                       <div className={`h-2 w-2 rounded-full ${label === 'Pending' ? 'bg-amber-400 animate-pulse' : label === 'Completed' ? 'bg-emerald-400' : 'bg-red-400'}`} />
-                                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#605E5E]/40">
-                                        ID: {item.transaction_id || "TRX-N/A"}
-                                      </p>
                                     </div>
                                     <p className="text-3xl font-black text-[#333333] tracking-tighter">
                                       {formatCurrencyFullAmount(item.amount || 0)}

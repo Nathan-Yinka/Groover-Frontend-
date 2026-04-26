@@ -8,7 +8,8 @@ import {
   FiPhone,
   FiUser,
 } from "react-icons/fi";
-import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { showAlert } from "../../app/slice/ui.slice";
 import logo from "../../assets/LogoWithText.svg";
 import loginpageImage from "../../assets/left.png";
 import authService from "../../app/service/auth.service";
@@ -22,11 +23,12 @@ const inputTheme = {
   labelClassName: "!text-[#2d2d2d] !font-semibold",
   iconClassName: "!text-gray-400 text-base",
   inputClassName:
-    "!h-[48px] !rounded-lg !border-gray-300 !bg-white !text-gray-800 !placeholder:text-gray-400 focus:!border-[#ff6b56] focus:!ring-[#ff6b56]/25",
+    "!h-[48px] !rounded-lg !border-gray-300 !bg-white !text-gray-800 !placeholder-gray-500 focus:!border-[#ff6b56] focus:!ring-[#ff6b56]/25",
 };
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -140,7 +142,11 @@ const SignUp = () => {
     }
 
     if (errors.length > 0) {
-      errors.forEach((error) => toast.error(error));
+      dispatch(showAlert({
+        type: 'error',
+        title: 'Error',
+        message: errors.join(' | ')
+      }));
       return;
     }
 
@@ -162,13 +168,15 @@ const SignUp = () => {
       const response = await authService.register(payload);
 
       if (response.success) {
-        toast.success("Registration successful!");
+        dispatch(showAlert({
+          type: 'success',
+          title: 'Success',
+          message: "Registration successful!"
+        }));
         setTimeout(() => navigate("/login"), 1600);
-      } else {
-        ErrorHandler(response.message);
       }
     } catch (error) {
-      ErrorHandler(error);
+      // Error handled by service
     } finally {
       setLoading(false);
     }
@@ -230,7 +238,7 @@ const SignUp = () => {
                   id="first_name"
                   name="first_name"
                   label="First Name"
-                  placeholder="John"
+                  placeholder="Enter your first name"
                   Icon={FiUser}
                   value={formData.first_name}
                   onChange={handleChange}
@@ -242,7 +250,7 @@ const SignUp = () => {
                   id="last_name"
                   name="last_name"
                   label="Last Name"
-                  placeholder="Doe"
+                  placeholder="Enter your last name"
                   Icon={FiUser}
                   value={formData.last_name}
                   onChange={handleChange}
@@ -256,7 +264,7 @@ const SignUp = () => {
                 id="username"
                 name="username"
                 label="Username"
-                placeholder="Create a username"
+                placeholder="Enter your username"
                 Icon={FiUser}
                 value={formData.username}
                 onChange={handleChange}
@@ -271,7 +279,7 @@ const SignUp = () => {
                   name="email"
                   type="email"
                   label="Email Address"
-                  placeholder="john@example.com"
+                  placeholder="Enter your email address"
                   Icon={FiMail}
                   value={formData.email}
                   onChange={handleChange}
@@ -284,7 +292,7 @@ const SignUp = () => {
                   name="phone_number"
                   type="tel"
                   label="Phone Number"
-                  placeholder="+1 (555) 000-0000"
+                  placeholder="Enter your phone number"
                   Icon={FiPhone}
                   value={formData.phone_number}
                   onChange={handleChange}
@@ -354,7 +362,7 @@ const SignUp = () => {
                   name="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   label="Confirm Password"
-                  placeholder="Confirm password"
+                  placeholder="Confirm your password"
                   Icon={FiLock}
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -382,7 +390,7 @@ const SignUp = () => {
                   name="transactional_password"
                   type={showTransactionalPassword ? "text" : "password"}
                   label="Transaction Password"
-                  placeholder="4-digit pin"
+                  placeholder="Enter 4-digit transaction pin"
                   Icon={FiLock}
                   value={formData.transactional_password}
                   onChange={handleChange}
@@ -411,7 +419,7 @@ const SignUp = () => {
                   id="invitation_code"
                   name="invitation_code"
                   label="Invitation Code"
-                  placeholder="Enter code"
+                  placeholder="Enter invitation code"
                   Icon={FiUser}
                   value={formData.invitation_code}
                   onChange={handleChange}

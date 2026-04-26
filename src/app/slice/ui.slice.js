@@ -6,7 +6,8 @@ const initialState = {
         type: 'info', // 'success' | 'error' | 'sync' | 'info'
         title: '',
         message: ''
-    }
+    },
+    isModalOpen: false
 };
 
 const uiSlice = createSlice({
@@ -23,9 +24,12 @@ const uiSlice = createSlice({
         },
         hideAlert(state) {
             state.alert.visible = false;
+        },
+        setModalOpen(state, action) {
+            state.isModalOpen = action.payload;
         }
     },
 });
 
-export const { showAlert, hideAlert } = uiSlice.actions;
+export const { showAlert, hideAlert, setModalOpen } = uiSlice.actions;
 export default uiSlice.reducer;

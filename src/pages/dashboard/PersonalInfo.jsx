@@ -133,8 +133,8 @@ const PersonalInfo = () => {
             if (Object.keys(changedData).length === 0) {
                 dispatch(showAlert({
                     type: 'info',
-                    title: 'Dossier Message',
-                    message: "No modifications detected in the dossier."
+                    title: 'No Changes',
+                    message: "No changes were made to your profile."
                 }));
                 setIsUpdatingProfile(false);
                 return;
@@ -144,16 +144,14 @@ const PersonalInfo = () => {
             if (result.success) {
                 dispatch(showAlert({
                     type: 'success',
-                    title: 'Dossier Updated',
-                    message: "Dossier synchronized successfully."
+                    title: 'Success',
+                    message: "Profile updated successfully."
                 }));
                 dispatch(setImagePreview(null)); // Clear preview after successful upload
                 // The useEffect will handle updating formData when profile changes in Redux
-            } else {
-                ErrorHandler(result.message);
             }
         } catch (error) {
-            ErrorHandler(error);
+            // Handled by service
         } finally {
             setIsUpdatingProfile(false);
         }
@@ -168,7 +166,7 @@ const PersonalInfo = () => {
         if (!passwordData.current_password || !passwordData.new_password || !passwordData.confirm_new_password) {
             dispatch(showAlert({
                 type: 'error',
-                title: 'Security Sync',
+                title: 'Missing Fields',
                 message: "All password fields are required."
             }));
             return;
@@ -176,7 +174,7 @@ const PersonalInfo = () => {
         if (passwordData.new_password !== passwordData.confirm_new_password) {
             dispatch(showAlert({
                 type: 'error',
-                title: 'Security Sync',
+                title: 'Mismatch',
                 message: "New passwords do not match."
             }));
             return;
@@ -190,16 +188,14 @@ const PersonalInfo = () => {
             if (result.success) {
                 dispatch(showAlert({
                     type: 'success',
-                    title: 'Security Alert',
-                    message: "Password updated successfully"
+                    title: 'Success',
+                    message: "Password updated successfully."
                 }));
                 setIsLoginPasswordModalOpen(false);
                 setPasswordData({ current_password: "", new_password: "", confirm_new_password: "" });
-            } else {
-                ErrorHandler(result.message);
             }
         } catch (error) {
-            ErrorHandler(error);
+            // Handled by service
         } finally {
             setIsSavingPassword(false);
         }
@@ -215,7 +211,7 @@ const PersonalInfo = () => {
         if (!current_password || !new_password || !confirm_new_password) {
             dispatch(showAlert({
                 type: 'error',
-                title: 'Security Sync',
+                title: 'Missing Fields',
                 message: "All fields are required."
             }));
             return;
@@ -234,16 +230,14 @@ const PersonalInfo = () => {
             if (result.success) {
                 dispatch(showAlert({
                     type: 'success',
-                    title: 'Security Alert',
-                    message: "Transaction password updated successfully"
+                    title: 'Success',
+                    message: "Transaction password updated successfully."
                 }));
                 setIsTransactionPasswordModalOpen(false);
                 setTransactionPasswordData({ current_password: "", new_password: "", confirm_new_password: "" });
-            } else {
-                ErrorHandler(result.message);
             }
         } catch (error) {
-            ErrorHandler(error);
+            // Handled by service
         } finally {
             setIsTransactionPasswordSaving(false);
         }

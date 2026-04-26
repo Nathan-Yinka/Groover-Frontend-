@@ -8,8 +8,7 @@ import {
     makeWithdrawalSuccess,
     makeWithdrawalFailure,
 } from "../slice/withdraw.slice";
-
-import { toast } from "sonner"; // For notifications
+import ErrorHandler from "../ErrorHandler";
 
 /**
  * Fetch Withdrawal History
@@ -23,13 +22,13 @@ export const fetchWithdrawalHistory = () => async (dispatch) => {
         } else {
             const errorMessage = response.data.message || "Failed to fetch withdrawal history.";
             dispatch(fetchWithdrawalsFailure(errorMessage));
-            toast.error(errorMessage);
+            ErrorHandler(response.data);
         }
     } catch (error) {
         console.error("Error fetching withdrawal history:", error);
         const errorMessage = error.response?.data?.message || "An error occurred while fetching withdrawal history.";
         dispatch(fetchWithdrawalsFailure(errorMessage));
-        toast.error(errorMessage);
+        ErrorHandler(error);
     }
 };
 
@@ -42,7 +41,6 @@ export const makeWithdrawal = (payload) => async (dispatch) => {
         const response = await axiosInstance.post(makeWithdrawals, payload);
         if (response.data.success) {
             dispatch(makeWithdrawalSuccess(response.data.message));
-            toast.success(response.data.message || "Withdrawal request successful.");
             return { success: true, message: response.data.message };
         } else {
             // Extract error message
@@ -52,7 +50,7 @@ export const makeWithdrawal = (payload) => async (dispatch) => {
                 "Failed to make withdrawal."; // Fallback error message
 
             dispatch(makeWithdrawalFailure(errorMessage));
-            // toast.error(errorMessage);
+            ErrorHandler(response.data);
             return { success: false, message: errorMessage };
         }
     } catch (error) {
@@ -65,7 +63,7 @@ export const makeWithdrawal = (payload) => async (dispatch) => {
             "An error occurred while making withdrawal."; // Fallback error message
 
         dispatch(makeWithdrawalFailure(errorMessage));
-        // toast.error(errorMessage);
+        ErrorHandler(error);
         return { success: false, message: error };
     }
 };

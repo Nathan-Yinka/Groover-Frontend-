@@ -1,13 +1,15 @@
-import {
-  FaHeadset,
-  FaWhatsapp,
-  FaTelegramPlane,
-  FaCommentDots,
-} from "react-icons/fa";
-import logo from "../../assets/logo.svg";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
 import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import { 
+  RiCustomerService2Line, 
+  RiWhatsappLine, 
+  RiTelegramLine, 
+  RiChatSmile3Line,
+  RiCheckDoubleLine
+} from "react-icons/ri";
+import logo from "../../assets/logo.svg";
+import { showAlert } from "../../app/slice/ui.slice";
 import authService from "../../app/service/auth.service";
 import Loader from "./components/Load";
 import ErrorHandler from "../../app/ErrorHandler";
@@ -17,11 +19,9 @@ import {
   fetchSettingsSuccess,
 } from "../../app/slice/auth.slice";
 import BackButton from "./components/BackButton";
-import BottomNavMobile from "./components/BottomNavMobile";
 
 const ContactUs = () => {
   const settings = useSelector((state) => state.auth.settings);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -33,34 +33,27 @@ const ContactUs = () => {
           if (response.success) {
             dispatch(fetchSettingsSuccess(response.data));
           } else {
-            dispatch(
-              fetchSettingsFailure(
-                response.message || "Failed to load profile.",
-              ),
-            );
+            dispatch(fetchSettingsFailure(response.message || "Failed to load profile."));
             ErrorHandler(response.message);
           }
         } catch (error) {
-          console.error("Error fetching profile:", error);
-          dispatch(
-            fetchSettingsFailure(
-              "An error occurred while fetching your profile.",
-            ),
-          );
-          // toast.error("An error occurred while fetching your profile.");
+          dispatch(fetchSettingsFailure("An error occurred while fetching your profile."));
           ErrorHandler(error);
         }
       }
     };
-
     fetchSettings();
   }, [dispatch, settings]);
 
   const handleNavigation = (url) => {
     if (url) {
-      window.open(url, "_blank"); // Open the URL in a new tab
+      window.open(url, "_blank");
     } else {
-      toast.error("Unable to navigate. URL is invalid."); // Provide user feedback if URL is invalid
+      dispatch(showAlert({
+        type: 'error',
+        title: 'Communication Error',
+        message: "The target sector link is currently invalid or disconnected."
+      }));
     }
   };
 
@@ -72,96 +65,103 @@ const ContactUs = () => {
   const telegramUsername = settings?.telegram_username?.replace("@", "");
 
   return (
-    <div className="min-h-screen bg-[#F7F6F0] text-[#333333]">
-      <div className="w-full space-y-5 px-3 py-4 pb-24 md:space-y-6 md:px-8 md:py-6 md:pb-8">
-        <div className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6">
-          <BackButton className="mb-5" />
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-                Contact Support
-              </h1>
-              <p className="text-xs text-[#605E5E] md:text-sm">
-                Fast help for services, account issues, and payout questions.
-              </p>
+    <div className="min-h-screen bg-[#F7F6F0] text-[#333333] overflow-x-hidden">
+      <div className="mx-auto max-w-[1600px] border-x border-[#e5ded3] min-h-screen bg-white md:bg-[#F7F6F0]/50 shadow-2xl">
+        
+        {/* PREMIUM SUPPORT HEADER */}
+        <section className="relative overflow-hidden bg-[#120d0c] px-6 py-12 md:rounded-b-[40px] md:py-20 lg:py-24">
+          <div className="absolute inset-0 z-0 opacity-30">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(236,99,69,0.2)_0%,transparent_50%)]" />
+            <div className="absolute inset-0 bg-[grid-white/[0.04]_bg-[size:40px_40px]" />
+          </div>
+          <div className="relative z-10 flex flex-col items-center text-center">
+            <BackButton className="mb-8" dark />
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mb-4 flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-md">
+              <RiCustomerService2Line className="text-[#EC6345]" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">Support Terminal</span>
+            </motion.div>
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-4 text-4xl font-bold tracking-tighter text-white md:text-6xl">
+              Contact <span className="text-[#EC6345]">Support</span>
+            </motion.h1>
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="max-w-[500px] text-xs font-medium leading-relaxed text-white/40 md:text-sm lg:text-base">
+              Fast help for services, account issues, and payout questions.
+            </motion.p>
+          </div>
+        </section>
+
+        <main className="px-4 py-10 pb-32 md:px-8 lg:px-20">
+          {/* WELCOME SECTION */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="group relative mb-12 overflow-hidden rounded-[32px] border border-[#e5ded3] bg-white p-10 text-center shadow-xl md:p-14"
+          >
+            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#EC6345]/5 blur-[80px] pointer-events-none" />
+            <img src={logo} alt="Groover Logo" className="mx-auto mb-8 h-auto w-36 md:w-44 transition-transform group-hover:scale-105 duration-700" />
+            <h2 className="mb-3 text-xl font-bold md:text-4xl text-[#120d0c] tracking-tight">Welcome to Customer Service</h2>
+            <p className="mx-auto max-w-[640px] text-sm text-[#5f5b57] md:text-lg leading-relaxed font-medium">
+              We are here to support your services, inquiries, and issues 24/7.
+            </p>
+          </motion.div>
+
+          {/* SUPPORT OPTIONS GRID */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+               <div className="h-px flex-1 bg-[#e5ded3]" />
+               <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#a56657]">Choose a Support Option</h3>
+               <div className="h-px flex-1 bg-[#e5ded3]" />
             </div>
-            <div className="hidden rounded-xl border border-[#EC6345]/25 bg-[#EC6345]/10 p-2.5 md:grid md:place-items-center">
-              <FaHeadset className="text-xl text-[#EC6345]" />
+
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3 pb-8">
+              {[
+                {
+                  id: 'online',
+                  label: "Online Chat",
+                  icon: RiChatSmile3Line,
+                  color: "bg-[#120d0c] text-white border-transparent",
+                  iconColor: "text-[#EC6345]",
+                  onClick: () => settings?.online_chat_url && handleNavigation(settings.online_chat_url)
+                },
+                {
+                  id: 'whatsapp',
+                  label: "WhatsApp Chat",
+                  icon: RiWhatsappLine,
+                  color: "bg-white text-[#120d0c] border-[#e5ded3]",
+                  iconColor: "text-green-500",
+                  onClick: () => whatsappNumber ? handleNavigation(`https://wa.me/${whatsappNumber}`) : dispatch(showAlert({ type: 'error', title: 'Link Missing', message: "WhatsApp contact is disconnected." }))
+                },
+                {
+                  id: 'telegram',
+                  label: "Telegram Chat",
+                  icon: RiTelegramLine,
+                  color: "bg-white text-[#120d0c] border-[#e5ded3]",
+                  iconColor: "text-blue-500",
+                  onClick: () => telegramUsername ? handleNavigation(`https://t.me/${telegramUsername}`) : dispatch(showAlert({ type: 'error', title: 'Link Missing', message: "Telegram contact is disconnected." }))
+                }
+              ].map((opt, i) => (
+                <motion.div
+                  key={opt.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  onClick={opt.onClick}
+                  className={`group relative overflow-hidden rounded-[32px] border ${opt.color} p-8 shadow-sm transition-all hover:-translate-y-2 hover:shadow-2xl cursor-pointer`}
+                >
+                  <div className="flex flex-col items-center gap-4 text-center">
+                    <div className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-black/5 text-3xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 ${opt.iconColor}`}>
+                      <opt.icon />
+                    </div>
+                    <span className="text-sm font-black uppercase tracking-widest">{opt.label}</span>
+                  </div>
+                  <RiCheckDoubleLine className="absolute bottom-4 right-4 text-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+                </motion.div>
+              ))}
             </div>
           </div>
-        </div>
-
-        <div className="rounded-2xl border border-[#e5ded3] bg-white p-5 text-center shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] md:p-8">
-          <img
-            src={logo}
-            alt="Groover Logo"
-            className="mx-auto mb-4 h-auto w-36 md:w-44"
-          />
-          <h2 className="text-xl font-bold md:text-2xl">
-            Welcome to Customer Service
-          </h2>
-          <p className="mx-auto mt-2 max-w-[640px] text-sm text-[#605E5E] md:text-base">
-            We are here to support your services, inquiries, and issues 24/7.
-          </p>
-        </div>
-
-        <div className="rounded-[18px] border border-[#e5ded3] bg-white p-4 shadow-[0_20px_45px_-38px_rgba(39,39,39,0.6)] md:p-6">
-          <h3 className="mb-4 text-lg font-semibold text-[#333333] md:text-xl">
-            Choose a Support Option
-          </h3>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-            <button
-              onClick={() =>
-                settings?.online_chat_url &&
-                handleNavigation(settings.online_chat_url)
-              }
-              className="rounded-xl border border-[#EC6345]/30 bg-[#EC6345] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#BA5225] md:text-base"
-            >
-              <span className="inline-flex items-center gap-2">
-                <FaCommentDots />
-                Online Chat
-              </span>
-            </button>
-
-            <button
-              onClick={() => {
-                if (whatsappNumber) {
-                  handleNavigation(`https://wa.me/${whatsappNumber}`);
-                } else {
-                  toast.error("WhatsApp contact is missing or invalid.");
-                }
-              }}
-              className="rounded-xl border border-[#e5ded3] bg-[#fbfaf6] px-4 py-3 text-sm font-semibold text-[#333333] transition hover:border-[#EC6345]/35 hover:text-[#EC6345] md:text-base"
-            >
-              <span className="inline-flex items-center gap-2">
-                <FaWhatsapp />
-                WhatsApp Chat
-              </span>
-            </button>
-
-            <button
-              onClick={() => {
-                if (telegramUsername) {
-                  handleNavigation(`https://t.me/${telegramUsername}`);
-                } else {
-                  toast.error("Telegram username is missing or invalid.");
-                }
-              }}
-              className="rounded-xl border border-[#e5ded3] bg-[#fbfaf6] px-4 py-3 text-sm font-semibold text-[#333333] transition hover:border-[#EC6345]/35 hover:text-[#EC6345] md:text-base"
-            >
-              <span className="inline-flex items-center gap-2">
-                <FaTelegramPlane />
-                Telegram Chat
-              </span>
-            </button>
-          </div>
-        </div>
+        </main>
       </div>
-      <BottomNavMobile className="md:hidden" />
     </div>
   );
 };
 
 export default ContactUs;
-
-

@@ -1,11 +1,20 @@
-import { BiBookOpen } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { BiHome } from "react-icons/bi";
+import { useSelector } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  RiHome5Line, 
+  RiHome5Fill, 
+  RiHistoryLine, 
+  RiHistoryFill,
+  RiMusic2Line,
+  RiMusic2Fill
+} from "react-icons/ri";
+import { IoMusicalNotes } from "react-icons/io5";
 import PropTypes from "prop-types";
-import logo from "../../../assets/logo.svg";
 
 function BottomNavMobile({ className = "" }) {
+  const isModalOpen = useSelector((state) => state.ui.isModalOpen);
   const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
@@ -19,10 +28,10 @@ function BottomNavMobile({ className = "" }) {
       const currentY = getScrollTop();
       const delta = currentY - lastY;
 
-      // Hide when scrolling down, show when scrolling up.
-      if (currentY > 24 && delta > 8) {
+      // Professional threshold for dock retraction
+      if (currentY > 60 && delta > 12) {
         setIsHidden(true);
-      } else if (delta < -8) {
+      } else if (delta < -12 || currentY < 20) {
         setIsHidden(false);
       }
 
@@ -33,56 +42,96 @@ function BottomNavMobile({ className = "" }) {
     return () => target.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const navItems = [
+    {
+      to: "/home",
+      label: "Home",
+      icon: RiHome5Line,
+      activeIcon: RiHome5Fill,
+      exact: true
+    },
+    {
+      to: "/home/starting",
+      label: "Start",
+      icon: RiMusic2Line,
+      activeIcon: RiMusic2Fill,
+      isCore: true
+    },
+    {
+      to: "/home/records",
+      label: "History",
+      icon: RiHistoryLine,
+      activeIcon: RiHistoryFill
+    }
+  ];
+
   return (
     <div
-      className={`fixed bottom-0 left-0 z-40 w-full border-t border-[#e5ded3] bg-[#F7F6F0]/95 shadow-[0_-18px_40px_-34px_rgba(39,39,39,0.7)] backdrop-blur-sm transition-transform duration-300 md:hidden ${
-        isHidden ? "translate-y-full" : "translate-y-0"
+      className={`fixed bottom-4 left-1/2 z-[1000] -translate-x-1/2 w-[88%] max-w-[340px] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] md:hidden ${
+        (isHidden || isModalOpen) ? "translate-y-24 opacity-0 scale-90 pointer-events-none" : "translate-y-0 opacity-100 scale-100"
       } ${className}`}
     >
-      <div className="flex h-[58px] items-center justify-around">
-      {/* Home Link */}
-      <NavLink
-        to="/home"
-        end
-        className={({ isActive }) =>
-          isActive
-            ? "text-[#EC6345] font-semibold tracking-wide flex flex-col items-center"
-            : "flex flex-col items-center text-[#6c6661] font-medium tracking-wide"
-        }
-      >
-        <BiHome className="text-xl" />
-        <p className="text-[11px]">Home</p>
-      </NavLink>
+      <div className="relative overflow-hidden rounded-[24px] border border-white/40 bg-white/70 p-1.5 shadow-[0_20px_40px_-15px_rgba(39,39,39,0.3)] backdrop-blur-2xl">
+        {/* INNER GLOW EFFECT */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+        
+        <div className="relative flex items-center justify-between px-1 py-0.5">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.exact}
+              className="relative flex flex-1 flex-col items-center justify-center py-1.5 transition-all duration-300"
+            >
+              {({ isActive }) => (
+                <>
+                  {/* ACTIVE INDICATOR ORBIT */}
+                  <AnimatePresence>
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeDockIndicator"
+                        className={`absolute inset-0 z-0 rounded-xl ${
+                          item.isCore ? "bg-[#EC6345]/5" : "bg-black/5"
+                        }`}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.35, ease: "circOut" }}
+                      />
+                    )}
+                  </AnimatePresence>
 
-      {/* Starting Link - Elevated Icon */}
-      <NavLink
-        to="/home/starting"
-        className={({ isActive }) =>
-          isActive
-            ? "text-[#EC6345] font-semibold tracking-wide flex flex-col items-center relative -top-3"
-            : "flex flex-col items-center relative -top-3 text-[#6c6661] font-medium tracking-wide"
-        }
-      >
-        <div className="rounded-full border border-[#EC6345]/35 bg-white p-2.5 shadow-[0_12px_28px_-22px_rgba(39,39,39,0.7)]">
-          <div className="w-10 overflow-hidden rounded-full">
-            <img src={logo} alt="Groover" className="h-auto w-full" />
-          </div>
-          <p className="text-[11px] mt-1">Starting</p>
+                  <div className={`relative z-10 flex flex-col items-center transition-transform duration-300 ${isActive ? '-translate-y-0.5' : ''}`}>
+                    {item.isCore ? (
+                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-500 ${
+                        isActive 
+                        ? 'bg-[#EC6345] text-white shadow-[0_8px_20px_-5px_rgba(236,99,69,0.5)] rotate-0 scale-110' 
+                        : 'bg-[#221d1a] text-white shadow-lg rotate-0'
+                      }`}>
+                        {isActive ? <IoMusicalNotes className="text-lg" /> : <item.icon className="text-lg" />}
+                      </div>
+                    ) : (
+                      <div className={`flex flex-col items-center gap-0.5 ${isActive ? "text-[#EC6345]" : "text-[#7b756f]"}`}>
+                        <div className="relative">
+                           {isActive ? <item.activeIcon className="text-xl" /> : <item.icon className="text-xl" />}
+                           {isActive && (
+                             <motion.div 
+                              layoutId="dot"
+                              className="absolute -bottom-0.5 left-1/2 h-0.5 w-0.5 -translate-x-1/2 rounded-full bg-[#EC6345]" 
+                             />
+                           )}
+                        </div>
+                        <span className={`text-[8.5px] font-black uppercase tracking-[0.1em] transition-all ${isActive ? 'opacity-100 mt-0.5' : 'opacity-40'}`}>
+                          {item.label}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </NavLink>
+          ))}
         </div>
-      </NavLink>
-
-      {/* Records Link */}
-      <NavLink
-        to="/home/records"
-        className={({ isActive }) =>
-          isActive
-            ? "text-[#EC6345] font-semibold tracking-wide flex flex-col items-center"
-            : "flex flex-col items-center text-[#6c6661] font-medium tracking-wide"
-        }
-      >
-        <BiBookOpen className="text-xl" />
-        <p className="text-[11px]">Records</p>
-      </NavLink>
       </div>
     </div>
   );

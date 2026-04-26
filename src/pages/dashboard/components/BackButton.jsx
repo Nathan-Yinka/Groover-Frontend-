@@ -17,7 +17,7 @@ const BackButton = ({ label = "Back", className = "", onClick }) => {
     <button
       type="button"
       onClick={handleBack}
-      className={`inline-flex items-center gap-2 rounded-lg border border-[#EC6345]/35 bg-[#EC6345]/10 px-4 py-2.5 text-[#EC6345] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#EC6345] hover:text-white hover:shadow-[0_10px_25px_-12px_rgba(236,99,69,0.75)] ${className}`}
+      className={`relative z-50 inline-flex items-center gap-2 rounded-lg border border-[#EC6345]/35 bg-[#EC6345]/10 px-4 py-2.5 text-[#EC6345] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#EC6345] hover:text-white hover:shadow-[0_10px_25px_-12px_rgba(236,99,69,0.75)] ${className}`}
     >
       <GoArrowLeft className="text-lg" />
       <span className="text-sm font-semibold tracking-wide">{label}</span>

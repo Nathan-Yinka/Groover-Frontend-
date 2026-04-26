@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { toast } from "sonner";
+import { showAlert } from "../../app/slice/ui.slice";
+import ErrorHandler from "../../app/ErrorHandler";
 import authService from "../../app/service/auth.service";
 import AppInit from "../../app/state.helper";
 import Loader from "../dashboard/components/loader";
@@ -42,7 +43,11 @@ const Login = () => {
     if (!password.trim()) errors.push("Password is required.");
 
     if (errors.length > 0) {
-      errors.forEach((error) => toast.error(error));
+      dispatch(showAlert({
+        type: 'error',
+        title: 'Login Error',
+        message: errors.join(' | ')
+      }));
       return;
     }
 
@@ -67,21 +72,15 @@ const Login = () => {
         if (initSuccess) {
           navigate("/home");
         } else {
-          toast.error(
-            "Failed to initialize the application. Please try again.",
-          );
+          dispatch(showAlert({
+            type: 'error',
+            title: 'Error',
+            message: "Failed to initialize the application."
+          }));
         }
-      } else {
-        throw new Error(
-          response.message || "Login failed. Please check your credentials.",
-        );
       }
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "An unexpected error occurred.";
-      toast.error(errorMessage);
+      // Error is now handled by the service layer (ErrorHandler)
     } finally {
       setLoading(false);
     }

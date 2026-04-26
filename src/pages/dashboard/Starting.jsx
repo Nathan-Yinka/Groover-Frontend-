@@ -36,11 +36,11 @@ import { fetchCurrentGame, fetchProducts, submitCurrentGame } from "../../app/se
 import ErrorHandler from "../../app/ErrorHandler";
 import authService from "../../app/service/auth.service";
 import { fetchProfileFailure, fetchProfileStart, fetchProfileSuccess } from "../../app/slice/profile.slice";
-import { showAlert, hideAlert } from "../../app/slice/ui.slice";
+import { showAlert, hideAlert, setModalOpen } from "../../app/slice/ui.slice";
 import { formatCurrencyWithCode } from "../../utils/currency";
-import { home, profile as profileRoute, level as levelRoute, notifications as notificationsRoute } from "../../constants/app.routes";
+import { home, profile as profileRoute, level as levelRoute, notifications as notificationsRoute, contact } from "../../constants/app.routes";
 import Loader from "./components/Load";
-import MusicVisualizer from "./components/MusicVisualizer";
+
 import BottomNavMobile from "./components/BottomNavMobile";
 
 // Assets (Using V2 assets for consistency)
@@ -100,7 +100,9 @@ const Starting = () => {
     const currentGame = useSelector((state) => state.products.currentGame);
 
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { notifications } = useSelector((state) => state.notifications);
+    const unreadNotifications = notifications.filter(n => !n.is_read).length;
+    const isModalOpen = useSelector((state) => state.ui.isModalOpen);
     const [selectedStar, setSelectedStar] = useState(0);
     const [comments, setComments] = useState("");
     const [shuffledProducts, setShuffledProducts] = useState([]);
@@ -124,10 +126,11 @@ const Starting = () => {
                 dispatch(fetchProfileSuccess(response.data));
             } else {
                 dispatch(fetchProfileFailure(response.message || "Failed to load profile."));
-                toast.error(response.message || "Failed to load profile.");
+                dispatch(showAlert({ type: 'error', title: 'Error', message: response.message || "Failed to load profile." }));
             }
         } catch (error) {
             dispatch(fetchProfileFailure("An error occurred while fetching your profile."));
+            dispatch(showAlert({ type: 'error', title: 'Connection Error', message: "An error occurred while fetching your profile." }));
         }
     }, [dispatch]);
 
@@ -220,7 +223,7 @@ const Starting = () => {
             if (currentGame.special_product) {
                 showGlobalAlert('success', 'Special Album Detected', 'A premium track has entered the curation queue.');
             }
-            setIsModalOpen(true);
+            dispatch(setModalOpen(true));
             return;
         }
 
@@ -232,7 +235,7 @@ const Starting = () => {
             const response = await dispatch(fetchCurrentGame());
             if (response?.success) {
                 // AUTO-OPEN MODAL after procurement
-                setIsModalOpen(true);
+                dispatch(setModalOpen(true));
             } else {
                 ErrorHandler(response);
             }
@@ -258,8 +261,8 @@ const Starting = () => {
             if (response?.success) {
                 setComments("");
                 setSelectedStar(0);
-                setIsModalOpen(false);
-                setIsModalOpen(false);
+                dispatch(setModalOpen(false));
+                dispatch(setModalOpen(false));
                 showGlobalAlert('success', 'Success', response?.data?.message || response?.message || 'Curation successfully submitted.');
                 await fetchProfileData();
             } else {
@@ -297,6 +300,11 @@ const Starting = () => {
                             className="relative flex h-9 w-9 md:h-11 md:w-11 items-center justify-center rounded-full border border-[#eadfd4] bg-[#fffaf6] text-[#2f2724] transition hover:-translate-y-0.5"
                         >
                             <IoNotificationsOutline className="text-lg md:text-xl" />
+                            {unreadNotifications > 0 && (
+                                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#EC6345] px-1 text-[9px] font-semibold text-white">
+                                    {unreadNotifications}
+                                </span>
+                            )}
                         </button>
 
                         <button 
@@ -331,15 +339,14 @@ const Starting = () => {
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(236,99,69,0.15)_0%,transparent_70%)]" />
                     </div>
 
-                    {/* THE MUSIC FLUX TICKER (TOP RAIL) */}
                     <div className="absolute top-0 left-0 right-0 z-0 overflow-hidden opacity-80 pointer-events-none">
                         <motion.div 
                             animate={{ x: [0, -2000] }}
                             transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                            className="flex gap-16 whitespace-nowrap pt-8"
+                            className="flex gap-8 md:gap-16 whitespace-nowrap pt-8 will-change-transform"
                         >
-                            {[...shuffledProducts, ...shuffledProducts, ...shuffledProducts].map((p, i) => (
-                                <div key={i} className="h-44 w-44 rounded-[40px] border border-white/20 bg-[#1b1513] overflow-hidden flex-shrink-0 shadow-2xl relative">
+                            {[...shuffledProducts, ...shuffledProducts].map((p, i) => (
+                                <div key={i} className="h-32 w-32 md:h-44 md:w-44 rounded-[24px] md:rounded-[40px] border border-white/20 bg-[#1b1513] overflow-hidden flex-shrink-0 shadow-2xl relative">
                                     <img src={p.image || missionBg} className="h-full w-full object-cover grayscale brightness-90 transition-all duration-700" alt="" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                                 </div>
@@ -347,12 +354,12 @@ const Starting = () => {
                         </motion.div>
                     </div>
 
-                    {/* THE MUSIC FLUX TICKER (BOTTOM RAIL) */}
-                    <div className="absolute bottom-0 left-0 right-0 z-0 overflow-hidden opacity-80 pointer-events-none">
+                    {/* THE MUSIC FLUX TICKER (BOTTOM RAIL) - DEACTIVATED ON MOBILE FOR PERFORMANCE */}
+                    <div className="absolute bottom-0 left-0 right-0 z-0 overflow-hidden opacity-80 pointer-events-none hidden lg:block">
                         <motion.div 
                             animate={{ x: [-2000, 0] }}
                             transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
-                            className="flex gap-16 whitespace-nowrap pb-8"
+                            className="flex gap-16 whitespace-nowrap pb-8 will-change-transform"
                         >
                             {/* Reversing for diversity so top and bottom rails don't show the same images at once */}
                             {[...shuffledProducts, ...shuffledProducts, ...shuffledProducts].reverse().map((p, i) => (
@@ -532,14 +539,13 @@ const Starting = () => {
                             <h2 className="text-3xl lg:text-4xl font-bold tracking-tighter text-white">Live Submission Feed</h2>
                         </div>
                         <div className="flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-6 py-3 backdrop-blur-md">
-                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                            <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">Network Live</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-[#EC6345] italic">Live Console</span>
                         </div>
                      </div>
 
                      <div className="relative">
-                        <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 gap-4 lg:gap-6">
-                            {shuffledProducts.slice(0, 7).map((product, i) => (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 lg:gap-6">
+                            {shuffledProducts.slice(0, 6).map((product, i) => (
                                 <motion.div 
                                     key={product.id || i}
                                     initial={{ opacity: 0, y: 20 }}
@@ -570,13 +576,13 @@ const Starting = () => {
                         <div className="absolute inset-0 bg-gradient-to-r from-[#EC6345]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                         
                         <div className="relative z-10 flex items-center gap-5">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#EC6345]">
-                                <IoTimeOutline className="text-2xl animate-pulse" />
+                            <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-2xl bg-white/5 text-[#EC6345]">
+                                <IoTimeOutline className="text-xl md:text-2xl animate-pulse" />
                             </div>
                             <div>
-                                <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.4em] mb-1.5">Network Availability</p>
+                                <p className="text-[8px] md:text-[9px] font-black text-white/40 uppercase tracking-[0.4em] mb-1.5">Network Availability</p>
                                 <div className="flex items-center gap-3">
-                                    <span className="text-xl font-bold text-[#EC6345] tracking-tight tabular-nums">
+                                    <span className="text-base md:text-xl font-bold text-[#EC6345] tracking-tight tabular-nums">
                                         {profile?.settings?.service_availability_start_time || "00:00:00"} — {profile?.settings?.service_availability_end_time || "23:59:59"}
                                     </span>
                                     <div className="h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]" />
@@ -587,13 +593,13 @@ const Starting = () => {
                         <div className="hidden md:block h-10 w-px bg-white/5" />
 
                         <div className="relative z-10 flex items-center gap-5">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#EC6345]">
-                                <IoRocketOutline className="text-2xl" />
+                            <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-2xl bg-white/5 text-[#EC6345]">
+                                <IoRocketOutline className="text-xl md:text-2xl" />
                             </div>
                             <div>
-                                <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.4em] mb-1.5">Curation Inquiries</p>
-                                <p className="text-sm font-medium text-white/70">
-                                    Reach out via the <span className="text-white hover:text-[#EC6345] transition-colors cursor-pointer underline underline-offset-6 font-black decoration-[#EC6345] uppercase tracking-tighter">Support Terminal</span>
+                                <p className="text-[8px] md:text-[9px] font-black text-white/40 uppercase tracking-[0.4em] mb-1.5">Curation Inquiries</p>
+                                <p className="text-[11px] md:text-sm font-medium text-white/70">
+                                    Reach out via the <span onClick={() => navigate(`${home}/${contact}`)} className="text-white hover:text-[#EC6345] transition-colors cursor-pointer underline underline-offset-4 md:underline-offset-6 font-black decoration-[#EC6345] uppercase tracking-tighter">Support Terminal</span>
                                 </p>
                             </div>
                         </div>
@@ -629,7 +635,7 @@ const Starting = () => {
                             {/* Close Command (Top) */}
                             <div className="absolute top-6 right-6 sm:top-8 sm:right-8 flex flex-col items-center gap-1 z-20">
                                 <button 
-                                    onClick={() => setIsModalOpen(false)}
+                                    onClick={() => dispatch(setModalOpen(false))}
                                     className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-white/5 text-white/40 hover:bg-[#EC6345]/20 hover:text-[#EC6345] transition-all"
                                 >
                                     <IoClose className="text-xl sm:text-2xl" />
@@ -733,11 +739,11 @@ const Starting = () => {
 
                             {/* Comment Entry */}
                             <div className="mb-6 text-left">
-                                <p className="text-[8px] font-black text-[#EC6345] uppercase tracking-[0.2em] mb-2">Intelligence Comment</p>
+                                <p className="text-[8px] font-black text-[#EC6345] uppercase tracking-[0.2em] mb-2">Comment</p>
                                 <textarea 
                                     value={comments}
                                     onChange={(e) => setComments(e.target.value)}
-                                    placeholder="Add intelligence..."
+                                    placeholder="Add Comment"
                                     className="w-full rounded-2xl bg-white/[0.03] border border-white/5 p-3 text-[11px] text-white placeholder:text-white/10 focus:outline-none focus:border-[#EC6345]/30 transition-all h-20 resize-none"
                                 />
                             </div>
@@ -745,7 +751,7 @@ const Starting = () => {
                             {/* Master Actions */}
                             <div className="grid grid-cols-2 gap-3">
                                 <button 
-                                    onClick={() => setIsModalOpen(false)}
+                                    onClick={() => dispatch(setModalOpen(false))}
                                     className="h-12 rounded-2xl border border-white/10 bg-white/5 text-[9px] font-black text-white/40 uppercase tracking-widest hover:text-red-400 transition-all"
                                 >
                                     Abort
@@ -763,8 +769,6 @@ const Starting = () => {
                 )}
             </AnimatePresence>
 
-            <MusicVisualizer />
-            <BottomNavMobile />
         </div>
     );
 };

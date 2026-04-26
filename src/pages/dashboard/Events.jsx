@@ -60,7 +60,7 @@ const Events = () => {
                     Events
                   </h1>
                   <p className="mt-2 text-sm font-medium text-[#605E5E]">
-                    Explore active curator missions and platform highlights.
+                    Explore active events and platform highlights.
                   </p>
                 </div>
               </div>

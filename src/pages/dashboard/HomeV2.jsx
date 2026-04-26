@@ -389,7 +389,7 @@ const HomeV2 = () => {
                 />
               ) : (
                 <div className="h-7 w-7 md:h-9 md:w-9 rounded-full bg-slate-100 flex items-center justify-center">
-                   <BiUserCircle className="text-xl md:text-2xl text-slate-300" />
+                  <BiUserCircle className="text-xl md:text-2xl text-slate-300" />
                 </div>
               )}
               <div className="hidden md:block text-left">
@@ -442,7 +442,7 @@ const HomeV2 = () => {
                     </span>
                   </div>
 
-                  <div className="mt-8 min-h-[110px] sm:min-h-[110px] lg:min-h-[130px] flex flex-col justify-start">
+                  <div className="mt-8 min-h-[140px] sm:min-h-[120px] lg:min-h-[160px] flex flex-col justify-start">
                     <h1 className="text-3xl font-bold leading-[1.2] tracking-tighter text-white sm:text-4xl lg:text-5xl bg-gradient-to-br from-white via-white to-white/70 bg-clip-text">
                       {showIntroWelcome
                         ? `Welcome back, ${profile?.first_name || "Curator"}.`
@@ -489,7 +489,7 @@ const HomeV2 = () => {
                         <item.icon className="text-[#EC6345]/60" />
                         {item.label}
                       </p>
-                      <p className="text-2xl font-bold text-white tracking-tight">{item.value}</p>
+                      <p className="text-xl md:text-2xl font-bold text-white tracking-tight whitespace-nowrap truncate">{item.value}</p>
                    </div>
                  ))}
                </div>
@@ -529,16 +529,16 @@ const HomeV2 = () => {
                   
                   {/* OVERLAY STATS CARDS */}
                   <div className="absolute bottom-20 left-6 right-6 z-20 grid grid-cols-2 gap-4">
-                     <div className="rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur-xl">
-                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/40 mb-1">Wallet Balance</p>
-                        <p className="text-xl font-bold text-white">{formatCurrencyWithCode(profile?.wallet?.balance || 0)}</p>
-                        <p className="mt-1 text-[8px] font-medium text-white/30 uppercase">Available now</p>
-                     </div>
-                     <div className="rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur-xl">
-                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/40 mb-1">Today Profit</p>
-                        <p className="text-xl font-bold text-white">{formatCurrencyWithCode(0)}</p>
-                        <p className="mt-1 text-[8px] font-medium text-white/30 uppercase">Updated in real time</p>
-                     </div>
+                      <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:p-5 backdrop-blur-xl min-w-0">
+                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/40 mb-1 truncate">Wallet Balance</p>
+                        <p className="text-lg sm:text-xl font-bold text-white whitespace-nowrap overflow-hidden text-ellipsis">{formatCurrencyWithCode(profile?.wallet?.balance || 0)}</p>
+                        <p className="mt-1 text-[8px] font-medium text-white/30 uppercase truncate">Available now</p>
+                      </div>
+                      <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:p-5 backdrop-blur-xl min-w-0">
+                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/40 mb-1 truncate">Today Profit</p>
+                        <p className="text-lg sm:text-xl font-bold text-white whitespace-nowrap overflow-hidden text-ellipsis">{formatCurrencyWithCode(0)}</p>
+                        <p className="mt-1 text-[8px] font-medium text-white/30 uppercase truncate">Updated in real time</p>
+                      </div>
                   </div>
 
                   <div className="absolute bottom-8 left-6 right-6 z-20 flex items-center justify-between">
@@ -577,7 +577,7 @@ const HomeV2 = () => {
                 { label: "FAQ", sub: "Support", icon: IoHelpCircle, route: faq, bg: supportCardBg },
                 { label: "Cert", sub: "Milestones", icon: IoTrophy, route: certificate, bg: certBg },
                 { label: "About", sub: "Mission", icon: IoMusicalNotesOutline, route: about, bg: missionBg },
-                { label: "Security", sub: "Verify", icon: IoShieldCheckmarkOutline, route: profileRoute, theme: "bg-slate-50" },
+                { label: "Security", sub: "Verify", icon: IoShieldCheckmarkOutline, route: profileRoute, bg: supportCardBg },
               ].map((action, i) => (
                 <motion.button
                   key={i}
@@ -618,15 +618,15 @@ const HomeV2 = () => {
                   {overviewStats.slice(2).map((item, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-5 py-4 group hover:bg-white/10 transition-all"
+                      className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 group hover:bg-white/10 transition-all"
                     >
-                      <div>
+                      <div className="shrink-0">
                         <p className="text-[9px] uppercase tracking-[0.25em] text-white/40 font-bold mb-1">
                           {item.label}
                         </p>
                         <p className="text-xs text-white/60 font-medium">{item.helper}</p>
                       </div>
-                      <p className="text-xl font-bold text-white tracking-widest">{item.value}</p>
+                      <p className="text-lg sm:text-2xl font-black text-white tracking-tighter whitespace-nowrap">{item.value}</p>
                     </div>
                   ))}
                 </div>
@@ -723,7 +723,10 @@ const HomeV2 = () => {
                <p className="mt-6 text-sm leading-relaxed text-[#6b625d] font-medium md:text-lg">
                  Set the mood, stay focused, and let the playlist carry the session while you review tracks and submit missions.
                </p>
-               <button className="mt-10 px-8 py-3.5 border border-[#EC6345]/30 text-[#EC6345] rounded-full text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#EC6345] hover:text-white transition-all shadow-lg shadow-[#EC6345]/10">
+               <button 
+                 onClick={() => navigate(starting)}
+                 className="mt-10 px-8 py-3.5 border border-[#EC6345]/30 text-[#EC6345] rounded-full text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#EC6345] hover:text-white transition-all shadow-lg shadow-[#EC6345]/10"
+               >
                  Explore Playlists
                </button>
              </div>
@@ -742,7 +745,6 @@ const HomeV2 = () => {
         </section>
       </main>
 
-      <BottomNavMobile />
 
 
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 bg-[#F7F6F0]">

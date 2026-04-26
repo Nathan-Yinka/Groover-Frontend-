@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
+import { showAlert } from "../../app/slice/ui.slice";
 import {
   IoStar,
   IoTrophy,
@@ -154,17 +154,13 @@ const Home = () => {
           if (response.success) {
             dispatch(fetchProfileSuccess(response.data));
           } else {
-            dispatch(
-              fetchProfileFailure(response.message || "Failed to load profile."),
-            );
-            toast.error(response.message || "Failed to load profile.");
+            dispatch(fetchProfileFailure(response.message || "Failed to load profile."));
+            dispatch(showAlert({ type: 'error', title: 'Profile Error', message: response.message || "Failed to load profile." }));
           }
         } catch (profileError) {
           console.error("Error fetching profile:", profileError);
-          dispatch(
-            fetchProfileFailure("An error occurred while fetching your profile."),
-          );
-          toast.error("An error occurred while fetching your profile.");
+          dispatch(fetchProfileFailure("An error occurred while fetching your profile."));
+          dispatch(showAlert({ type: 'error', title: 'Connection Error', message: "An error occurred while fetching your profile." }));
         }
       }
     };
@@ -384,7 +380,7 @@ const Home = () => {
                 VIP Tier Access
               </h2>
               <p className="mt-3 text-slate-500 font-medium text-sm md:text-base text-balance">
-                Elevate your experience and unlock exclusive curators rights and higher commission rates.
+                Elevate your experience and unlock exclusive rights and higher commission rates.
               </p>
             </div>
           </div>

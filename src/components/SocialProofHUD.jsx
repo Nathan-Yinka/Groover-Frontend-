@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { IoCloseOutline, IoSparklesOutline } from "react-icons/io5";
 import { fetchProducts } from '../app/service/products.service';
 import v2AlbumArt from "../assets/v2_album_art.png";
@@ -15,25 +16,32 @@ const NAMES = [
 
 const SocialProofHUD = () => {
     const dispatch = useDispatch();
+    const location = useLocation();
     const { products } = useSelector((state) => state.products);
     const [showActivity, setShowActivity] = useState(false);
     const [currentActivity, setCurrentActivity] = useState(null);
     const activityTimerRef = useRef(null);
     const visibleTimerRef = useRef(null);
 
+    // Only allow on Landing (/) and Home Dashboard (/home)
+    const isAllowedPage = useMemo(() => {
+        const path = location.pathname;
+        return path === "/" || path === "/home" || path === "/home/";
+    }, [location.pathname]);
+
     // Ensure products are available
     useEffect(() => {
-        if (!products || products.length === 0) {
+        if (isAllowedPage && (!products || products.length === 0)) {
             dispatch(fetchProducts());
         }
-    }, [products, dispatch]);
+    }, [products, dispatch, isAllowedPage]);
 
     const generateRandomActivity = useCallback(() => {
-        // Fallback for names and actions if products not yet loaded
+        if (!isAllowedPage) return null;
+        
         const randomName = NAMES[Math.floor(Math.random() * NAMES.length)];
         const randomAction = ACTIONS[Math.floor(Math.random() * ACTIONS.length)];
         
-        // If no products, use placeholder data
         if (!products || products.length === 0) {
              return {
                 name: randomName,
@@ -58,14 +66,20 @@ const SocialProofHUD = () => {
             amount: randomAmount,
             images: selectedProducts.map(p => p.product_image_url || p.image || v2AlbumArt)
         };
-    }, [products]);
+    }, [products, isAllowedPage]);
 
     useEffect(() => {
+        if (!isAllowedPage) {
+            setShowActivity(false);
+            if (activityTimerRef.current) clearTimeout(activityTimerRef.current);
+            if (visibleTimerRef.current) clearTimeout(visibleTimerRef.current);
+            return;
+        }
+
         const cycle = () => {
             if (activityTimerRef.current) clearTimeout(activityTimerRef.current);
             if (visibleTimerRef.current) clearTimeout(visibleTimerRef.current);
 
-            // Wait between 35 and 85 seconds
             const nextWait = Math.floor(Math.random() * (85000 - 35000) + 35000);
             
             activityTimerRef.current = setTimeout(() => {
@@ -76,7 +90,7 @@ const SocialProofHUD = () => {
                     visibleTimerRef.current = setTimeout(() => {
                         setShowActivity(false);
                         cycle(); 
-                    }, 7000); // Show for 7 seconds
+                    }, 7000);
                 } else {
                     cycle();
                 }
@@ -89,7 +103,9 @@ const SocialProofHUD = () => {
             if (activityTimerRef.current) clearTimeout(activityTimerRef.current);
             if (visibleTimerRef.current) clearTimeout(visibleTimerRef.current);
         };
-    }, [generateRandomActivity]);
+    }, [generateRandomActivity, isAllowedPage]);
+
+    if (!isAllowedPage) return null;
 
     return (
         <AnimatePresence mode="wait">

@@ -52,7 +52,7 @@ const ErrorHandler = (error) => {
     const combinedMessage = cleanMessages.join(' | ');
     store.dispatch(showAlert({
         type: 'error',
-        title: 'System Message',
+        title: 'Error',
         message: combinedMessage
     }));
 

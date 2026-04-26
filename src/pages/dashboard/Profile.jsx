@@ -10,7 +10,7 @@ import {
 import { GiCrown } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
+import { showAlert } from "../../app/slice/ui.slice";
 import BottomNavMobile from "./components/BottomNavMobile";
 import authService from "../../app/service/auth.service";
 import { logout } from "../../app/slice/auth.slice";
@@ -49,7 +49,11 @@ const Profile = () => {
                 response.message || "Failed to load profile.",
               ),
             );
-            toast.error(response.message || "Failed to load profile.");
+            dispatch(showAlert({
+              type: 'error',
+              title: 'Sync Error',
+              message: response.message || "Failed to load profile."
+            }));
           }
         } catch (error) {
           console.error("Error fetching profile:", error);
@@ -58,7 +62,11 @@ const Profile = () => {
               "An error occurred while fetching your profile.",
             ),
           );
-          toast.error("An error occurred while fetching your profile.");
+          dispatch(showAlert({
+            type: 'error',
+            title: 'Connection Error',
+            message: "An error occurred while fetching your profile."
+          }));
         }
       }
     };
@@ -69,10 +77,11 @@ const Profile = () => {
   const copyReferralCode = () => {
     if (profile?.referral_code) {
       navigator.clipboard.writeText(profile.referral_code);
-      toast.success("Referral code copied!", {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      dispatch(showAlert({
+        type: 'success',
+        title: 'Referral Code',
+        message: "Referral code successfully copied to the clipboard!"
+      }));
     }
   };
 
@@ -153,7 +162,7 @@ const Profile = () => {
                 {profile?.profile_picture ? (
                   <img
                     src={profile.profile_picture}
-                    alt="Curator"
+                    alt="User"
                     className="relative h-28 w-28 md:h-32 md:w-32 rounded-[40px] object-cover border-4 border-white shadow-2xl transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
@@ -177,7 +186,7 @@ const Profile = () => {
                     {displayName}
                   </h1>
                   <div className="v2-chip bg-[#EC6345]/10 text-[#EC6345] border border-[#EC6345]/20">
-                    Active Curator
+                    Active Member
                   </div>
                 </div>
                 <p className="text-sm font-bold text-[#EC6345] tracking-widest uppercase">

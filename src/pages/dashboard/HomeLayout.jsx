@@ -18,6 +18,8 @@ import { IoMusicalNotesOutline } from "react-icons/io5";
 import BottomNavMobile from "./components/BottomNavMobile";
 import authService from "../../app/service/auth.service";
 import { logout } from "../../app/slice/auth.slice";
+import { fetchProfileSuccess } from "../../app/slice/profile.slice";
+import BonusPrompt from "./components/BonusPrompt";
 
 const HomeLayout = () => {
   const dispatch = useDispatch();
@@ -108,6 +110,9 @@ const HomeLayout = () => {
 
   return (
     <div className="flex h-screen bg-[#F7F6F0] text-[#333333]">
+      <BonusPrompt
+        onProfileRefresh={(profileData) => dispatch(fetchProfileSuccess(profileData))}
+      />
       <SideBarWeb />
 
       <div className="flex flex-col w-full h-full">
@@ -285,5 +290,4 @@ const HomeLayout = () => {
 };
 
 export default HomeLayout;
-
 

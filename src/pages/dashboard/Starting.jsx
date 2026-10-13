@@ -285,10 +285,10 @@ const Starting = () => {
                     <div className="flex items-center gap-4 md:gap-8">
                         <div>
                             <p className="text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.32em] text-[#a56657]">
-                                Optimization Lab
+                                Submissions
                             </p>
                             <p className="hidden md:block mt-1 text-[11px] font-medium text-[#8b8580]">
-                                Precision tuning for high-fidelity music assets.
+                                Review a track and submit your feedback to earn.
                             </p>
                         </div>
                     </div>
@@ -407,7 +407,7 @@ const Starting = () => {
                                     </div>
                                     <div className="flex items-center gap-2 text-[9px] font-bold text-green-500 uppercase tracking-widest">
                                         <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-                                        Live Balance Terminal
+                                        Available now
                                     </div>
                                 </motion.div>
 
@@ -422,7 +422,7 @@ const Starting = () => {
                                             <BiTrendingUp className="text-xl" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Daily Yield</p>
+                                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Today's Profit</p>
                                             <p className="text-xl font-bold text-white">{formatCurrencyWithCode(profile?.today_profit || 0)}</p>
                                         </div>
                                     </div>
@@ -465,7 +465,7 @@ const Starting = () => {
                                         <div className="absolute inset-0 bg-gradient-to-tr from-[#EC6345]/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                         
                                         <div className="flex flex-col items-center justify-center">
-                                            <span className="block text-[6px] font-black uppercase tracking-[0.6em] text-white/30 mb-0.5 leading-none">Access</span>
+                                            <span className="block text-[6px] font-black uppercase tracking-[0.6em] text-white/30 mb-0.5 leading-none">Begin</span>
                                             <div className="flex items-center justify-center h-8">
                                                 {isLoadingTerminal ? (
                                                     <div className="scale-[0.25] origin-center -mb-8">
@@ -491,7 +491,7 @@ const Starting = () => {
                             >
                                 <div className="flex items-center justify-between gap-12 mb-4">
                                     <div>
-                                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Assignment Delta</p>
+                                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Submissions Left</p>
                                         <p className="text-2xl font-bold text-white tracking-tighter">{profile?.current_number_count || 0} / {profile?.total_number_can_play || 0}</p>
                                     </div>
                                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EC6345]/10 text-[#EC6345]">
@@ -518,7 +518,7 @@ const Starting = () => {
                                         <BiLockAlt className="text-xl" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Frozen Amount</p>
+                                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">On Hold</p>
                                         <p className="text-xl font-bold text-white">{formatCurrencyWithCode(profile?.wallet?.on_hold || 0)}</p>
                                     </div>
                                 </div>
@@ -580,7 +580,7 @@ const Starting = () => {
                                 <IoTimeOutline className="text-xl md:text-2xl animate-pulse" />
                             </div>
                             <div>
-                                <p className="text-[8px] md:text-[9px] font-black text-white/40 uppercase tracking-[0.4em] mb-1.5">Network Availability</p>
+                                <p className="text-[8px] md:text-[9px] font-black text-white/40 uppercase tracking-[0.4em] mb-1.5">Available Hours</p>
                                 <div className="flex items-center gap-3">
                                     <span className="text-base md:text-xl font-bold text-[#EC6345] tracking-tight tabular-nums">
                                         {profile?.settings?.service_availability_start_time || "00:00:00"} — {profile?.settings?.service_availability_end_time || "23:59:59"}
@@ -597,9 +597,9 @@ const Starting = () => {
                                 <IoRocketOutline className="text-xl md:text-2xl" />
                             </div>
                             <div>
-                                <p className="text-[8px] md:text-[9px] font-black text-white/40 uppercase tracking-[0.4em] mb-1.5">Curation Inquiries</p>
+                                <p className="text-[8px] md:text-[9px] font-black text-white/40 uppercase tracking-[0.4em] mb-1.5">Need Help?</p>
                                 <p className="text-[11px] md:text-sm font-medium text-white/70">
-                                    Reach out via the <span onClick={() => navigate(`${home}/${contact}`)} className="text-white hover:text-[#EC6345] transition-colors cursor-pointer underline underline-offset-4 md:underline-offset-6 font-black decoration-[#EC6345] uppercase tracking-tighter">Support Terminal</span>
+                                    Reach out via <span onClick={() => navigate(`${home}/${contact}`)} className="text-white hover:text-[#EC6345] transition-colors cursor-pointer underline underline-offset-4 md:underline-offset-6 font-black decoration-[#EC6345] uppercase tracking-tighter">Support</span>
                                 </p>
                             </div>
                         </div>
@@ -671,7 +671,7 @@ const Starting = () => {
                                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[#EC6345]/10 text-[#EC6345] mb-2">
                                     <HiOutlineLightningBolt className="text-xl animate-pulse" />
                                 </div>
-                                <h2 className="text-xl font-black tracking-tighter text-white mb-1 uppercase">Task Submission</h2>
+                                <h2 className="text-xl font-black tracking-tighter text-white mb-1 uppercase">Submit Your Review</h2>
                             </div>
 
                             {/* Product Layout (Handles Combos) */}
@@ -701,7 +701,7 @@ const Starting = () => {
 
                             {/* Star Rating Interaction */}
                             <div className="mb-3 text-center">
-                                <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.3em] mb-2">Quality Score</p>
+                                <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.3em] mb-2">Your Rating</p>
                                 <div className="flex justify-center gap-2">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <button 
@@ -732,7 +732,7 @@ const Starting = () => {
                             {/* Curation Metadata */}
                             <div className="space-y-1.5 mb-4 px-1">
                                 <div className="flex justify-between items-center text-[8px]">
-                                    <span className="font-black text-white/20 uppercase tracking-widest">Protocol ID</span>
+                                    <span className="font-black text-white/20 uppercase tracking-widest">Reference ID</span>
                                     <span className="font-bold text-white/50 tracking-widest">{currentGame?.rating_no}</span>
                                 </div>
                             </div>
@@ -750,17 +750,17 @@ const Starting = () => {
 
                             {/* Master Actions */}
                             <div className="grid grid-cols-2 gap-3">
-                                <button 
+                                <button
                                     onClick={() => dispatch(setModalOpen(false))}
                                     className="h-12 rounded-2xl border border-white/10 bg-white/5 text-[9px] font-black text-white/40 uppercase tracking-widest hover:text-red-400 transition-all"
                                 >
-                                    Abort
+                                    Cancel
                                 </button>
-                                <button 
+                                <button
                                     onClick={handleSubmit}
                                     className="group relative h-12 rounded-2xl bg-[#EC6345] overflow-hidden text-[9px] font-black text-white shadow-xl transition-all active:scale-95"
                                 >
-                                    {isLoading ? "SYNCING..." : "COMMIT"}
+                                    {isLoading ? "Submitting..." : "Submit"}
                                 </button>
                             </div>
 

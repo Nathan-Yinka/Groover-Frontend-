@@ -695,7 +695,7 @@ const HomeV2 = () => {
                         <p className="text-sm font-bold">{pack?.profit_percentage || 0}%</p>
                       </div>
                       <div>
-                        <p className="text-[8px] uppercase tracking-widest text-white/40 font-bold mb-1">Daily Tasks</p>
+                        <p className="text-[8px] uppercase tracking-widest text-white/40 font-bold mb-1">Daily Submissions</p>
                         <p className="text-sm font-bold">{pack?.daily_missions || 0}</p>
                       </div>
                     </div>

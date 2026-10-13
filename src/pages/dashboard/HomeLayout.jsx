@@ -48,21 +48,21 @@ const HomeLayout = () => {
   const dynamicPageDetails = useMemo(() => {
     const path = location.pathname;
     if (path === "/home" || path === "/home/") {
-      return { title: "Dashboard Mix", sub: "Master control for your daily workflow." };
+      return { title: "Dashboard", sub: "Your daily overview." };
     }
     if (path.includes("starting")) {
-      return { title: "Optimization Lab", sub: "Precision tuning for high-fidelity assets." };
+      return { title: "Submissions", sub: "Review tracks and submit your feedback." };
     }
     if (path.includes("records")) {
-      return { title: "History Terminal", sub: "Tracking each payout and metric." };
+      return { title: "Records", sub: "Your submission history and payouts." };
     }
     if (path.includes("profile") || path.includes("personal")) {
-      return { title: "Member Station", sub: "Security and account synchronization." };
+      return { title: "Profile", sub: "Your account and security settings." };
     }
     if (path.includes("notifications")) {
-        return { title: "Alert Center", sub: "System transmissions and broadcasts." };
+        return { title: "Notifications", sub: "Your latest updates." };
     }
-    return { title: "Groover Status", sub: "Network active and synchronized." };
+    return { title: "Groover", sub: "" };
   }, [location.pathname]);
 
   useEffect(() => {
@@ -214,7 +214,7 @@ const HomeLayout = () => {
                   <div className="space-y-1.5 flex-grow overflow-y-auto pr-1">
                     {[
                       { to: "/home", label: "Dashboard", icon: MdOutlineDashboard, end: true },
-                      { to: "/home/starting", label: "Starting", icon: RiRestartLine },
+                      { to: "/home/starting", label: "Submit", icon: RiRestartLine },
                       { to: "/home/records", label: "Records", icon: BiBookOpen },
                       { to: "/home/profile", label: "Profile", icon: GiEgyptianProfile },
                       { to: "/home/notifications", label: "Notifications", icon: IoMdNotificationsOutline, badge: unreadNotifications },

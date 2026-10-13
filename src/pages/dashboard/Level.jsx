@@ -93,7 +93,7 @@ const Level = () => {
               VIP <span className="text-[#EC6345]">Tiers</span>
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-sm font-medium text-[#605E5E] md:text-base leading-relaxed">
-              Ascend through the curation ranks to unlock higher submission volumes, premium mission frequencies, and elite reward multipliers.
+              Upgrade your package to unlock more daily submissions, higher commission rates, and better rewards.
             </p>
           </div>
         </motion.div>
@@ -165,8 +165,8 @@ const Level = () => {
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-white/40 uppercase tracking-widest">Loadout</span>
-                      <span className="text-sm font-black text-white">{pack.daily_missions} Tasks</span>
+                      <span className="text-xs font-semibold text-white/40 uppercase tracking-widest">Daily Submissions</span>
+                      <span className="text-sm font-black text-white">{pack.daily_missions}</span>
                     </div>
 
                     {pack.short_description && (

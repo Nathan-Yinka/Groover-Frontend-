@@ -442,7 +442,7 @@ const Home = () => {
                           )}
                           {hasDailyMissions && (
                             <div className="flex items-center justify-between">
-                              <span className="text-xs text-white/50 font-medium uppercase tracking-wider">Daily Rev</span>
+                              <span className="text-xs text-white/50 font-medium uppercase tracking-wider">Daily Submissions</span>
                               <span className="text-sm font-bold text-white">{dailyOrders}</span>
                             </div>
                           )}

@@ -62,7 +62,7 @@ function SideBarWeb() {
       <div className="flex-1 space-y-1 overflow-y-auto pr-2 custom-scrollbar">
         {[
           { to: home, label: "Dashboard", icon: MdOutlineDashboard, end: true },
-          { to: starting, label: "Starting", icon: RiRestartLine },
+          { to: starting, label: "Submit", icon: RiRestartLine },
           { to: records, label: "Records", icon: BiBookOpen },
           { to: profile, label: "Profile", icon: GiEgyptianProfile },
           { 

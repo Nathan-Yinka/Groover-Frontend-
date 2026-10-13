@@ -314,8 +314,8 @@ const PersonalInfo = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {[
-                                { label: "Username", name: "username", icon: IoPersonOutline, placeholder: "Curator ID" },
-                                { label: "Email Address", name: "email", icon: IoMailOutline, placeholder: "curator@mission.com" },
+                                { label: "Username", name: "username", icon: IoPersonOutline, placeholder: "Your username" },
+                                { label: "Email Address", name: "email", icon: IoMailOutline, placeholder: "you@example.com" },
                                 { label: "Phone Number", name: "phone_number", icon: IoCallOutline, placeholder: "+1 000 000 000" },
                                 { label: "First Name", name: "first_name", icon: IoIdCardOutline, placeholder: "Given Name" },
                                 { label: "Last Name", name: "last_name", icon: IoIdCardOutline, placeholder: "Surname" }
@@ -493,9 +493,9 @@ const PersonalInfo = () => {
 
                                 <div className="space-y-4">
                                     {[
-                                        { label: "Current Access Code", name: "current_password" },
-                                        { label: "New Access Code", name: "new_password" },
-                                        { label: "Confirm Access Code", name: "confirm_new_password" }
+                                        { label: "Current PIN", name: "current_password" },
+                                        { label: "New PIN", name: "new_password" },
+                                        { label: "Confirm New PIN", name: "confirm_new_password" }
                                     ].map(f => (
                                         <div key={f.name} className="space-y-1.5">
                                             <label className="text-[9px] font-black uppercase tracking-widest text-[#605E5E]/60 ml-1">{f.label}</label>

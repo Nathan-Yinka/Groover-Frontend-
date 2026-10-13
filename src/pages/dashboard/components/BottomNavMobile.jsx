@@ -52,14 +52,14 @@ function BottomNavMobile({ className = "" }) {
     },
     {
       to: "/home/starting",
-      label: "Start",
+      label: "Submit",
       icon: RiMusic2Line,
       activeIcon: RiMusic2Fill,
       isCore: true
     },
     {
       to: "/home/records",
-      label: "History",
+      label: "Records",
       icon: RiHistoryLine,
       activeIcon: RiHistoryFill
     }

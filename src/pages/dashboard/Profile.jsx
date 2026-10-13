@@ -101,11 +101,11 @@ const Profile = () => {
       value: formatCurrencyWithCode(profile?.wallet?.balance || 0),
     },
     {
-      label: "Frozen Amount",
+      label: "On Hold",
       value: formatCurrencyWithCode(profile?.wallet?.on_hold || 0),
     },
     {
-      label: "Commission",
+      label: "Today's Profit",
       value: formatCurrencyWithCode(profile?.today_profit || 0),
       highlight: true,
     },
@@ -263,7 +263,7 @@ const Profile = () => {
             >
               <div className="bg-[#fbfaf6] border-b border-[#e5ded3] px-6 py-4">
                 <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#333333]">
-                  {group.title} <span className="text-[#EC6345]">Terminal</span>
+                  {group.title}
                 </p>
               </div>
               <div className="divide-y divide-[#e5ded3]/50">

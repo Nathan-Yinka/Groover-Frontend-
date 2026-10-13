@@ -19,12 +19,12 @@ import BackButton from "./components/BackButton";
 const statusColors = {
   Completed: "border-[#EC6345]/30 bg-[#EC6345]/10 text-[#EC6345] shadow-[0_0_15px_-5px_rgba(236,99,69,0.3)]",
   Pending: "border-[#d6a44f]/30 bg-[#d6a44f]/10 text-[#d6a44f] shadow-[0_0_15px_-5px_rgba(214,164,79,0.3)]",
-  Freeze: "border-[#7b756f]/30 bg-[#7b756f]/10 text-[#7b756f]",
+  "On Hold": "border-[#7b756f]/30 bg-[#7b756f]/10 text-[#7b756f]",
 };
 
 const getStatus = (record) => {
   if (record.pending) return "Pending";
-  if (!record.pending && record.rating_score === 0) return "Freeze";
+  if (!record.pending && record.rating_score === 0) return "On Hold";
   return "Completed";
 };
 
@@ -64,7 +64,7 @@ const Records = () => {
         dispatch(showAlert({
           type: 'success',
           title: 'Success',
-          message: "Committed successfully."
+          message: "Submitted successfully."
         }));
         dispatch(fetchGameRecords());
       } else {
@@ -132,7 +132,7 @@ const Records = () => {
           className="rounded-[24px] border border-[#e5ded3] bg-white/60 p-2 shadow-[0_20px_45px_-40px_rgba(39,39,39,0.4)] backdrop-blur-xl"
         >
           <div className="grid grid-cols-4 gap-1.5">
-            {["All", "Completed", "Pending", "Freeze"].map((tab) => (
+            {["All", "Completed", "Pending", "On Hold"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => {
@@ -204,7 +204,7 @@ const Records = () => {
                               ) : (
                                 <IoCheckmarkCircle className="text-sm" />
                               )}
-                              <span>{submittingId === record.id ? "Syncing" : "Commit"}</span>
+                              <span>{submittingId === record.id ? "Submitting" : "Submit"}</span>
                             </button>
                           )}
                         </div>

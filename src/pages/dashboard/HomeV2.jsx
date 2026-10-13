@@ -22,6 +22,8 @@ import { FaCcMastercard } from "react-icons/fa";
 import { FiPlusSquare } from "react-icons/fi";
 import { fetchActivePacks } from "../../app/service/packs.service";
 import { fetchProducts } from "../../app/service/products.service";
+import axiosInstance from "../../app/axiosConfig";
+import { dashboardBannersAPI } from "../../constants/api.routes";
 import Loader from "./components/Load";
 import {
   about,
@@ -157,15 +159,45 @@ const HomeV2 = () => {
     return [...globalWins, ...personal, ...welcome];
   }, [notifications, profile, globalWins]);
 
-  const heroSlides = useMemo(() => {
-    return [
-      { type: "image", src: v2HeroStudioCurator },
-      { type: "image", src: v2HeroImage },
-      { type: "image", src: v2HeroVar1 },
-      { type: "image", src: v2HeroVar2 },
-      { type: "image", src: eyeCatcher },
-    ];
+  const fallbackHeroSlides = useMemo(() => [
+    { type: "image", src: v2HeroStudioCurator },
+    { type: "image", src: v2HeroImage },
+    { type: "image", src: v2HeroVar1 },
+    { type: "image", src: v2HeroVar2 },
+    { type: "image", src: eyeCatcher },
+  ], []);
+
+  const [dashboardBanners, setDashboardBanners] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    axiosInstance
+      .get(dashboardBannersAPI)
+      .then((response) => {
+        if (!isMounted) return;
+        const payload = response?.data?.data;
+        const list = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload?.results)
+            ? payload.results
+            : [];
+        setDashboardBanners(list);
+      })
+      .catch(() => {
+        if (isMounted) setDashboardBanners([]);
+      });
+    return () => { isMounted = false; };
   }, []);
+
+  // Images now come from the backend (see administration > Dashboard Banners
+  // in the admin panel) so they can be swapped without a redeploy. Falls
+  // back to the bundled images until the API responds, or if none are set.
+  const heroSlides = useMemo(() => {
+    if (dashboardBanners && dashboardBanners.length > 0) {
+      return dashboardBanners.map((banner) => ({ type: "image", src: banner.image }));
+    }
+    return fallbackHeroSlides;
+  }, [dashboardBanners, fallbackHeroSlides]);
 
   const [showIntroWelcome, setShowIntroWelcome] = useState(false);
   const [typingIndex, setTypingIndex] = useState(0);

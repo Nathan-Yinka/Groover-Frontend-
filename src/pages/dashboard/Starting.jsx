@@ -109,6 +109,12 @@ const Starting = () => {
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [isLoadingTerminal, setIsLoadingTerminal] = useState(false);
     const [loadedImages, setLoadedImages] = useState({});
+    const [stageCols, setStageCols] = useState(() => (typeof window !== "undefined" && window.innerWidth >= 768 ? 5 : 3));
+    useEffect(() => {
+        const onResize = () => setStageCols(window.innerWidth >= 768 ? 5 : 3);
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, []);
 
     // Logic for interacting with the Global Terminal HUD
     const showGlobalAlert = (type, title, message) => {
@@ -281,7 +287,7 @@ const Starting = () => {
             <main className="w-full space-y-5 px-4 py-5 pb-32 md:px-6 md:py-6 md:pb-10">
 
                 {/* GREETING + DAILY PROGRESS + AVAILABLE HOURS */}
-                <div className="rounded-2xl bg-[#221917] p-5 text-white md:p-6">
+                <div className="rounded-3xl bg-[#221917] p-5 text-white shadow-[0_12px_30px_-18px_rgba(34,25,23,0.35)] md:p-6">
                     <div className="flex items-start justify-between gap-4">
                         <div className="flex items-center gap-4">
                             <div className="relative">
@@ -343,7 +349,7 @@ const Starting = () => {
                         { label: "On Hold", sub: "Frozen funds", value: formatCurrencyWithCode(profile?.wallet?.on_hold || 0), icon: BiLockAlt },
                         { label: "Salary", sub: "Daily salary", value: formatCurrencyWithCode(profile?.wallet?.salary || 0), icon: BiBriefcase },
                     ].map((item) => (
-                        <div key={item.label} className="rounded-2xl bg-gradient-to-br from-[#221917] to-[#3b2a25] p-4 text-white">
+                        <div key={item.label} className="rounded-3xl bg-gradient-to-br from-[#221917] to-[#3b2a25] p-5 text-white shadow-[0_12px_30px_-18px_rgba(34,25,23,0.35)]">
                             <item.icon className="text-xl text-[#ffb29f]" />
                             <p className="mt-3 text-sm font-semibold">{item.label}</p>
                             <p className="text-xs text-white/50">{item.sub}</p>
@@ -352,39 +358,52 @@ const Starting = () => {
                     ))}
                 </div>
 
-                {/* SUBMISSIONS */}
-                <div className="rounded-2xl border border-[#e5ded3] bg-white p-5 md:p-6">
-                    <div className="flex items-start justify-between gap-4">
+                {/* SUBMISSION STAGE: albums around a big START button */}
+                <div className="relative overflow-hidden rounded-3xl bg-[#120d0c] p-4 shadow-[0_24px_50px_-28px_rgba(34,25,23,0.8)] md:p-8">
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(236,99,69,0.25),transparent_65%)]" />
+
+                    <div className="relative mb-5 flex items-start justify-between gap-4 text-white">
                         <div>
-                            <h2 className="text-xl font-bold text-[#221d1a]">Start Submission</h2>
-                            <p className="text-sm text-[#605E5E]">Pick a track, rate it and submit your feedback to earn rewards.</p>
+                            <h2 className="text-xl font-bold md:text-2xl">Start Submission</h2>
+                            <p className="mt-1 text-sm text-white/60">Tap START, rate the track and submit your feedback to earn.</p>
                         </div>
-                        <div className="shrink-0 rounded-xl bg-[#f0ede6] px-4 py-2 text-lg font-bold">
+                        <div className="shrink-0 rounded-xl bg-white/10 px-4 py-2 text-lg font-bold">
                             {profile?.current_number_count || 0} / {profile?.total_number_can_play || 0}
                         </div>
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={handleStartOptimization}
-                        disabled={isLoadingTerminal}
-                        className="mt-4 w-full rounded-xl bg-[#EC6345] py-3 text-sm font-bold text-white transition hover:bg-[#d9583b] disabled:opacity-50 sm:w-auto sm:px-10"
-                    >
-                        {isLoadingTerminal ? "Loading..." : "Start"}
-                    </button>
-
-                    <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
-                        {shuffledProducts.slice(0, 12).map((product, i) => (
-                            <button
-                                key={product.id || i}
-                                type="button"
-                                onClick={handleStartOptimization}
-                                disabled={isLoadingTerminal}
-                                className="aspect-square overflow-hidden rounded-xl border border-[#e5ded3] bg-[#f0ede6] transition hover:border-[#EC6345]/50 disabled:opacity-50"
-                            >
-                                <img src={product.image || missionBg} className="h-full w-full object-cover" alt={product.name || "Track"} />
-                            </button>
-                        ))}
+                    <div className="relative mx-auto grid max-w-[720px] gap-3 md:gap-4" style={{ gridTemplateColumns: `repeat(${stageCols}, minmax(0, 1fr))` }}>
+                        {Array.from({ length: stageCols * 3 }).map((_, i) => {
+                            const total = stageCols * 3;
+                            const center = Math.floor(total / 2);
+                            if (i === center) {
+                                return (
+                                    <div key="start" className="relative flex items-center justify-center">
+                                        <div className="absolute inset-[-8%] animate-pulse rounded-full bg-[#EC6345]/30 blur-xl" />
+                                        <button
+                                            type="button"
+                                            onClick={handleStartOptimization}
+                                            disabled={isLoadingTerminal}
+                                            className="relative aspect-square w-full rounded-full bg-gradient-to-br from-[#EC6345] to-[#ff8a6b] text-base font-black tracking-wide text-white shadow-[0_0_40px_rgba(236,99,69,0.55)] ring-4 ring-white/20 transition hover:scale-105 active:scale-95 disabled:opacity-60 md:text-2xl"
+                                        >
+                                            {isLoadingTerminal ? "..." : "START"}
+                                        </button>
+                                    </div>
+                                );
+                            }
+                            const product = shuffledProducts.filter((p) => p.image)[i < center ? i : i - 1];
+                            return (
+                                <button
+                                    key={product?.id || `cell-${i}`}
+                                    type="button"
+                                    onClick={handleStartOptimization}
+                                    disabled={isLoadingTerminal}
+                                    className="aspect-square overflow-hidden rounded-2xl border border-white/10 bg-[#1b1513] shadow-lg transition hover:scale-105 hover:border-[#EC6345]/60 disabled:opacity-60"
+                                >
+                                    {product && <img src={product.image || missionBg} className="h-full w-full object-cover" alt={product.name || "Track"} />}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 

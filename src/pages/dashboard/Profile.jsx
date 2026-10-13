@@ -150,7 +150,7 @@ const Profile = () => {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-[28px] bg-[#221917] text-white p-6 md:p-8"
+          className="rounded-3xl bg-[#221917] text-white p-6 md:p-8 shadow-[0_12px_30px_-18px_rgba(34,25,23,0.35)]"
         >
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -224,7 +224,7 @@ const Profile = () => {
                   <button
                     key={item.label}
                     onClick={() => navigate(item.route)}
-                    className="flex w-full items-center justify-between rounded-2xl border border-[#e5ded3] bg-white px-5 py-4 transition hover:border-[#EC6345]/30"
+                    className="flex w-full items-center justify-between rounded-2xl border border-[#e5ded3] bg-white px-5 py-4 shadow-sm transition hover:border-[#EC6345]/30"
                   >
                     <div className="flex items-center gap-3">
                       <Icon className="text-xl text-[#605E5E]" />

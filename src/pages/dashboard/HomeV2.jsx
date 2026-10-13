@@ -103,7 +103,7 @@ const HomeV2 = () => {
       <div className="w-full space-y-5 px-4 py-5 pb-32 md:px-6 md:py-6 md:pb-10">
 
         {/* GREETING */}
-        <div className="flex items-center justify-between gap-4 rounded-2xl bg-[#221917] p-5 text-white">
+        <div className="flex items-center justify-between gap-4 rounded-3xl bg-[#221917] p-5 text-white shadow-[0_12px_30px_-18px_rgba(34,25,23,0.35)]">
           <div className="flex items-center gap-4">
             {profile?.profile_picture ? (
               <img src={profile.profile_picture} alt="" className="h-14 w-14 rounded-full object-cover" />
@@ -134,7 +134,7 @@ const HomeV2 = () => {
             { label: "Submissions Left", value: Math.max((profile?.total_number_can_play || 0) - (profile?.current_number_count || 0), 0) },
             { label: "Credit Score", value: `${profile?.wallet?.credit_score || 0}%` },
           ].map((item) => (
-            <div key={item.label} className="rounded-2xl border border-[#e5ded3] bg-white p-4">
+            <div key={item.label} className="rounded-3xl border border-[#e5ded3] bg-white shadow-[0_12px_30px_-18px_rgba(34,25,23,0.35)] p-4">
               <p className="text-xs text-[#8b8580]">{item.label}</p>
               <p className="mt-1 text-lg font-bold">{item.value}</p>
             </div>
@@ -142,7 +142,7 @@ const HomeV2 = () => {
         </div>
 
         {/* HERO IMAGE (from backend) */}
-        <div className="relative h-[220px] overflow-hidden rounded-2xl bg-[#221917] md:h-[340px]">
+        <div className="relative h-[220px] overflow-hidden rounded-3xl shadow-xl bg-[#221917] md:h-[340px]">
           <img src={slides[slide % slides.length]} alt="" className="h-full w-full object-cover" />
           {slides.length > 1 && (
             <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
@@ -164,7 +164,7 @@ const HomeV2 = () => {
             <button
               key={item.label}
               onClick={() => navigate(item.route)}
-              className="flex flex-col items-center gap-2 rounded-2xl border border-[#e5ded3] bg-white px-2 py-4 text-xs font-semibold text-[#333333] transition hover:border-[#EC6345]/40 hover:text-[#EC6345]"
+              className="flex flex-col items-center gap-2 rounded-3xl border border-[#e5ded3] bg-white shadow-[0_12px_30px_-18px_rgba(34,25,23,0.35)] px-2 py-4 text-xs font-semibold text-[#333333] transition hover:border-[#EC6345]/40 hover:text-[#EC6345]"
             >
               <item.icon className="text-2xl" />
               {item.label}
@@ -185,7 +185,7 @@ const HomeV2 = () => {
           </div>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {packItems.slice(0, 4).map((pack) => (
-              <div key={pack.id || pack.name} className="rounded-2xl border border-[#e5ded3] bg-white p-4">
+              <div key={pack.id || pack.name} className="rounded-3xl border border-[#e5ded3] bg-white shadow-[0_12px_30px_-18px_rgba(34,25,23,0.35)] p-4">
                 <div className="flex items-center gap-3">
                   {pack.icon && <img src={pack.icon} alt="" className="h-10 w-10 object-contain" />}
                   <div>
@@ -204,7 +204,7 @@ const HomeV2 = () => {
         {/* PLAYLIST */}
         <div>
           <h2 className="mb-3 text-lg font-bold">Playlist</h2>
-          <div className="overflow-hidden rounded-2xl border border-[#e5ded3] bg-white">
+          <div className="overflow-hidden rounded-3xl border border-[#e5ded3] bg-white shadow-[0_12px_30px_-18px_rgba(34,25,23,0.35)]">
             <iframe
               title="Spotify Playlist"
               src="https://open.spotify.com/embed/playlist/52ryhemOPZrgqWE98Sr3kl?utm_source=generator&theme=0"

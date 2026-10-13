@@ -24,8 +24,8 @@ export const updateProfile = (data) => async (dispatch) => {
         });
 
         const response = await axiosInstance.patch(updateAPI, formData); // Let Axios handle Content-Type
-        dispatch(updateProfileSuccess(response.data));
-        return { success: true, message: "Profile updated successfully." };
+        dispatch(updateProfileSuccess(response.data.data)); // Dispatch only the user data
+        return { success: true, message: "Profile updated successfully.", data: response.data.data };
     } catch (error) {
         const errorMessage = error.response?.data?.message || "Failed to update profile.";
         dispatch(updateProfileFailure(errorMessage));

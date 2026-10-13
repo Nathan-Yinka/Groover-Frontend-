@@ -16,9 +16,9 @@ import {
     fetchSettingsSuccess,
     fetchSettingsFailure,
 } from "../slice/auth.slice";
-import { toast } from "sonner"; // Import Sonner for toast notifications
 import { jwtDecode } from "jwt-decode"; // Import jwt-decode to parse JWTs
 import store from "../store"; // Import Redux store to dispatch actions
+import ErrorHandler from "../ErrorHandler";
 
 const authService = {
     /**
@@ -34,6 +34,7 @@ const authService = {
             // Check if the token has expired
             return decoded.exp && decoded.exp > currentTime;
         } catch (error) {
+            ErrorHandler(error);
             console.error("Invalid token:", error);
             return false;
         }
@@ -49,24 +50,7 @@ const authService = {
             console.log(response);
             return { success: true, message: "Registration successful." };
         } catch (error) {
-            // let errorMessage = "Registration failed. Please try again.";
-            // const errorData = error.response?.data;
-
-            // // Handle nested or multiple error messages
-            // if (errorData?.message) {
-            //     if (typeof errorData.message === "string") {
-            //         errorMessage = errorData.message;
-            //     } else if (typeof errorData.message === "object") {
-            //         const messages = Object.values(errorData.message).flat();
-            //         errorMessage = messages[0] || errorMessage;
-            //     }
-            // } else if (errorData?.errors) {
-            //     const errorMessages = Object.values(errorData.errors).flat();
-            //     errorMessage = errorMessages[0] || errorMessage;
-            // }
-
-            // store.dispatch(registerFailure(errorMessage));
-            // toast.error(errorMessage); // Show error message via toast
+            ErrorHandler(error);
             return { success: false, message: error };
         }
     },
@@ -106,7 +90,7 @@ const authService = {
             }
 
             store.dispatch(loginFailure(errorMessage));
-            // toast.error(errorMessage); // Show error message via toast
+            ErrorHandler(error);
             return { success: false, message: errorMessage };
         }
     },
@@ -124,7 +108,7 @@ const authService = {
             return { success: true, data: profile };
         } catch (error) {
             console.error("Failed to fetch user profile:", error);
-            toast.error("Failed to fetch user profile."); // Show error via toast
+            ErrorHandler(error);
             return { success: false, message: error || "Failed to fetch profile." };
         }
     },
@@ -141,9 +125,8 @@ const authService = {
             return { success: true, data: settings };
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to fetch settings.";
-            console.error("Failed to fetch settings:", errorMessage);
             store.dispatch(fetchSettingsFailure(errorMessage)); // Dispatch failure
-            toast.error(errorMessage); // Show error via toast
+            ErrorHandler(error);
             return { success: false, message: error };
         }
     },
@@ -161,8 +144,6 @@ const authService = {
             }
         });
         store.dispatch(logout());
-
-        show_toast && toast.success("Logged out successfully."); // Notify user of successful logout
     },
 
     /**
@@ -189,7 +170,7 @@ const authService = {
 
             // Consolidate toast error for session expiration
             if (error.response?.status === 401) {
-                toast.error("Session expired. Please log in again.");
+                // toast.error("Session expired. Please log in again.");
                 authService.logout(false)
             }
 
@@ -209,7 +190,7 @@ const authService = {
             return await authService.refreshAccessToken();
         } catch (error) {
             console.error("Error handling token expiration:", error);
-            toast.error("Unable to refresh session. Please log in again.");
+            // toast.error("Unable to refresh session. Please log in again.");
             return { success: false, message: "Session expired. Please log in again." };
         }
     },

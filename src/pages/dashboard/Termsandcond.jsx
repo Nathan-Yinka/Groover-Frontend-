@@ -1,163 +1,143 @@
+import React from "react";
+import { motion } from "framer-motion";
+import { 
+  RiShieldLine, 
+  RiLockLine, 
+  RiExchangeDollarLine, 
+  RiMusic2Line, 
+  RiFlag2Line,
+  RiFileList3Line,
+  RiScales3Line,
+  RiRefund2Line,
+  RiSafe2Line,
+  RiTimer2Line
+} from "react-icons/ri";
+import BackButton from "./components/BackButton";
+
+const ProtocolCard = ({ title, icon: Icon, children, index }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: index * 0.05 }}
+    className="group relative overflow-hidden rounded-[32px] border border-[#e5ded3] bg-white p-6 md:p-8 transition-all hover:border-[#EC6345]/30 hover:shadow-2xl hover:shadow-[#EC6345]/5"
+  >
+    <div className="flex items-start gap-4 md:gap-6">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#EC6345]/5 text-[#EC6345] transition-all group-hover:bg-[#EC6345] group-hover:text-white">
+        <Icon className="text-2xl" />
+      </div>
+      <div className="space-y-4 flex-1">
+        <h3 className="text-lg font-black tracking-tight text-[#333333] uppercase italic italic-heavy">
+          {title}
+        </h3>
+        <div className="text-xs md:text-sm font-medium leading-relaxed text-[#605E5E] space-y-2">
+          {children}
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
+
 const TermsandCond = () => {
   return (
-    <div className="h-screen overflow-y-auto bg-[#F7F6F0] p-4 font-sans text-[#4a4642] md:p-12">
-      <h1 className="text-3xl font-bold text-center mb-8 text-[#EC6345]">
-        Contract Rules
-      </h1>
+    <div className="min-h-screen bg-[#F7F6F0] text-[#333333]">
+      <div className="mx-auto max-w-[1600px] space-y-6 px-4 py-8 pb-32 md:px-8 md:py-10">
+        
+        {/* HEADER STATION */}
+        <section className="relative overflow-hidden rounded-[40px] bg-[#120d0c] px-6 py-12 md:py-20 text-center">
+            <div className="absolute inset-0 z-0 opacity-20">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(236,99,69,0.1)_0%,transparent_50%)]" />
+                <div className="absolute inset-0 bg-[grid-white/[0.03]_bg-[size:40px_40px]" />
+            </div>
 
-      <div className="mx-auto max-w-4xl space-y-6 rounded-[18px] border border-[#e5ded3] bg-white p-5 leading-relaxed shadow-[0_20px_45px_-38px_rgba(39,39,39,0.55)] md:p-8">
-        <section>
-          <h2 className="text-xl font-semibold mb-2 text-[#333333]">
-            1. Task Reset
-          </h2>
-          <p>
-            To reset a task, you must complete the current task first. The
-            account balance must be at least{" "}
-            <span className="font-semibold text-[#EC6345]">$100</span>.
-          </p>
+            <div className="relative z-10 max-w-3xl mx-auto">
+                <div className="mb-6 flex justify-center">
+                  <BackButton dark />
+                </div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="mb-4 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-md"
+                >
+                    <RiShieldLine className="text-[#EC6345]/60" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">Legal Protocol</span>
+                </motion.div>
+                
+                <h1 className="mb-4 text-4xl font-black tracking-tighter text-white md:text-6xl uppercase italic italic-heavy">
+                  Mission <span className="text-white/80 font-medium">Codex</span>
+                </h1>
+                
+                <p className="max-w-[600px] mx-auto text-xs font-medium leading-relaxed text-white/40 md:text-sm italic">
+                  The operative framework and contractual directives governing the Groover Music Curation Network. Symmetry in compliance ensures security of assets.
+                </p>
+            </div>
         </section>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">2. Data Submission</h2>
-          <p>
-            Each user must complete all music album data submission tasks before
-            meeting system withdrawal requirements.
-          </p>
-        </section>
+        {/* GUIDELINES GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+          <ProtocolCard title="01. Task Reset Protocol" icon={RiRestartLine} index={0}>
+            <p>To reset a curation task, you must successfully finalize the active assignment. A minimum account baseline of <span className="font-bold text-[#EC6345]">$100 USD</span> is required for account re-synchronization.</p>
+          </ProtocolCard>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">3. Withdrawals</h2>
-          <p>
-            To avoid capital loss, all withdrawals are processed automatically
-            by the system, not manually.
-          </p>
-        </section>
+          <ProtocolCard title="02. Submission Directive" icon={RiMusic2Line} index={1}>
+            <p>Curators are mandated to complete the full sequence of music album data submissions assigned by the system before withdrawal parameters are unlocked.</p>
+          </ProtocolCard>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">4. Fund Safety</h2>
-          <p>
-            User funds are completely safe on the platform. The platform will be
-            liable for any accidental losses.
-          </p>
-        </section>
+          <ProtocolCard title="03. Withdrawal Logic" icon={RiExchangeDollarLine} index={2}>
+            <p>To mitigate capital exposure, all withdrawal requests are executed through the global automated settlement engine. Manual overrides are restricted to ensure data integrity.</p>
+          </ProtocolCard>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">5. Password & Security</h2>
-          <ul className="list-disc list-inside">
-            <li>
-              Do not disclose your account password and security code. The
-              platform is not responsible for any losses caused by disclosure.
-            </li>
-            <li>
-              Users should properly secure their accounts to avoid leakage. The
-              platform is not responsible for accidental leaks.
-            </li>
-            <li>
-              Avoid weak passwords such as birthdays, ID numbers, or phone
-              numbers. Use a complex password to protect your funds.
-            </li>
-            <li>
-              If you forget your password, reset it by contacting online
-              customer service and update it immediately afterward.
-            </li>
-          </ul>
-        </section>
+          <ProtocolCard title="04. Asset Safeguard" icon={RiSafe2Line} index={3}>
+            <p>Curator funds are secured within encrypted workstation vaults. The platform maintains full liability for accidental losses occurring within the verified network.</p>
+          </ProtocolCard>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">6. Account Protection</h2>
-          <p>
-            If the account balance exceeds{" "}
-            <span className="font-semibold text-[#EC6345]">$50,000</span> and the
-            wrong transaction password is entered more than 3 times, the account
-            will enter protection mode. To release it, a deposit of 30%–50% of
-            the total account balance is required, ensuring fund security.
-          </p>
-        </section>
+          <ProtocolCard title="05. Security Protocols" icon={RiLockLine} index={4}>
+            <ul className="space-y-3 list-none">
+              <li className="flex gap-2"><div className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#EC6345]" /><span>Restricted disclosure of security codes and biometric credentials.</span></li>
+              <li className="flex gap-2"><div className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#EC6345]" /><span>Mandatory use of complex alphanumeric strings to secure fund terminals.</span></li>
+              <li className="flex gap-2"><div className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#EC6345]" /><span>Contact Online Support for immediate password reset and re-verification.</span></li>
+            </ul>
+          </ProtocolCard>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">7. Task Assignment</h2>
-          <ul className="list-disc list-inside">
-            <li>
-              Music album data submission tasks are randomly assigned by the
-              system and cannot be changed, canceled, or skipped.
-            </li>
-            <li>
-              Due to the large number of users, data tasks cannot be manually
-              adjusted.
-            </li>
-            <li>
-              The system randomly releases ordinary and combination albums.
-              Users may receive 1–3 albums in a combination task.
-            </li>
-          </ul>
-        </section>
+          <ProtocolCard title="06. Account Protection" icon={RiShieldLine} index={5}>
+            <p>Accounts exceeding <span className="font-bold text-[#EC6345]">$50,000</span> with multiple failed transaction attempts will trigger **Protection Mode**. Stabilization requires a security deposit of 30%–50% to verify ownership.</p>
+          </ProtocolCard>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">8. Legal Compliance</h2>
-          <p>Legal action will be taken if the account is misused.</p>
-        </section>
+          <ProtocolCard title="07. Automated Assignment" icon={RiFileList3Line} index={6}>
+            <p>Music album data submissions are randomly distributed via the system engine. Assignments are locked upon distribution and cannot be skipped, retracted, or manually adjusted.</p>
+          </ProtocolCard>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">9. Deposits</h2>
-          <p>
-            Each work is provided by a different record company. Deposits must
-            not exceed 30 minutes and must be confirmed with customer service to
-            verify the company’s encrypted address. The platform is not
-            responsible for deposits sent to the wrong account.
-          </p>
-        </section>
+          <ProtocolCard title="08. Legal Compliance" icon={RiScales3Line} index={7}>
+            <p>The system actively monitors for network misuse. Any breach of terms will result in immediate tactical de-verification and potential legal pursuit.</p>
+          </ProtocolCard>
 
-        <section className="md:mb-2 mb-52">
-          <h2 className="text-xl font-semibold mb-2">
-            10. Task Completion & Credit Score
-          </h2>
-          <ul className="list-disc list-inside">
-            <li>
-              Users must complete and withdraw funds within 24 hours. Failure to
-              do so without notifying the record company of an extension may
-              result in complaints and a breach of contract.
-            </li>
-            <li>
-              Long-term extensions will lower a user&apos;s credit score. Accounts
-              with a score below 100 must be repaired before withdrawals.
-            </li>
-          </ul>
-        </section>
+          <ProtocolCard title="09. Deposit Parameters" icon={RiFlag2Line} index={8}>
+            <p>Work is sourced from verified record companies. Deposits must be finalized within **30 minutes** and addressed only to the verified company terminal provided by customer service.</p>
+          </ProtocolCard>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">11. Task Abandonment</h2>
-          <p>
-            If you choose to give up or quit during the submission of the task
-            music album, you will not be able to apply for a withdrawal or
-            refund.
-          </p>
-        </section>
+          <ProtocolCard title="10. Credit Score Repair" icon={RiTimer2Line} index={9}>
+            <p>Curators must finalize and withdraw within a 24-hour cycle. Delays without authorization decrease the credit baseline. Scores below 100 require immediate repair for full access.</p>
+          </ProtocolCard>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">12. Excess Withdrawal</h2>
-          <p>
-            If you withdraw excess funds, your account will be frozen and you
-            will need to upgrade to the corresponding VIP level to unfreeze the
-            account and withdraw all funds.
-          </p>
-        </section>
+          <ProtocolCard title="11. Mission Finality" icon={RiRefund2Line} index={10}>
+            <p>Abandoning a mission or quitting during an active album submission sequence forfeits the current balance. Withdrawals are only accessible upon 100% mission completion.</p>
+          </ProtocolCard>
 
-        <section className="md:mb-2 mb-52">
-          <h2 className="text-xl font-semibold mb-2">13. Tax Regulations</h2>
-          <p>
-            According to the regulations of different regional governments on
-            our platform, all users with personal funds exceeding 50,000
-            USDT/USDC are required to pay personal income tax of 20%-40% of the
-            account funds before the withdrawal is processed, but the personal
-            income tax will be refunded to your work account 2 hours after the
-            withdrawal is completed.
-          </p>
-        </section>
+          <ProtocolCard title="12. Excess Settlement" icon={RiScales3Line} index={11}>
+            <p>Withdrawing funds beyond tier-specific limits triggers an account freeze. Upgrade to the corresponding VIP Tier is required to unfreeze and authorize the total payout.</p>
+          </ProtocolCard>
+
+          <ProtocolCard title="13. Fiscal Regulations" icon={RiFileList3Line} index={12}>
+            <p>Accounts exceeding **50,000 USDT** are subject to regional income tax (20%-40%). Tax settlements are processed prior to withdrawal and refunded to the work balance within 2 hours of completion.</p>
+          </ProtocolCard>
+        </div>
+
       </div>
     </div>
   );
 };
 
+// Internal icon for specific mapping fix
+const RiRestartLine = RiShieldLine; // Fallback if not found
+
 export default TermsandCond;
-
-

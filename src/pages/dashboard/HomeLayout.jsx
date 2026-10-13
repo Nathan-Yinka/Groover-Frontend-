@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import SideBarWeb from "./components/SideBarWeb";
 import logo from "../../assets/logo.svg";
@@ -13,6 +13,9 @@ import { GiEgyptianProfile } from "react-icons/gi";
 import { BiUserCircle } from "react-icons/bi";
 import { AnimatePresence, motion } from "framer-motion";
 import { CiLogout } from "react-icons/ci";
+import { IoMusicalNotesOutline } from "react-icons/io5";
+
+import BottomNavMobile from "./components/BottomNavMobile";
 import authService from "../../app/service/auth.service";
 import { logout } from "../../app/slice/auth.slice";
 
@@ -41,6 +44,26 @@ const HomeLayout = () => {
     setIsMobileMenuOpen(false);
     navigate(login);
   };
+
+  const dynamicPageDetails = useMemo(() => {
+    const path = location.pathname;
+    if (path === "/home" || path === "/home/") {
+      return { title: "Dashboard Mix", sub: "Master control for your daily workflow." };
+    }
+    if (path.includes("starting")) {
+      return { title: "Optimization Lab", sub: "Precision tuning for high-fidelity assets." };
+    }
+    if (path.includes("records")) {
+      return { title: "History Terminal", sub: "Tracking each payout and metric." };
+    }
+    if (path.includes("profile") || path.includes("personal")) {
+      return { title: "Member Station", sub: "Security and account synchronization." };
+    }
+    if (path.includes("notifications")) {
+        return { title: "Alert Center", sub: "System transmissions and broadcasts." };
+    }
+    return { title: "Groover Status", sub: "Network active and synchronized." };
+  }, [location.pathname]);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -88,62 +111,60 @@ const HomeLayout = () => {
       <SideBarWeb />
 
       <div className="flex flex-col w-full h-full">
-        <div
-          className={`nav-bar fixed left-0 right-0 top-0 z-40 flex h-[68px] items-center border-b border-[#e5ded3] bg-[#F7F6F0]/95 px-3 shadow-sm backdrop-blur transition-transform duration-200 will-change-transform md:hidden ${
-            isMobileTopBarHidden ? "-translate-y-full" : "translate-y-0"
+        {/* <div
+          className={`nav-bar fixed left-0 right-0 top-0 z-40 px-4 pt-4 md:hidden transition-transform duration-300 ${
+            isMobileTopBarHidden && !isMobileMenuOpen ? "-translate-y-full" : "translate-y-0"
           }`}
         >
-          <button
-            type="button"
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="rounded-lg border border-[#e5ded3] bg-white p-2 text-[#333333] shadow-sm"
-          >
-            <HiOutlineMenuAlt3 className="text-xl" />
-          </button>
+          <div className="mx-auto flex items-center justify-between rounded-[22px] border border-white/60 bg-white/70 px-4 py-2.5 shadow-[0_20px_55px_-40px_rgba(26,20,18,0.55)] backdrop-blur-xl">
+             <div className="flex items-center gap-3">
+               <button
+                 type="button"
+                 onClick={() => setIsMobileMenuOpen(true)}
+                 className="flex h-9 w-9 items-center justify-center rounded-full border border-[#eadfd4] bg-[#fffaf6] text-[#2f2724] transition active:scale-95"
+               >
+                 <HiOutlineMenuAlt3 className="text-xl" />
+               </button>
+               <div className="h-4 w-px bg-[#eadfd4]" />
+               <div>
+                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-[#a56657] leading-none mb-0.5">{dynamicPageDetails.title}</p>
+                  <p className="text-[7px] font-bold text-[#8b8580] uppercase tracking-tighter leading-none opacity-60 truncate max-w-[100px]">{dynamicPageDetails.sub}</p>
+               </div>
+             </div>
 
-          <button type="button" className="ml-3 flex items-center" onClick={() => navigate(home)}>
-            <img src={logo} alt="Groover" className="h-auto w-[112px]" />
-          </button>
+             <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => navigate("/home/notifications")}
+                  className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[#eadfd4] bg-[#fffaf6] text-[#2f2724] transition active:scale-95"
+                >
+                  <IoMdNotificationsOutline className="text-xl" />
+                  {unreadNotifications > 0 && (
+                    <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#EC6345] px-1 text-[9px] font-semibold text-white">
+                      {unreadNotifications}
+                    </span>
+                  )}
+                </button>
 
-          <div className="ml-auto flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => navigate("/home/notifications")}
-              className="relative rounded-full border border-[#e5ded3] bg-white p-2.5 shadow-sm"
-            >
-              <IoMdNotificationsOutline className="text-xl text-[#333333]" />
-              {unreadNotifications > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EC6345] px-1 text-[11px] font-semibold text-white">
-                  {unreadNotifications}
-                </span>
-              )}
-            </button>
-            <div className="h-8 w-px bg-[#e5ded3]" />
-            <button
-              type="button"
-              onClick={() => navigate("/home/profile")}
-              className="flex items-center justify-center space-x-2 text-[#EC6345]"
-            >
-              <span className="text-sm font-medium text-[#333333] max-w-[120px] truncate">
-                {displayName}
-              </span>
-              {profileImage ? (
-                <img
-                  src={profileImage}
-                  alt="Profile"
-                  className="w-8 h-8 rounded-full object-cover ring-1 ring-[#EC6345]/25"
-                />
-              ) : (
-                <BiUserCircle className="w-8 h-8 text-[#8b8580]" />
-              )}
-            </button>
+                <button
+                  type="button"
+                  onClick={() => navigate("/home/profile")}
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#eadfd4] bg-[#fffaf6] overflow-hidden transition active:scale-95"
+                >
+                  {profileImage ? (
+                    <img src={profileImage} alt="Profile" className="h-full w-full object-cover" />
+                  ) : (
+                    <BiUserCircle className="text-2xl text-[#8b8580]" />
+                  )}
+                </button>
+             </div>
           </div>
-        </div>
+        </div> */}
 
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
-              className="fixed inset-0 z-50 md:hidden"
+              className="fixed inset-0 z-[1000] md:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -151,7 +172,7 @@ const HomeLayout = () => {
             >
               <button
                 type="button"
-                className="absolute inset-0 bg-[#272727]/45"
+                className="absolute inset-0 bg-black/40 backdrop-blur-sm"
                 onClick={() => setIsMobileMenuOpen(false)}
                 aria-label="Close menu backdrop"
               />
@@ -169,26 +190,34 @@ const HomeLayout = () => {
                       navigate(home);
                       setIsMobileMenuOpen(false);
                     }}
+                    className="flex items-center gap-3"
                   >
-                    <img src={logo} alt="Groover" className="h-auto w-[124px]" />
+                    <div className="w-10 h-10 rounded-xl bg-[#EC6345] flex items-center justify-center text-white text-xl">
+                      <IoMusicalNotesOutline />
+                    </div>
+                    <img src={logo} alt="Groover" className="h-6 w-auto" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="rounded-lg border border-[#e5ded3] bg-white p-2 text-[#333333]"
+                    className="rounded-2xl border border-slate-100 bg-white p-2.5 text-slate-800 shadow-sm"
                   >
                     <HiOutlineX className="text-xl" />
                   </button>
                 </div>
 
-                <div className="flex h-[calc(100%-60px)] flex-col">
-                  <div className="space-y-2">
+                <div className="flex h-[calc(100%-80px)] flex-col">
+                  <div className="mb-8 p-4 rounded-2xl bg-white border border-slate-100 flex items-center justify-between shadow-sm">
+                     <span className="text-[10px] font-black uppercase tracking-widest text-[#EC6345] italic">Live Console</span>
+                  </div>
+
+                  <div className="space-y-1.5 flex-grow overflow-y-auto pr-1">
                     {[
-                      { to: "/home", label: "Home", icon: MdOutlineDashboard, end: true },
+                      { to: "/home", label: "Dashboard", icon: MdOutlineDashboard, end: true },
                       { to: "/home/starting", label: "Starting", icon: RiRestartLine },
                       { to: "/home/records", label: "Records", icon: BiBookOpen },
                       { to: "/home/profile", label: "Profile", icon: GiEgyptianProfile },
-                      { to: "/home/notifications", label: "Notifications", icon: IoMdNotificationsOutline },
+                      { to: "/home/notifications", label: "Notifications", icon: IoMdNotificationsOutline, badge: unreadNotifications },
                       { to: "/home/withdraw", label: "Withdraw", icon: BiMoneyWithdraw },
                       { to: "/home/deposit", label: "Deposit", icon: RiLuggageDepositLine },
                       { to: "/home/events", label: "Events", icon: BiCalendarEvent },
@@ -205,12 +234,19 @@ const HomeLayout = () => {
                           onClick={() => setIsMobileMenuOpen(false)}
                           className={({ isActive }) =>
                             isActive
-                              ? "flex items-center gap-3 rounded-lg border border-[#EC6345]/25 bg-white px-3 py-3 text-[#EC6345] font-semibold"
-                              : "flex items-center gap-3 rounded-lg px-3 py-3 text-[#5f5b57] hover:bg-white hover:text-[#EC6345]"
+                              ? "flex items-center gap-4 rounded-2xl border border-[#EC6345]/30 bg-white px-5 py-4 text-[#EC6345] font-black uppercase text-[11px] tracking-widest shadow-xl shadow-[#EC6345]/5"
+                              : "flex items-center gap-4 rounded-2xl px-5 py-4 text-slate-400 font-bold uppercase text-[11px] tracking-widest hover:bg-white hover:text-slate-800"
                           }
                         >
-                          <item.icon className="text-lg" />
-                          <span className="text-sm tracking-wide">{item.label}</span>
+                          <div className="relative">
+                            <item.icon className="text-xl" />
+                            {item.badge > 0 && (
+                                <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#EC6345] text-[8px] font-black text-white border-2 border-white">
+                                    {item.badge}
+                                </span>
+                            )}
+                          </div>
+                          <span className="flex-1">{item.label}</span>
                         </NavLink>
                       </motion.div>
                     ))}
@@ -219,13 +255,13 @@ const HomeLayout = () => {
                   <motion.button
                     type="button"
                     onClick={handleLogout}
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.32 }}
-                    className="mb-3 mt-auto flex w-full items-center gap-3 rounded-lg border border-[#f2c2b8] bg-white px-3 py-3 text-[#BA5225] hover:bg-[#fff5f2]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="mt-6 flex w-full items-center gap-4 rounded-2xl border border-orange-100 bg-white px-6 py-4 font-black uppercase text-[11px] tracking-widest text-[#BA5225]"
                   >
-                    <CiLogout className="text-lg" />
-                    <span className="text-sm tracking-wide">Logout</span>
+                    <CiLogout className="text-xl rotate-180" />
+                    <span>Logout</span>
                   </motion.button>
                 </div>
               </motion.div>
@@ -236,10 +272,13 @@ const HomeLayout = () => {
         <div
           id="dashboard-scroll-container"
           ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto pt-[68px] md:pt-0"
+          className="flex-1 overflow-y-auto"
         >
-          <Outlet />
+          <div className="pb-40 md:pb-0">
+            <Outlet />
+          </div>
         </div>
+        <BottomNavMobile />
       </div>
     </div>
   );

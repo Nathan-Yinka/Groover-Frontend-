@@ -1,70 +1,71 @@
+import React from "react";
 import PropTypes from "prop-types";
+import { motion } from "framer-motion";
+import logo from "../../../assets/logo.svg";
 
 const Loader = ({ fullScreen = false, size = "default" }) => {
   const sizeClasses = {
-    small: "h-24 w-24",
-    default: "h-32 w-32",
-    large: "h-40 w-40",
+    small: { height: "h-8", width: "w-[2px]", gap: "gap-0.5", bars: 10 },
+    default: { height: "h-20 md:h-28", width: "w-1.5 md:w-2.5", gap: "gap-1 md:gap-1.5", bars: 15 },
+    large: { height: "h-32 md:h-48", width: "w-2 md:w-4", gap: "gap-1.5 md:gap-2.5", bars: 20 },
   };
 
   const containerClasses = fullScreen
-    ? "flex min-h-screen items-center justify-center bg-[#f6f1ea] px-6"
-    : "flex min-h-[220px] items-center justify-center px-6";
+    ? "fixed inset-0 flex flex-col justify-center items-center bg-[#F7F6F0] z-[999999] w-full h-[100dvh] overflow-hidden"
+    : "flex flex-col justify-center items-center min-h-[400px] w-full";
+
+  const currentSize = sizeClasses[size] || sizeClasses.default;
 
   return (
-    <>
-      <div className={containerClasses}>
-        <div className="flex flex-col items-center gap-5 text-center">
-          <div className={`relative ${sizeClasses[size]}`}>
-            <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,#ffb29f_0%,rgba(236,99,69,0.22)_40%,rgba(246,241,234,0)_72%)] blur-xl" />
-            <div className="absolute inset-[8%] rounded-full border border-[#ec6345]/20 bg-[#fffaf5] shadow-[0_25px_60px_-35px_rgba(39,39,39,0.55)]" />
-            <div className="absolute inset-[14%] rounded-full border-2 border-[#ec6345]/20 border-t-[#ec6345] animate-spin" />
-            <div
-              className="absolute inset-[24%] rounded-full border border-[#332823]/10 border-b-[#ffb29f]"
-              style={{ animation: "spin 3.2s linear infinite reverse" }}
+    <div className={containerClasses}>
+      <div className="flex flex-col items-center gap-12">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center"
+        >
+          <img src={logo} alt="Groover" className={`${size === "large" ? "h-12 md:h-16" : "h-8 md:h-10"} w-auto mb-4 opacity-80`} />
+        </motion.div>
+
+        <div className={`flex items-end ${currentSize.gap} ${currentSize.height} relative`}>
+        {[...Array(currentSize.bars)].map((_, i) => {
+          // Calculate distance from center for Gaussian distribution
+          const center = (currentSize.bars - 1) / 2;
+          const dist = Math.abs(i - center);
+          // Base height multiplier based on proximity to center (bell curve)
+          const multiplier = Math.max(0.3, 1 - dist / (center * 1.5));
+          
+          return (
+            <motion.div
+              key={i}
+              className={`${currentSize.width} rounded-full`}
+              style={{
+                background: "linear-gradient(to top, #BA5225, #EC6345, #FF8A65)",
+                boxShadow: "0 0 15px rgba(236,99,69,0.2)",
+              }}
+              animate={{
+                height: [
+                  `${multiplier * 20}%`,
+                  `${multiplier * 100}%`,
+                  `${multiplier * 40}%`,
+                  `${multiplier * 85}%`,
+                  `${multiplier * 20}%`,
+                ],
+                opacity: [0.6, 1, 0.8, 1, 0.6],
+              }}
+              transition={{
+                duration: 1.2 + (dist * 0.1), // Center moves faster
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: i * 0.04,
+              }}
             />
-            <div className="absolute inset-[34%] flex items-end justify-center gap-1 rounded-full bg-[radial-gradient(circle_at_top,#2d201d_0%,#191312_75%)] px-4 pb-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-              {[0, 1, 2, 3].map((bar) => (
-                <span
-                  key={bar}
-                  className="loader-bar w-1.5 rounded-full bg-gradient-to-t from-[#ec6345] via-[#ff9f88] to-[#ffe1d7]"
-                  style={{ animationDelay: `${bar * 0.14}s` }}
-                />
-              ))}
-            </div>
-            <div className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/50 bg-[#fff7f2] shadow-[0_0_0_5px_rgba(255,255,255,0.08)]" />
-          </div>
-
-          <div className="space-y-1">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-[#9a5c4f]">
-              Groover
-            </p>
-            <p className="text-sm text-[#5f5b57] md:text-base">
-              Tuning your dashboard experience...
-            </p>
-          </div>
-        </div>
+          );
+        })}
       </div>
-
-      <style>{`
-        .loader-bar {
-          height: 18%;
-          animation: loaderWave 1.15s ease-in-out infinite;
-          transform-origin: center bottom;
-        }
-
-        @keyframes loaderWave {
-          0%, 100% {
-            height: 18%;
-            opacity: 0.42;
-          }
-          50% {
-            height: 52%;
-            opacity: 1;
-          }
-        }
-      `}</style>
-    </>
+      </div>
+    </div>
   );
 };
 

@@ -1,7 +1,7 @@
 import authService from "./service/auth.service";
 import { setUserProfile } from "./slice/auth.slice";
 import { fetchNotifications } from "./service/notifications.service"; // Import the fetchNotifications action
-import { toast } from "sonner";
+import { showAlert } from "./slice/ui.slice";
 
 async function AppInit({ dispatch, isAuthenticated }) {
     try {
@@ -12,7 +12,11 @@ async function AppInit({ dispatch, isAuthenticated }) {
                 dispatch(setUserProfile(profileResponse.data));
                 console.log("User profile initialized successfully.");
             } else {
-                toast.error(profileResponse.message || "Failed to fetch user profile.");
+                dispatch(showAlert({
+                    type: 'error',
+                    title: 'Profile Error',
+                    message: profileResponse.message || "Failed to fetch user profile."
+                }));
             }
 
             // Fetch notifications
@@ -21,13 +25,21 @@ async function AppInit({ dispatch, isAuthenticated }) {
                 console.log("Notifications fetched successfully.");
             } catch (error) {
                 console.error("Error fetching notifications:", error);
-                toast.error("Failed to fetch notifications.");
+                dispatch(showAlert({
+                    type: 'error',
+                    title: 'Sync Error',
+                    message: "Failed to sync notifications."
+                }));
             }
         }
         return true; // Initialization successful
     } catch (error) {
         console.error("Initialization error:", error);
-        toast.error("An error occurred during initialization. Please try again.");
+        dispatch(showAlert({
+            type: 'error',
+            title: 'Init Error',
+            message: "An error occurred during system initialization."
+        }));
         return false; // Initialization failed
     }
 }

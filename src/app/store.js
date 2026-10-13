@@ -8,6 +8,7 @@ import paymentsSlice from "./slice/payments.slice";
 import withdrawSlice from "./slice/withdraw.slice";
 import notificationsSlice from "./slice/notifications.slice";
 import eventSlice from "./slice/event.slice";
+import uiSlice from "./slice/ui.slice";
 
 // Combine all reducers
 const appReducer = combineReducers({
@@ -20,6 +21,7 @@ const appReducer = combineReducers({
     withdrawals: withdrawSlice,
     notifications: notificationsSlice,
     event: eventSlice,
+    ui: uiSlice,
 });
 
 // Create a root reducer with logout handling

@@ -144,7 +144,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-[#F7F6F0] text-[#333333] selection:bg-[#EC6345]/30">
-      <div className="mx-auto max-w-[1000px] space-y-5 px-4 py-6 pb-32 md:px-8 md:py-10">
+      <div className="w-full space-y-5 px-4 py-5 pb-32 md:px-6 md:py-6 md:pb-10">
 
         {/* PROFILE OVERVIEW */}
         <motion.div

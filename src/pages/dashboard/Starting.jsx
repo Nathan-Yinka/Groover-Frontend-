@@ -278,92 +278,43 @@ const Starting = () => {
 
     return (
         <div className="min-h-screen grow bg-[#f6f1ea] text-[#221d1a] selection:bg-[#EC6345]/30 overflow-x-hidden font-sans">
-            {/* BRAND TOP BAR */}
-            <div className="px-4 pt-4 md:px-8 md:pt-6 sticky top-0 z-[100]">
-                <div className="mx-auto flex max-w-[1600px] items-center justify-between rounded-[22px] md:rounded-[26px] border border-white/60 bg-white/70 px-4 md:px-6 py-2.5 md:py-3 shadow-[0_20px_55px_-40px_rgba(26,20,18,0.55)] backdrop-blur-xl">
-                    <div className="flex items-center gap-4 md:gap-8">
-                        <div>
-                            <p className="text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.32em] text-[#a56657]">
-                                Submissions
-                            </p>
-                            <p className="hidden md:block mt-1 text-[11px] font-medium text-[#8b8580]">
-                                Review a track and submit your feedback to earn.
-                            </p>
-                        </div>
-                    </div>
+            <main className="w-full space-y-5 px-4 py-5 pb-32 md:px-6 md:py-6 md:pb-10">
 
-                    <div className="flex items-center gap-2 md:gap-4">
-                        <div className="hidden lg:flex items-center gap-2 rounded-full border border-[#eadfd4] bg-[#fffaf6] px-4 py-2">
-                            <IoTimeOutline className="text-sm text-[#EC6345]" />
-                            <span className="text-[11px] font-bold text-[#221d1a] tabular-nums">
-                                {profile?.settings?.service_availability_start_time?.slice(0, 5) || "00:00"} – {profile?.settings?.service_availability_end_time?.slice(0, 5) || "23:59"}
-                            </span>
-                            <span className="text-[9px] font-bold uppercase tracking-widest text-[#a56657]">Available</span>
+                {/* GREETING + DAILY PROGRESS + AVAILABLE HOURS */}
+                <div className="rounded-2xl bg-[#221917] p-5 text-white md:p-6">
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                            <div className="relative">
+                                {profile?.profile_picture ? (
+                                    <img src={profile.profile_picture} alt="" className="h-14 w-14 rounded-full object-cover" />
+                                ) : (
+                                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/10">
+                                        <BiUserCircle className="text-3xl text-white/70" />
+                                    </div>
+                                )}
+                                <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-[#221917] bg-green-500" />
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold">Hi, {profile?.first_name || 'there'} 👋</h1>
+                                <p className="text-sm text-white/60">Welcome back to your dashboard</p>
+                            </div>
                         </div>
-
                         <button
                             type="button"
                             onClick={() => navigate(`${home}/${levelRoute}`)}
-                            className="hidden sm:flex items-center gap-2 rounded-full border border-[#EC6345]/30 bg-[#fff5f2] px-4 py-2 transition hover:-translate-y-0.5"
+                            className="flex shrink-0 items-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-sm font-semibold hover:bg-white/15"
                         >
-                            <span className="text-[9px] font-bold uppercase tracking-widest text-[#EC6345]">Level</span>
-                            <span className="text-[11px] font-black text-[#221d1a] uppercase">{profile?.wallet?.package?.name || 'Basic'}</span>
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => navigate(`${home}/${notificationsRoute}`)}
-                            className="relative flex h-9 w-9 md:h-11 md:w-11 items-center justify-center rounded-full border border-[#eadfd4] bg-[#fffaf6] text-[#2f2724] transition hover:-translate-y-0.5"
-                        >
-                            <IoNotificationsOutline className="text-lg md:text-xl" />
-                            {unreadNotifications > 0 && (
-                                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#EC6345] px-1 text-[9px] font-semibold text-white">
-                                    {unreadNotifications}
-                                </span>
-                            )}
-                        </button>
-
-                        <button 
-                            type="button"
-                            onClick={() => navigate(`${home}/${profileRoute}`)}
-                            className="flex items-center gap-2 md:gap-3 rounded-full border border-[#eadfd4] bg-[#fffaf6] p-1 md:p-1.5 md:pr-5 transition hover:-translate-y-0.5"
-                        >
-                            {profile?.profile_picture ? (
-                                <img src={profile.profile_picture} alt="Profile" className="h-7 w-7 md:h-9 md:h-9 rounded-full object-cover ring-2 ring-[#EC6345]/10" />
-                            ) : (
-                                <div className="h-7 w-7 md:h-9 md:w-9 rounded-full bg-slate-100 flex items-center justify-center">
-                                    <BiUserCircle className="text-xl md:text-2xl text-slate-300" />
-                                </div>
-                            )}
-                            <div className="hidden md:block text-left">
-                                <p className="text-xs font-bold text-[#221d1a] uppercase tracking-wider">{profile?.first_name || 'Curator'}</p>
-                                <p className="text-[10px] font-medium text-[#a56657] uppercase tracking-tighter">{profile?.wallet?.package?.name || 'VIP 0'}</p>
-                            </div>
+                            {profile?.wallet?.package?.icon && <img src={profile.wallet.package.icon} alt="" className="h-6 w-6 object-contain" />}
+                            {profile?.wallet?.package?.name || 'Basic'}
                         </button>
                     </div>
-                </div>
-            </div>
 
-            <main className="mx-auto w-full max-w-[1000px] px-4 py-6 md:px-8 md:py-8 space-y-5">
-
-                {/* GREETING + DAILY PROGRESS */}
-                <div className="rounded-[28px] bg-[#221917] text-white p-6 md:p-8">
-                    <div className="flex items-start justify-between gap-4">
-                        <div>
-                            <h1 className="text-xl font-bold">Hi, {profile?.first_name || 'Curator'} 👋</h1>
-                            <p className="mt-1 text-sm text-white/60">Welcome back to your dashboard</p>
-                        </div>
-                        <div className="flex shrink-0 flex-col items-center gap-1 rounded-2xl bg-white/10 px-3 py-2">
-                            <span className="text-xs font-semibold uppercase text-[#ffb29f]">{profile?.wallet?.package?.name || 'Basic'}</span>
-                        </div>
-                    </div>
-
-                    <div className="mt-6">
+                    <div className="mt-5">
                         <div className="flex items-center justify-between text-sm">
                             <span className="font-medium text-white/80">Daily Progress</span>
                             <span className="font-bold">{profile?.current_number_count || 0} / {profile?.total_number_can_play || 0}</span>
                         </div>
-                        <div className="mt-2 h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
                             <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${Math.min(((profile?.current_number_count || 0) / (profile?.total_number_can_play || 1)) * 100, 100)}%` }}
@@ -372,66 +323,74 @@ const Starting = () => {
                             />
                         </div>
                     </div>
+
+                    <div className="mt-5 flex items-center justify-between rounded-xl bg-white/10 px-4 py-3">
+                        <div className="flex items-center gap-2 text-sm text-white/80">
+                            <IoTimeOutline className="text-lg text-[#ffb29f]" />
+                            Available hours
+                        </div>
+                        <span className="text-base font-bold tabular-nums">
+                            {profile?.settings?.service_availability_start_time?.slice(0, 5) || "00:00"} – {profile?.settings?.service_availability_end_time?.slice(0, 5) || "23:59"}
+                        </span>
+                    </div>
                 </div>
 
                 {/* WALLET STATS */}
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
                     {[
-                        { label: "Wallet Balance", sub: "Available funds", value: formatCurrencyWithCode(profile?.wallet?.balance || 0) },
-                        { label: "Today's Profit", sub: "Earnings today", value: formatCurrencyWithCode(profile?.today_profit || 0) },
-                        { label: "On Hold", sub: "Frozen funds", value: formatCurrencyWithCode(profile?.wallet?.on_hold || 0) },
-                        { label: "Salary", sub: "Daily salary", value: formatCurrencyWithCode(profile?.wallet?.salary || 0) },
+                        { label: "Wallet Balance", sub: "Available funds", value: formatCurrencyWithCode(profile?.wallet?.balance || 0), icon: IoWalletOutline },
+                        { label: "Today's Profit", sub: "Earnings today", value: formatCurrencyWithCode(profile?.today_profit || 0), icon: BiTrendingUp },
+                        { label: "On Hold", sub: "Frozen funds", value: formatCurrencyWithCode(profile?.wallet?.on_hold || 0), icon: BiLockAlt },
+                        { label: "Salary", sub: "Daily salary", value: formatCurrencyWithCode(profile?.wallet?.salary || 0), icon: BiBriefcase },
                     ].map((item) => (
-                        <div key={item.label} className="rounded-2xl border border-[#e5ded3] bg-white p-4">
-                            <p className="text-xs font-semibold text-[#333333]">{item.label}</p>
-                            <p className="text-[11px] text-[#8b8580]">{item.sub}</p>
-                            <p className="mt-2 text-lg font-bold text-[#221d1a]">{item.value}</p>
+                        <div key={item.label} className="rounded-2xl bg-gradient-to-br from-[#221917] to-[#3b2a25] p-4 text-white">
+                            <item.icon className="text-xl text-[#ffb29f]" />
+                            <p className="mt-3 text-sm font-semibold">{item.label}</p>
+                            <p className="text-xs text-white/50">{item.sub}</p>
+                            <p className="mt-2 text-lg font-bold">{item.value}</p>
                         </div>
                     ))}
                 </div>
 
-                {/* TRACKS TO REVIEW */}
-                <div>
-                    <div className="flex items-end justify-between gap-4">
+                {/* SUBMISSIONS */}
+                <div className="rounded-2xl border border-[#e5ded3] bg-white p-5 md:p-6">
+                    <div className="flex items-start justify-between gap-4">
                         <div>
-                            <h2 className="text-lg font-bold text-[#221d1a]">Submissions</h2>
-                            <p className="text-sm text-[#8b8580]">Pick a track below to review and submit feedback.</p>
+                            <h2 className="text-xl font-bold text-[#221d1a]">Start Submission</h2>
+                            <p className="text-sm text-[#605E5E]">Pick a track, rate it and submit your feedback to earn rewards.</p>
                         </div>
-                        <button
-                            type="button"
-                            onClick={handleStartOptimization}
-                            disabled={isLoadingTerminal}
-                            className="shrink-0 rounded-full bg-[#EC6345] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#d9583b] disabled:opacity-50"
-                        >
-                            {isLoadingTerminal ? "Loading..." : "Start"}
-                        </button>
+                        <div className="shrink-0 rounded-xl bg-[#f0ede6] px-4 py-2 text-lg font-bold">
+                            {profile?.current_number_count || 0} / {profile?.total_number_can_play || 0}
+                        </div>
                     </div>
 
-                    <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                        {shuffledProducts.slice(0, 8).map((product, i) => (
+                    <button
+                        type="button"
+                        onClick={handleStartOptimization}
+                        disabled={isLoadingTerminal}
+                        className="mt-4 w-full rounded-xl bg-[#EC6345] py-3 text-sm font-bold text-white transition hover:bg-[#d9583b] disabled:opacity-50 sm:w-auto sm:px-10"
+                    >
+                        {isLoadingTerminal ? "Loading..." : "Start"}
+                    </button>
+
+                    <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
+                        {shuffledProducts.slice(0, 12).map((product, i) => (
                             <button
                                 key={product.id || i}
                                 type="button"
                                 onClick={handleStartOptimization}
                                 disabled={isLoadingTerminal}
-                                className="aspect-square overflow-hidden rounded-2xl border border-[#e5ded3] bg-white transition hover:border-[#EC6345]/40 disabled:opacity-50"
+                                className="aspect-square overflow-hidden rounded-xl border border-[#e5ded3] bg-[#f0ede6] transition hover:border-[#EC6345]/50 disabled:opacity-50"
                             >
-                                <img
-                                    src={product.image || missionBg}
-                                    className="h-full w-full object-cover"
-                                    alt={product.name || "Track"}
-                                />
+                                <img src={product.image || missionBg} className="h-full w-full object-cover" alt={product.name || "Track"} />
                             </button>
                         ))}
                     </div>
                 </div>
 
-                {/* NEED HELP */}
-                <div className="rounded-2xl border border-[#e5ded3] bg-white p-5 text-center">
-                    <p className="text-sm text-[#605E5E]">
-                        Need help? <span onClick={() => navigate(`${home}/${contact}`)} className="cursor-pointer font-semibold text-[#EC6345] underline underline-offset-2">Contact support</span>
-                    </p>
-                </div>
+                <p className="text-center text-sm text-[#605E5E]">
+                    Need help? <span onClick={() => navigate(`${home}/${contact}`)} className="cursor-pointer font-semibold text-[#EC6345] underline underline-offset-2">Contact support</span>
+                </p>
             </main>
 
 

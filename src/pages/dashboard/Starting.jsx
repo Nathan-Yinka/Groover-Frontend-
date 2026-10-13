@@ -109,12 +109,6 @@ const Starting = () => {
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [isLoadingTerminal, setIsLoadingTerminal] = useState(false);
     const [loadedImages, setLoadedImages] = useState({});
-    const [stageCols, setStageCols] = useState(() => (typeof window !== "undefined" && window.innerWidth >= 768 ? 5 : 3));
-    useEffect(() => {
-        const onResize = () => setStageCols(window.innerWidth >= 768 ? 5 : 3);
-        window.addEventListener("resize", onResize);
-        return () => window.removeEventListener("resize", onResize);
-    }, []);
 
     // Logic for interacting with the Global Terminal HUD
     const showGlobalAlert = (type, title, message) => {
@@ -284,55 +278,51 @@ const Starting = () => {
 
     return (
         <div className="min-h-screen grow bg-[#f6f1ea] text-[#221d1a] selection:bg-[#EC6345]/30 overflow-x-hidden font-sans">
-            <main className="w-full space-y-5 px-4 py-5 pb-32 md:px-6 md:py-6 md:pb-10">
+            <main className="mx-auto w-full max-w-[1600px] space-y-6 px-4 py-8 pb-32 md:px-8 md:py-10">
 
                 {/* GREETING + DAILY PROGRESS + AVAILABLE HOURS */}
-                <div className="rounded-3xl bg-[#221917] p-5 text-white shadow-[0_12px_30px_-18px_rgba(34,25,23,0.35)] md:p-6">
-                    <div className="flex items-start justify-between gap-4">
+                <div className="rounded-2xl bg-gradient-to-br from-[#EC6345] to-[#c9472b] p-5 text-white shadow-lg md:p-6">
+                    <div className="mb-5 flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div className="relative">
                                 {profile?.profile_picture ? (
-                                    <img src={profile.profile_picture} alt="" className="h-14 w-14 rounded-full object-cover" />
+                                    <img src={profile.profile_picture} alt="Profile" className="h-16 w-16 rounded-full border-4 border-white/20 object-cover shadow-lg md:h-20 md:w-20" />
                                 ) : (
-                                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/10">
-                                        <BiUserCircle className="text-3xl text-white/70" />
+                                    <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white/20 bg-white/20 shadow-lg md:h-20 md:w-20">
+                                        <BiUserCircle className="text-3xl text-white md:text-4xl" />
                                     </div>
                                 )}
-                                <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-[#221917] bg-green-500" />
+                                <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full border-2 border-white bg-green-400" />
                             </div>
                             <div>
-                                <h1 className="text-xl font-bold">Hi, {profile?.first_name || 'there'} 👋</h1>
-                                <p className="text-sm text-white/60">Welcome back to your dashboard</p>
+                                <h1 className="text-lg font-bold md:text-xl">Hi, {profile?.first_name || 'there'} 👋</h1>
+                                <p className="text-xs text-white/80 md:text-sm">Welcome back to your dashboard</p>
                             </div>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => navigate(`${home}/${levelRoute}`)}
-                            className="flex shrink-0 items-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-sm font-semibold hover:bg-white/15"
-                        >
-                            {profile?.wallet?.package?.icon && <img src={profile.wallet.package.icon} alt="" className="h-6 w-6 object-contain" />}
-                            {profile?.wallet?.package?.name || 'Basic'}
+                        <button type="button" onClick={() => navigate(`${home}/${levelRoute}`)} className="flex items-center gap-2">
+                            {profile?.wallet?.package?.icon && <img src={profile.wallet.package.icon} alt={profile?.wallet?.package?.name || "Package"} className="h-10 w-10 object-contain md:h-12 md:w-12" />}
+                            <span className="hidden text-sm font-bold sm:block">{profile?.wallet?.package?.name || 'Basic'}</span>
                         </button>
                     </div>
 
-                    <div className="mt-5">
-                        <div className="flex items-center justify-between text-sm">
-                            <span className="font-medium text-white/80">Daily Progress</span>
-                            <span className="font-bold">{profile?.current_number_count || 0} / {profile?.total_number_can_play || 0}</span>
+                    <div className="mb-5">
+                        <div className="mb-2 flex items-center justify-between">
+                            <span className="text-sm font-medium">Daily Progress</span>
+                            <span className="text-sm font-bold">{profile?.current_number_count || 0} / {profile?.total_number_can_play || 0}</span>
                         </div>
-                        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
+                        <div className="h-3 w-full overflow-hidden rounded-full bg-white/20">
                             <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${Math.min(((profile?.current_number_count || 0) / (profile?.total_number_can_play || 1)) * 100, 100)}%` }}
                                 transition={{ duration: 1, ease: "easeOut" }}
-                                className="h-full rounded-full bg-[#EC6345]"
+                                className="h-full rounded-full bg-white"
                             />
                         </div>
                     </div>
 
-                    <div className="mt-5 flex items-center justify-between rounded-xl bg-white/10 px-4 py-3">
-                        <div className="flex items-center gap-2 text-sm text-white/80">
-                            <IoTimeOutline className="text-lg text-[#ffb29f]" />
+                    <div className="flex items-center justify-between rounded-xl bg-white/15 px-4 py-3">
+                        <div className="flex items-center gap-2 text-sm">
+                            <IoTimeOutline className="text-lg" />
                             Available hours
                         </div>
                         <span className="text-base font-bold tabular-nums">
@@ -341,67 +331,62 @@ const Starting = () => {
                     </div>
                 </div>
 
-                {/* WALLET STATS */}
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                {/* WALLET CARDS */}
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                     {[
-                        { label: "Wallet Balance", sub: "Available funds", value: formatCurrencyWithCode(profile?.wallet?.balance || 0), icon: IoWalletOutline },
-                        { label: "Today's Profit", sub: "Earnings today", value: formatCurrencyWithCode(profile?.today_profit || 0), icon: BiTrendingUp },
-                        { label: "On Hold", sub: "Frozen funds", value: formatCurrencyWithCode(profile?.wallet?.on_hold || 0), icon: BiLockAlt },
-                        { label: "Salary", sub: "Daily salary", value: formatCurrencyWithCode(profile?.wallet?.salary || 0), icon: BiBriefcase },
+                        { label: "Wallet Balance", description: "Available funds", amount: formatCurrencyWithCode(profile?.wallet?.balance || 0), icon: "💰", gradient: "from-[#EC6345]/90 to-[#EC6345]" },
+                        { label: "Today's Profit", description: "Earnings today", amount: formatCurrencyWithCode(profile?.today_profit || 0), icon: "📈", gradient: "from-[#EC6345]/80 to-[#EC6345]/90" },
+                        { label: "On Hold", description: "Frozen funds", amount: formatCurrencyWithCode(profile?.wallet?.on_hold || 0), icon: "❄️", gradient: "from-[#EC6345]/70 to-[#EC6345]/80" },
+                        { label: "Salary", description: "Daily salary", amount: formatCurrencyWithCode(profile?.wallet?.salary || 0), icon: "💼", gradient: "from-[#EC6345]/60 to-[#EC6345]/70" },
                     ].map((item) => (
-                        <div key={item.label} className="rounded-3xl bg-gradient-to-br from-[#221917] to-[#3b2a25] p-5 text-white shadow-[0_12px_30px_-18px_rgba(34,25,23,0.35)]">
-                            <item.icon className="text-xl text-[#ffb29f]" />
-                            <p className="mt-3 text-sm font-semibold">{item.label}</p>
-                            <p className="text-xs text-white/50">{item.sub}</p>
-                            <p className="mt-2 text-lg font-bold">{item.value}</p>
+                        <div key={item.label} className={`relative overflow-hidden rounded-xl bg-gradient-to-br ${item.gradient} p-4 text-white shadow-lg transition hover:-translate-y-1`}>
+                            <div className="absolute right-0 top-0 h-16 w-16 -translate-y-8 translate-x-8 rounded-full bg-white/10" />
+                            <div className="relative">
+                                <div className="mb-2 flex items-center justify-between">
+                                    <span className="text-xl">{item.icon}</span>
+                                    <div className="h-2 w-2 rounded-full bg-white/50" />
+                                </div>
+                                <h3 className="mb-1 text-xs font-bold md:text-sm">{item.label}</h3>
+                                <p className="mb-2 text-xs text-white/80">{item.description}</p>
+                                <p className="text-base font-bold md:text-lg">{item.amount}</p>
+                            </div>
                         </div>
                     ))}
                 </div>
 
-                {/* SUBMISSION STAGE: albums around a big START button */}
-                <div className="relative overflow-hidden rounded-3xl bg-[#120d0c] p-4 shadow-[0_24px_50px_-28px_rgba(34,25,23,0.8)] md:p-8">
-                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(236,99,69,0.25),transparent_65%)]" />
-
-                    <div className="relative mb-5 flex items-start justify-between gap-4 text-white">
+                {/* START SUBMISSION */}
+                <div className="rounded-2xl bg-white p-6 shadow-xl md:p-8">
+                    <div className="mb-6 flex items-center justify-between">
                         <div>
-                            <h2 className="text-xl font-bold md:text-2xl">Start Submission</h2>
-                            <p className="mt-1 text-sm text-white/60">Tap START, rate the track and submit your feedback to earn.</p>
+                            <h2 className="mb-1 text-lg font-bold text-gray-800 md:text-2xl">Start Submission</h2>
+                            <p className="text-sm text-gray-600 md:text-base">Tap Start, rate the track and submit your feedback to earn</p>
                         </div>
-                        <div className="shrink-0 rounded-xl bg-white/10 px-4 py-2 text-lg font-bold">
-                            {profile?.current_number_count || 0} / {profile?.total_number_can_play || 0}
+                        <div className="rounded-xl bg-[#EC6345]/10 px-3 py-1 md:px-4 md:py-2">
+                            <p className="text-sm font-bold text-[#EC6345] md:text-xl">{profile?.current_number_count || 0} / {profile?.total_number_can_play || 0}</p>
                         </div>
                     </div>
 
-                    <div className="relative mx-auto grid max-w-[720px] gap-3 md:gap-4" style={{ gridTemplateColumns: `repeat(${stageCols}, minmax(0, 1fr))` }}>
-                        {Array.from({ length: stageCols * 3 }).map((_, i) => {
-                            const total = stageCols * 3;
-                            const center = Math.floor(total / 2);
-                            if (i === center) {
+                    <div className="mx-auto grid w-full max-w-4xl grid-cols-3 grid-rows-3 gap-3 md:gap-6">
+                        {Array.from({ length: 9 }).map((_, i) => {
+                            if (i === 4) {
                                 return (
-                                    <div key="start" className="relative flex items-center justify-center">
-                                        <div className="absolute inset-[-8%] animate-pulse rounded-full bg-[#EC6345]/30 blur-xl" />
+                                    <div key="start" className="flex aspect-square items-center justify-center">
                                         <button
                                             type="button"
                                             onClick={handleStartOptimization}
                                             disabled={isLoadingTerminal}
-                                            className="relative aspect-square w-full rounded-full bg-gradient-to-br from-[#EC6345] to-[#ff8a6b] text-base font-black tracking-wide text-white shadow-[0_0_40px_rgba(236,99,69,0.55)] ring-4 ring-white/20 transition hover:scale-105 active:scale-95 disabled:opacity-60 md:text-2xl"
+                                            className="flex h-[70%] w-[70%] items-center justify-center rounded-full bg-[#EC6345] text-sm font-semibold text-white shadow-lg transition hover:scale-105 hover:bg-[#d9583b] active:scale-95 disabled:opacity-60 sm:text-lg md:text-xl"
                                         >
-                                            {isLoadingTerminal ? "..." : "START"}
+                                            {isLoadingTerminal ? "..." : "Start"}
                                         </button>
                                     </div>
                                 );
                             }
-                            const product = shuffledProducts.filter((p) => p.image)[i < center ? i : i - 1];
+                            const product = shuffledProducts.filter((p) => p.image)[i < 4 ? i : i - 1];
                             return (
-                                <button
-                                    key={product?.id || `cell-${i}`}
-                                    type="button"
-                                    onClick={handleStartOptimization}
-                                    disabled={isLoadingTerminal}
-                                    className="aspect-square overflow-hidden rounded-2xl border border-white/10 bg-[#1b1513] shadow-lg transition hover:scale-105 hover:border-[#EC6345]/60 disabled:opacity-60"
-                                >
-                                    {product && <img src={product.image || missionBg} className="h-full w-full object-cover" alt={product.name || "Track"} />}
-                                </button>
+                                <div key={product?.id || `cell-${i}`} className="aspect-square rounded-lg border bg-[#EC6345] p-1 transition-transform hover:scale-105">
+                                    {product && <img src={product.image} alt={product.name || "Track"} className="h-full w-full rounded-lg object-cover" />}
+                                </div>
                             );
                         })}
                     </div>

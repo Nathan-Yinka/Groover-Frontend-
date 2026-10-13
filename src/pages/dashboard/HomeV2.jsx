@@ -100,10 +100,10 @@ const HomeV2 = () => {
 
   return (
     <div className="min-h-screen bg-[#F7F6F0] text-[#221d1a]">
-      <div className="w-full space-y-5 px-4 py-5 pb-32 md:px-6 md:py-6 md:pb-10">
+      <div className="mx-auto w-full max-w-[1600px] space-y-6 px-4 py-8 pb-32 md:px-8 md:py-10">
 
         {/* GREETING */}
-        <div className="flex items-center justify-between gap-4 rounded-3xl bg-[#221917] p-5 text-white shadow-[0_12px_30px_-18px_rgba(34,25,23,0.35)]">
+        <div className="flex items-center justify-between gap-4 rounded-2xl bg-gradient-to-br from-[#EC6345] to-[#c9472b] p-5 text-white shadow-lg">
           <div className="flex items-center gap-4">
             {profile?.profile_picture ? (
               <img src={profile.profile_picture} alt="" className="h-14 w-14 rounded-full object-cover" />
@@ -114,7 +114,7 @@ const HomeV2 = () => {
             )}
             <div>
               <h1 className="text-xl font-bold">Hi, {profile?.first_name || profile?.username || "there"} 👋</h1>
-              <p className="text-sm text-white/60">Welcome back to your dashboard</p>
+              <p className="text-sm text-white/80">Welcome back to your dashboard</p>
             </div>
           </div>
           <button

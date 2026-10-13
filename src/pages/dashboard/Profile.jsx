@@ -144,13 +144,13 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-[#F7F6F0] text-[#333333] selection:bg-[#EC6345]/30">
-      <div className="w-full space-y-5 px-4 py-5 pb-32 md:px-6 md:py-6 md:pb-10">
+      <div className="mx-auto w-full max-w-[1600px] space-y-6 px-4 py-8 pb-32 md:px-8 md:py-10">
 
         {/* PROFILE OVERVIEW */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl bg-[#221917] text-white p-6 md:p-8 shadow-[0_12px_30px_-18px_rgba(34,25,23,0.35)]"
+          className="rounded-2xl bg-gradient-to-br from-[#EC6345] to-[#c9472b] text-white p-6 md:p-8 shadow-lg"
         >
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -167,10 +167,10 @@ const Profile = () => {
               )}
               <div>
                 <h1 className="text-xl font-bold">{displayName}</h1>
-                <p className="mt-1 text-sm text-white/60">@{profile?.username || "username"}</p>
+                <p className="mt-1 text-sm text-white/80">@{profile?.username || "username"}</p>
                 <button
                   onClick={copyReferralCode}
-                  className="mt-1 flex items-center gap-1.5 text-sm text-white/60 hover:text-white transition-colors"
+                  className="mt-1 flex items-center gap-1.5 text-sm text-white/80 hover:text-white transition-colors"
                 >
                   <span>Referral code: <span className="font-semibold text-white">{profile?.referral_code || "GEN-000"}</span></span>
                   <BiCopy className="text-sm" />
@@ -182,7 +182,7 @@ const Profile = () => {
               onClick={() => navigate("/home/level")}
               className="flex shrink-0 flex-col items-center gap-1 rounded-2xl bg-white/10 px-3 py-2 hover:bg-white/15 transition-colors"
             >
-              <GiCrown className="text-xl text-[#ffb29f]" />
+              <GiCrown className="text-xl text-white" />
               <span className="text-xs font-semibold uppercase">{profile?.wallet?.package?.name || "Basic"}</span>
             </button>
           </div>
@@ -192,12 +192,12 @@ const Profile = () => {
               <span className="font-medium text-white/80">Credit Score</span>
               <span className="font-bold">{profile?.wallet?.credit_score || 0}%</span>
             </div>
-            <div className="mt-2 h-2 w-full rounded-full bg-white/10 overflow-hidden">
+            <div className="mt-2 h-3 w-full rounded-full bg-white/20 overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${profile?.wallet?.credit_score || 0}%` }}
                 transition={{ duration: 1, ease: "easeOut" }}
-                className="h-full rounded-full bg-[#EC6345]"
+                className="h-full rounded-full bg-white"
               />
             </div>
           </div>
@@ -205,8 +205,8 @@ const Profile = () => {
           <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5 border-t border-white/10 pt-5 sm:grid-cols-4">
             {walletStats.map((item) => (
               <div key={item.label}>
-                <p className="text-xs font-medium text-white/50">{item.label}</p>
-                <p className={`mt-1 text-lg font-bold ${item.highlight ? "text-[#ffb29f]" : "text-white"}`}>
+                <p className="text-xs font-medium text-white/80">{item.label}</p>
+                <p className={`mt-1 text-lg font-bold ${item.highlight ? "text-white" : "text-white"}`}>
                   {item.value}
                 </p>
               </div>

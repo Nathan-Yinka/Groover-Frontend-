@@ -294,7 +294,24 @@ const Starting = () => {
                     </div>
 
                     <div className="flex items-center gap-2 md:gap-4">
-                        <button 
+                        <div className="hidden lg:flex items-center gap-2 rounded-full border border-[#eadfd4] bg-[#fffaf6] px-4 py-2">
+                            <IoTimeOutline className="text-sm text-[#EC6345]" />
+                            <span className="text-[11px] font-bold text-[#221d1a] tabular-nums">
+                                {profile?.settings?.service_availability_start_time?.slice(0, 5) || "00:00"} – {profile?.settings?.service_availability_end_time?.slice(0, 5) || "23:59"}
+                            </span>
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-[#a56657]">Available</span>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() => navigate(`${home}/${levelRoute}`)}
+                            className="hidden sm:flex items-center gap-2 rounded-full border border-[#EC6345]/30 bg-[#fff5f2] px-4 py-2 transition hover:-translate-y-0.5"
+                        >
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-[#EC6345]">Level</span>
+                            <span className="text-[11px] font-black text-[#221d1a] uppercase">{profile?.wallet?.package?.name || 'Basic'}</span>
+                        </button>
+
+                        <button
                             type="button"
                             onClick={() => navigate(`${home}/${notificationsRoute}`)}
                             className="relative flex h-9 w-9 md:h-11 md:w-11 items-center justify-center rounded-full border border-[#eadfd4] bg-[#fffaf6] text-[#2f2724] transition hover:-translate-y-0.5"
@@ -569,28 +586,11 @@ const Starting = () => {
                      </div>
                 </section>
 
-                {/* COMMAND STATUS BAR (INTEGRATED FOOTER) */}
+                {/* SUPPORT FOOTER */}
                 <div className="mt-12">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 rounded-[32px] border border-white/10 bg-[#0d0908] p-6 md:p-8 backdrop-blur-md relative overflow-hidden group shadow-2xl">
+                    <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-6 rounded-[32px] border border-white/10 bg-[#0d0908] p-6 md:p-8 backdrop-blur-md relative overflow-hidden group shadow-2xl">
                         {/* Status Ambient Glow */}
                         <div className="absolute inset-0 bg-gradient-to-r from-[#EC6345]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                        
-                        <div className="relative z-10 flex items-center gap-5">
-                            <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-2xl bg-white/5 text-[#EC6345]">
-                                <IoTimeOutline className="text-xl md:text-2xl animate-pulse" />
-                            </div>
-                            <div>
-                                <p className="text-[8px] md:text-[9px] font-black text-white/40 uppercase tracking-[0.4em] mb-1.5">Available Hours</p>
-                                <div className="flex items-center gap-3">
-                                    <span className="text-base md:text-xl font-bold text-[#EC6345] tracking-tight tabular-nums">
-                                        {profile?.settings?.service_availability_start_time || "00:00:00"} — {profile?.settings?.service_availability_end_time || "23:59:59"}
-                                    </span>
-                                    <div className="h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="hidden md:block h-10 w-px bg-white/5" />
 
                         <div className="relative z-10 flex items-center gap-5">
                             <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-2xl bg-white/5 text-[#EC6345]">

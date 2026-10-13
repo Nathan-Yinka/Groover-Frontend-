@@ -721,7 +721,7 @@ const HomeV2 = () => {
                  Keep the energy <br /> up while you <span className="text-[#EC6345]">work.</span>
                </h2>
                <p className="mt-6 text-sm leading-relaxed text-[#6b625d] font-medium md:text-lg">
-                 Set the mood, stay focused, and let the playlist carry the session while you review tracks and submit missions.
+                 Set the mood, stay focused, and let the playlist carry the session while you review tracks and submit your feedback.
                </p>
                <button 
                  onClick={() => navigate(starting)}

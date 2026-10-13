@@ -144,169 +144,108 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-[#F7F6F0] text-[#333333] selection:bg-[#EC6345]/30">
-      <div className="mx-auto max-w-[1600px] space-y-6 px-4 py-8 pb-32 md:px-8 md:py-10">
-        
-        {/* IDENTIFICATION DOSSIER */}
+      <div className="mx-auto max-w-[1000px] space-y-5 px-4 py-6 pb-32 md:px-8 md:py-10">
+
+        {/* PROFILE OVERVIEW */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="v2-card p-6 md:p-10 relative overflow-hidden"
+          className="rounded-[28px] bg-[#221917] text-white p-6 md:p-8"
         >
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(236,99,69,0.04)_0%,transparent_70%)] pointer-events-none" />
-          
-          <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              {/* ASSET AUTHORIZATION */}
-              <div className="relative group">
-                <div className="absolute inset-0 bg-[#EC6345]/10 blur-2xl group-hover:bg-[#EC6345]/20 transition-all duration-700" />
-                {profile?.profile_picture ? (
-                  <img
-                    src={profile.profile_picture}
-                    alt="User"
-                    className="relative h-28 w-28 md:h-32 md:w-32 rounded-[40px] object-cover border-4 border-white shadow-2xl transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="relative h-28 w-28 md:h-32 md:w-32 flex items-center justify-center rounded-[40px] bg-[#fff5f2] border-4 border-white shadow-2xl">
-                    <BiUserCircle className="text-6xl text-[#EC6345]" />
-                  </div>
-                )}
-                {/* RANK OVERLAY */}
-                <div className="absolute -bottom-2 -right-2 h-10 w-10 flex items-center justify-center rounded-2xl bg-white border border-[#e5ded3] shadow-lg">
-                  {profile?.wallet?.package?.icon ? (
-                    <img src={profile.wallet.package.icon} alt="" className="h-6 w-6 object-contain" />
-                  ) : (
-                    <GiCrown className="text-xl text-[#EC6345]" />
-                  )}
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-4">
+              {profile?.profile_picture ? (
+                <img
+                  src={profile.profile_picture}
+                  alt="User"
+                  className="h-16 w-16 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10">
+                  <BiUserCircle className="text-4xl text-white/70" />
                 </div>
-              </div>
-              
-              <div className="text-center md:text-left space-y-2">
-                <div className="flex flex-col md:flex-row items-center gap-3">
-                  <h1 className="text-3xl md:text-4xl font-black text-[#333333] uppercase italic italic-heavy tracking-tighter leading-none">
-                    {displayName}
-                  </h1>
-                  <div className="v2-chip bg-[#EC6345]/10 text-[#EC6345] border border-[#EC6345]/20">
-                    Active Member
-                  </div>
-                </div>
-                <p className="text-sm font-bold text-[#EC6345] tracking-widest uppercase">
-                  @{profile?.username || "username"}
-                </p>
-                
-                <div className="pt-2 flex justify-center md:justify-start">
-                  <button 
-                    onClick={copyReferralCode}
-                    className="flex items-center gap-3 bg-[#333333] text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:bg-[#444444] active:scale-95"
-                  >
-                    <BiCopy className="text-sm" />
-                    <span>Ref Code: {profile?.referral_code || "GEN-000"}</span>
-                  </button>
-                </div>
+              )}
+              <div>
+                <h1 className="text-xl font-bold">{displayName}</h1>
+                <p className="mt-1 text-sm text-white/60">@{profile?.username || "username"}</p>
+                <button
+                  onClick={copyReferralCode}
+                  className="mt-1 flex items-center gap-1.5 text-sm text-white/60 hover:text-white transition-colors"
+                >
+                  <span>Referral code: <span className="font-semibold text-white">{profile?.referral_code || "GEN-000"}</span></span>
+                  <BiCopy className="text-sm" />
+                </button>
               </div>
             </div>
 
-            {/* CREDIT SCORE & LEVEL */}
             <button
               onClick={() => navigate("/home/level")}
-              className="lg:w-[380px] rounded-[24px] border border-[#e5ded3] bg-[#fbfaf6] p-5 text-left transition hover:border-[#EC6345]/30"
+              className="flex shrink-0 flex-col items-center gap-1 rounded-2xl bg-white/10 px-3 py-2 hover:bg-white/15 transition-colors"
             >
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-xs font-bold text-[#605E5E] uppercase tracking-widest mb-1">Credit Score</p>
-                  <p className="text-4xl font-black text-[#333333] tracking-tighter leading-none">{profile?.wallet?.credit_score || 0}%</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs font-bold text-[#EC6345] uppercase tracking-widest mb-1">Current Level</p>
-                  <p className="text-2xl font-black text-[#333333] uppercase tracking-tight leading-none">{profile?.wallet?.package?.name || "Basic"}</p>
-                </div>
-              </div>
-              <div className="mt-4 h-2.5 w-full bg-[#f0ede6] rounded-full overflow-hidden border border-[#e5ded3]">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${profile?.wallet?.credit_score || 0}%` }}
-                  transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
-                  className="h-full bg-gradient-to-r from-[#EC6345] to-[#ff987d] rounded-full"
-                />
-              </div>
+              <GiCrown className="text-xl text-[#ffb29f]" />
+              <span className="text-xs font-semibold uppercase">{profile?.wallet?.package?.name || "Basic"}</span>
             </button>
           </div>
 
-          {/* CAPITAL STORAGE MODULES */}
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
-            {walletStats.map((item, idx) => (
+          <div className="mt-6">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium text-white/80">Credit Score</span>
+              <span className="font-bold">{profile?.wallet?.credit_score || 0}%</span>
+            </div>
+            <div className="mt-2 h-2 w-full rounded-full bg-white/10 overflow-hidden">
               <motion.div
-                key={item.label}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * idx }}
-                className="relative p-5 rounded-[28px] border border-[#e5ded3] bg-[#fbfaf6] group hover:border-[#EC6345]/30 transition-all duration-300"
-              >
-                <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-slate-200 group-hover:bg-[#EC6345]/40 transition-colors" />
-                <p className="text-[10px] font-black text-[#605E5E]/50 uppercase tracking-[0.15em] mb-2">
-                  {item.label}
-                </p>
-                <p className={`text-xl font-black tracking-tighter ${item.highlight ? "text-[#EC6345]" : "text-[#333333]"}`}>
+                initial={{ width: 0 }}
+                animate={{ width: `${profile?.wallet?.credit_score || 0}%` }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="h-full rounded-full bg-[#EC6345]"
+              />
+            </div>
+          </div>
+
+          <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5 border-t border-white/10 pt-5 sm:grid-cols-4">
+            {walletStats.map((item) => (
+              <div key={item.label}>
+                <p className="text-xs font-medium text-white/50">{item.label}</p>
+                <p className={`mt-1 text-lg font-bold ${item.highlight ? "text-[#ffb29f]" : "text-white"}`}>
                   {item.value}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </motion.div>
 
-
-        {/* SYSTEMS CONTROL GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {optionGroups.map((group, groupIndex) => (
-            <motion.div
-              key={group.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + (0.1 * groupIndex) }}
-              className="v2-card flex flex-col overflow-hidden"
-            >
-              <div className="bg-[#fbfaf6] border-b border-[#e5ded3] px-6 py-4">
-                <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#333333]">
-                  {group.title}
-                </p>
-              </div>
-              <div className="divide-y divide-[#e5ded3]/50">
-                {group.items.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <button
-                      key={item.label}
-                      onClick={() => navigate(item.route)}
-                      className="flex w-full items-center justify-between px-6 py-5 transition-all hover:bg-slate-50 group"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white border border-[#e5ded3] text-[#333333] transition-all group-hover:border-[#EC6345]/30 group-hover:text-[#EC6345] group-hover:shadow-md">
-                          <Icon className="text-xl" />
-                        </div>
-                        <p className="text-sm font-black uppercase tracking-tight text-[#333333]">{item.label}</p>
-                      </div>
-                      <BiChevronRight className="text-slate-300 transition-transform group-hover:translate-x-1 group-hover:text-[#EC6345]" />
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
+        {/* ACCOUNT OPTIONS */}
+        <div className="space-y-3">
+          {optionGroups.map((group) => (
+            <div key={group.title} className="space-y-2">
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.label}
+                    onClick={() => navigate(item.route)}
+                    className="flex w-full items-center justify-between rounded-2xl border border-[#e5ded3] bg-white px-5 py-4 transition hover:border-[#EC6345]/30"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className="text-xl text-[#605E5E]" />
+                      <span className="text-sm font-semibold text-[#333333]">{item.label}</span>
+                    </div>
+                    <BiChevronRight className="text-slate-300" />
+                  </button>
+                );
+              })}
+            </div>
           ))}
         </div>
 
         {/* LOGOUT */}
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.99 }}
+        <button
           onClick={handleLogout}
-          className="flex w-full items-center justify-center space-x-3 rounded-[32px] border-2 border-[#EC6345]/10 bg-white py-6 transition-all hover:bg-red-50/30 hover:border-[#EC6345]/20 group"
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[#e5ded3] bg-white py-4 text-sm font-semibold text-[#d64545] transition hover:bg-red-50"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-50 text-[#EC6345] group-hover:bg-[#EC6345] group-hover:text-white transition-all">
-            <BiLogOutCircle className="text-xl" /> 
-          </div>
-          <span className="text-xs font-black text-[#333333] uppercase tracking-[0.3em]">Logout</span>
-        </motion.button>
+          <BiLogOutCircle className="text-lg" />
+          Logout
+        </button>
       </div>
       <BottomNavMobile className="md:hidden" />
     </div>

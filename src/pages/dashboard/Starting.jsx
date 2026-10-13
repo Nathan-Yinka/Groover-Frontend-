@@ -43,8 +43,7 @@ import Loader from "./components/Load";
 
 import BottomNavMobile from "./components/BottomNavMobile";
 
-// Assets (Using V2 assets for consistency)
-import v2HeroStudioCurator from "../../assets/v2_hero_studio_curator.png";
+// Assets
 import missionBg from "../../assets/v2_mission_bg.png";
 
 const MySwal = withReactContent(Swal);
@@ -345,267 +344,96 @@ const Starting = () => {
                 </div>
             </div>
 
-            <main className="mx-auto w-full max-w-[1600px] px-4 py-8 md:px-8 lg:py-16">
-                
-                {/* THE ORBITAL COMMAND CENTER */}
-                <section className="relative min-h-[750px] lg:min-h-[850px] flex items-center justify-center overflow-hidden rounded-[60px] bg-[#120d0c] shadow-3xl border border-white/5">
-                    {/* AVANT-GARDE BACKGROUND */}
-                    <div className="absolute inset-0 z-0">
-                        <img src={v2HeroStudioCurator} className="h-full w-full object-cover opacity-20 scale-110 blur-[2px]" alt="" />
-                        <div className="absolute inset-0 bg-gradient-to-b from-[#120d0c] via-transparent to-[#120d0c]" />
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(236,99,69,0.15)_0%,transparent_70%)]" />
+            <main className="mx-auto w-full max-w-[1000px] px-4 py-6 md:px-8 md:py-8 space-y-5">
+
+                {/* GREETING + DAILY PROGRESS */}
+                <div className="rounded-[28px] bg-[#221917] text-white p-6 md:p-8">
+                    <div className="flex items-start justify-between gap-4">
+                        <div>
+                            <h1 className="text-xl font-bold">Hi, {profile?.first_name || 'Curator'} 👋</h1>
+                            <p className="mt-1 text-sm text-white/60">Welcome back to your dashboard</p>
+                        </div>
+                        <div className="flex shrink-0 flex-col items-center gap-1 rounded-2xl bg-white/10 px-3 py-2">
+                            <span className="text-xs font-semibold uppercase text-[#ffb29f]">{profile?.wallet?.package?.name || 'Basic'}</span>
+                        </div>
                     </div>
 
-                    <div className="absolute top-0 left-0 right-0 z-0 overflow-hidden opacity-80 pointer-events-none">
-                        <motion.div 
-                            animate={{ x: [0, -2000] }}
-                            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                            className="flex gap-8 md:gap-16 whitespace-nowrap pt-8 will-change-transform"
-                        >
-                            {[...shuffledProducts, ...shuffledProducts].map((p, i) => (
-                                <div key={i} className="h-32 w-32 md:h-44 md:w-44 rounded-[24px] md:rounded-[40px] border border-white/20 bg-[#1b1513] overflow-hidden flex-shrink-0 shadow-2xl relative">
-                                    <img src={p.image || missionBg} className="h-full w-full object-cover grayscale brightness-90 transition-all duration-700" alt="" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                                </div>
-                            ))}
-                        </motion.div>
-                    </div>
-
-                    {/* THE MUSIC FLUX TICKER (BOTTOM RAIL) - DEACTIVATED ON MOBILE FOR PERFORMANCE */}
-                    <div className="absolute bottom-0 left-0 right-0 z-0 overflow-hidden opacity-80 pointer-events-none hidden lg:block">
-                        <motion.div 
-                            animate={{ x: [-2000, 0] }}
-                            transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
-                            className="flex gap-16 whitespace-nowrap pb-8 will-change-transform"
-                        >
-                            {/* Reversing for diversity so top and bottom rails don't show the same images at once */}
-                            {[...shuffledProducts, ...shuffledProducts, ...shuffledProducts].reverse().map((p, i) => (
-                                <div key={i} className="h-44 w-44 rounded-[40px] border border-white/20 bg-[#1b1513] overflow-hidden flex-shrink-0 shadow-2xl relative">
-                                    <img src={p.image || missionBg} className="h-full w-full object-cover grayscale brightness-90 transition-all duration-700" alt="" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                                </div>
-                            ))}
-                        </motion.div>
-                    </div>
-
-                    {/* DECORATIVE ROTATING RINGS */}
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                        <motion.div 
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                          className="h-[400px] w-[400px] rounded-full border border-dashed border-white/5 sm:h-[500px] sm:w-[500px]" 
-                        />
-                        <motion.div 
-                          animate={{ rotate: -360 }}
-                          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[300px] w-[300px] rounded-full border border-white/10 opacity-40 sm:h-[350px] sm:w-[350px]" 
-                        />
-                    </div>
-
-                    <div className="relative z-10 w-full max-w-7xl px-6 py-12 flex flex-col items-center justify-center gap-16">
-
-                        <div className="flex flex-col lg:flex-row items-center justify-between w-full gap-16 lg:gap-8">
-                            
-                            {/* LEFT WING: FINANCIAL MODULES */}
-                            <div className="flex flex-col gap-6 order-2 lg:order-1 w-full lg:w-auto">
-                                <motion.div 
-                                    initial={{ opacity: 0, x: -30 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    className="group rounded-[32px] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl shadow-2xl transition-all hover:bg-white/[0.05]"
-                                >
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#EC6345]/20 text-[#EC6345]">
-                                            <IoWalletOutline className="text-xl" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Balance</p>
-                                            <p className="text-2xl font-bold text-white tracking-tighter">{formatCurrencyWithCode(profile?.wallet?.balance || 0)}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-[9px] font-bold text-green-500 uppercase tracking-widest">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-                                        Available now
-                                    </div>
-                                </motion.div>
-
-                                <motion.div 
-                                    initial={{ opacity: 0, x: -30 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.1 }}
-                                    className="group rounded-[32px] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl shadow-2xl transition-all hover:bg-white/[0.05]"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-green-500/10 text-green-500">
-                                            <BiTrendingUp className="text-xl" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Today's Profit</p>
-                                            <p className="text-xl font-bold text-white">{formatCurrencyWithCode(profile?.today_profit || 0)}</p>
-                                        </div>
-                                    </div>
-                                </motion.div>
-
-                                <motion.div 
-                                    initial={{ opacity: 0, x: -30 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.2 }}
-                                    className="group rounded-[32px] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl shadow-2xl transition-all hover:bg-white/[0.05]"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-500">
-                                            <IoWalletOutline className="text-xl" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Salary</p>
-                                            <p className="text-xl font-bold text-white">{formatCurrencyWithCode(profile?.wallet?.salary || 0)}</p>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            </div>
-
-                            {/* CENTER: THE START CORE */}
-                            <div className="relative order-1 lg:order-2">
-                                <motion.div 
-                                  initial={{ scale: 0.8, opacity: 0 }}
-                                  animate={{ scale: 1, opacity: 1 }}
-                                  className="relative flex h-[160px] w-[160px] sm:h-[200px] sm:w-[200px] items-center justify-center"
-                                >
-                                    {/* Glowing Aura (Concentrated for compact core) */}
-                                    <div className="absolute inset-0 rounded-full bg-[#EC6345]/30 blur-[40px] animate-pulse" />
-                                    <div className="absolute -inset-3 rounded-full border border-white/5 animate-[spin_20s_linear_infinite]" />
-                                    
-                                    <button
-                                        onClick={handleStartOptimization}
-                                        disabled={isLoadingTerminal}
-                                        className="group relative flex h-full w-full flex-col items-center justify-center rounded-full border border-white/20 bg-[#1b1513] text-white shadow-3xl transition-all hover:border-[#EC6345]/50 active:scale-95 disabled:opacity-50 overflow-hidden"
-                                    >
-                                        <div className="absolute inset-0 bg-gradient-to-tr from-[#EC6345]/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        
-                                        <div className="flex flex-col items-center justify-center">
-                                            <span className="block text-[6px] font-black uppercase tracking-[0.6em] text-white/30 mb-0.5 leading-none">Begin</span>
-                                            <div className="flex items-center justify-center h-8">
-                                                {isLoadingTerminal ? (
-                                                    <div className="scale-[0.25] origin-center -mb-8">
-                                                        <ResponsiveSpinner size="sm" />
-                                                    </div>
-                                                ) : (
-                                                    <span className="block text-xl font-black uppercase tracking-tighter sm:text-2xl leading-none">
-                                                        START
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </button>
-                                </motion.div>
-                            </div>
-
-                            {/* RIGHT WING: MISSION MODULES */}
-                            <div className="flex flex-col gap-6 order-3 w-full lg:w-auto">
-                            <motion.div 
-                                initial={{ opacity: 0, x: 30 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                className="group rounded-[32px] border border-white/10 bg-white/[0.03] p-7 backdrop-blur-xl shadow-2xl transition-all hover:bg-white/[0.05]"
-                            >
-                                <div className="flex items-center justify-between gap-12 mb-4">
-                                    <div>
-                                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Submissions Left</p>
-                                        <p className="text-2xl font-bold text-white tracking-tighter">{profile?.current_number_count || 0} / {profile?.total_number_can_play || 0}</p>
-                                    </div>
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EC6345]/10 text-[#EC6345]">
-                                        <p className="text-[10px] font-black">{Math.round(((profile?.current_number_count || 0) / (profile?.total_number_can_play || 1)) * 100)}%</p>
-                                    </div>
-                                </div>
-                                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                     <motion.div 
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${Math.min(((profile?.current_number_count || 0) / (profile?.total_number_can_play || 1)) * 100, 100)}%` }}
-                                        className="h-full bg-[#EC6345] rounded-full shadow-[0_0_10px_rgba(236,99,69,0.5)]"
-                                    />
-                                </div>
-                            </motion.div>
-
-                            <motion.div 
-                                initial={{ opacity: 0, x: 30 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.1 }}
-                                className="group rounded-[32px] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl shadow-2xl transition-all hover:bg-white/[0.05]"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-yellow-500/10 text-yellow-500">
-                                        <BiLockAlt className="text-xl" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">On Hold</p>
-                                        <p className="text-xl font-bold text-white">{formatCurrencyWithCode(profile?.wallet?.on_hold || 0)}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
+                    <div className="mt-6">
+                        <div className="flex items-center justify-between text-sm">
+                            <span className="font-medium text-white/80">Daily Progress</span>
+                            <span className="font-bold">{profile?.current_number_count || 0} / {profile?.total_number_can_play || 0}</span>
+                        </div>
+                        <div className="mt-2 h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${Math.min(((profile?.current_number_count || 0) / (profile?.total_number_can_play || 1)) * 100, 100)}%` }}
+                                transition={{ duration: 1, ease: "easeOut" }}
+                                className="h-full rounded-full bg-[#EC6345]"
+                            />
                         </div>
                     </div>
                 </div>
-                </section>
 
-
-                {/* LIVE ALBUM FEED */}
-                <section className="mt-24 overflow-hidden rounded-[40px] bg-[#1b1513] p-8 lg:p-12 relative shadow-3xl">
-                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#EC6345]/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
-                     
-                     <div className="relative z-10 flex flex-wrap items-end justify-between gap-6 mb-16">
-                        <div className="space-y-4">
-                            <span className="text-[11px] font-black text-[#EC6345] uppercase tracking-[0.4em] block">Global Network</span>
-                            <h2 className="text-3xl lg:text-4xl font-bold tracking-tighter text-white">Live Submission Feed</h2>
+                {/* WALLET STATS */}
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {[
+                        { label: "Wallet Balance", sub: "Available funds", value: formatCurrencyWithCode(profile?.wallet?.balance || 0) },
+                        { label: "Today's Profit", sub: "Earnings today", value: formatCurrencyWithCode(profile?.today_profit || 0) },
+                        { label: "On Hold", sub: "Frozen funds", value: formatCurrencyWithCode(profile?.wallet?.on_hold || 0) },
+                        { label: "Salary", sub: "Daily salary", value: formatCurrencyWithCode(profile?.wallet?.salary || 0) },
+                    ].map((item) => (
+                        <div key={item.label} className="rounded-2xl border border-[#e5ded3] bg-white p-4">
+                            <p className="text-xs font-semibold text-[#333333]">{item.label}</p>
+                            <p className="text-[11px] text-[#8b8580]">{item.sub}</p>
+                            <p className="mt-2 text-lg font-bold text-[#221d1a]">{item.value}</p>
                         </div>
-                        <div className="flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-6 py-3 backdrop-blur-md">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-[#EC6345] italic">Live Console</span>
-                        </div>
-                     </div>
+                    ))}
+                </div>
 
-                     <div className="relative">
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 lg:gap-6">
-                            {shuffledProducts.slice(0, 6).map((product, i) => (
-                                <motion.div 
-                                    key={product.id || i}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.1 }}
-                                    className="group relative"
-                                >
-                                    <div className="aspect-square overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-xl transition-all group-hover:scale-105 group-hover:-translate-y-2 group-hover:shadow-[#EC6345]/20">
-                                        <img 
-                                            src={product.image || missionBg} 
-                                            className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" 
-                                            alt="" 
-                                        />
-                                    </div>
-                                    <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <p className="text-[8px] font-bold text-white/40 uppercase tracking-widest text-center truncate">{product.name || 'Anonymous hit'}</p>
-                                    </div>
-                                </motion.div>
-                            ))}
+                {/* TRACKS TO REVIEW */}
+                <div>
+                    <div className="flex items-end justify-between gap-4">
+                        <div>
+                            <h2 className="text-lg font-bold text-[#221d1a]">Submissions</h2>
+                            <p className="text-sm text-[#8b8580]">Pick a track below to review and submit feedback.</p>
                         </div>
-                     </div>
-                </section>
-
-                {/* SUPPORT FOOTER */}
-                <div className="mt-12">
-                    <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-6 rounded-[32px] border border-white/10 bg-[#0d0908] p-6 md:p-8 backdrop-blur-md relative overflow-hidden group shadow-2xl">
-                        {/* Status Ambient Glow */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#EC6345]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                        <div className="relative z-10 flex items-center gap-5">
-                            <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-2xl bg-white/5 text-[#EC6345]">
-                                <IoRocketOutline className="text-xl md:text-2xl" />
-                            </div>
-                            <div>
-                                <p className="text-[8px] md:text-[9px] font-black text-white/40 uppercase tracking-[0.4em] mb-1.5">Need Help?</p>
-                                <p className="text-[11px] md:text-sm font-medium text-white/70">
-                                    Reach out via <span onClick={() => navigate(`${home}/${contact}`)} className="text-white hover:text-[#EC6345] transition-colors cursor-pointer underline underline-offset-4 md:underline-offset-6 font-black decoration-[#EC6345] uppercase tracking-tighter">Support</span>
-                                </p>
-                            </div>
-                        </div>
+                        <button
+                            type="button"
+                            onClick={handleStartOptimization}
+                            disabled={isLoadingTerminal}
+                            className="shrink-0 rounded-full bg-[#EC6345] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#d9583b] disabled:opacity-50"
+                        >
+                            {isLoadingTerminal ? "Loading..." : "Start"}
+                        </button>
                     </div>
+
+                    <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                        {shuffledProducts.slice(0, 8).map((product, i) => (
+                            <button
+                                key={product.id || i}
+                                type="button"
+                                onClick={handleStartOptimization}
+                                disabled={isLoadingTerminal}
+                                className="aspect-square overflow-hidden rounded-2xl border border-[#e5ded3] bg-white transition hover:border-[#EC6345]/40 disabled:opacity-50"
+                            >
+                                <img
+                                    src={product.image || missionBg}
+                                    className="h-full w-full object-cover"
+                                    alt={product.name || "Track"}
+                                />
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* NEED HELP */}
+                <div className="rounded-2xl border border-[#e5ded3] bg-white p-5 text-center">
+                    <p className="text-sm text-[#605E5E]">
+                        Need help? <span onClick={() => navigate(`${home}/${contact}`)} className="cursor-pointer font-semibold text-[#EC6345] underline underline-offset-2">Contact support</span>
+                    </p>
                 </div>
             </main>
+
 
             {/* OPTIMIZATION MODAL (HIGH-FIDELITY TASK SUBMISSION) */}
             <AnimatePresence>

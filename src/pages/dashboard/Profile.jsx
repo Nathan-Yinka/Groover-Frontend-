@@ -206,28 +206,29 @@ const Profile = () => {
             </div>
 
             {/* CREDIT SCORE & LEVEL */}
-            <div className="lg:w-[380px] grid grid-cols-2 gap-4">
-              <div className="rounded-[24px] border border-[#e5ded3] bg-[#fbfaf6] p-5">
-                <p className="text-xs font-bold text-[#605E5E] uppercase tracking-widest mb-1">Credit Score</p>
-                <p className="text-4xl font-black text-[#333333] tracking-tighter leading-none">{profile?.wallet?.credit_score || 0}%</p>
-                <div className="mt-3 h-2.5 w-full bg-[#f0ede6] rounded-full overflow-hidden border border-[#e5ded3]">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${profile?.wallet?.credit_score || 0}%` }}
-                    transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
-                    className="h-full bg-gradient-to-r from-[#EC6345] to-[#ff987d] rounded-full"
-                  />
+            <button
+              onClick={() => navigate("/home/level")}
+              className="lg:w-[380px] rounded-[24px] border border-[#e5ded3] bg-[#fbfaf6] p-5 text-left transition hover:border-[#EC6345]/30"
+            >
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold text-[#605E5E] uppercase tracking-widest mb-1">Credit Score</p>
+                  <p className="text-4xl font-black text-[#333333] tracking-tighter leading-none">{profile?.wallet?.credit_score || 0}%</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-bold text-[#EC6345] uppercase tracking-widest mb-1">Current Level</p>
+                  <p className="text-2xl font-black text-[#333333] uppercase tracking-tight leading-none">{profile?.wallet?.package?.name || "Basic"}</p>
                 </div>
               </div>
-              <button
-                onClick={() => navigate("/home/level")}
-                className="rounded-[24px] border-2 border-[#EC6345] bg-[#fff5f2] p-5 text-left transition hover:bg-[#ffe9e3] active:scale-[0.98]"
-              >
-                <p className="text-xs font-bold text-[#EC6345] uppercase tracking-widest mb-1">Current Level</p>
-                <p className="text-2xl font-black text-[#333333] uppercase tracking-tight leading-none">{profile?.wallet?.package?.name || "Basic"}</p>
-                <p className="mt-3 text-xs font-bold text-[#EC6345] underline underline-offset-2">View all packages &rarr;</p>
-              </button>
-            </div>
+              <div className="mt-4 h-2.5 w-full bg-[#f0ede6] rounded-full overflow-hidden border border-[#e5ded3]">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${profile?.wallet?.credit_score || 0}%` }}
+                  transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+                  className="h-full bg-gradient-to-r from-[#EC6345] to-[#ff987d] rounded-full"
+                />
+              </div>
+            </button>
           </div>
 
           {/* CAPITAL STORAGE MODULES */}
